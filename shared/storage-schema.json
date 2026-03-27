@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agentic Authorship Dashboard — Storage Schema",
+  "description": "Namespace-Konventionen fuer window.localStorage. Jedes Modul nutzt seinen eigenen Prefix.",
+  "version": "1.0.0",
+  "updated": "2026-03-27",
+
+  "namespaces": {
+    "shell": {
+      "description": "Navigation, User-Preferences, Theme",
+      "keys": {
+        "shell:theme": { "type": "string", "default": "dark", "values": ["dark", "light"] },
+        "shell:lastModule": { "type": "string", "default": null, "description": "Letztes geoeffnetes Modul (z.B. 'm09')" },
+        "shell:userName": { "type": "string", "default": null },
+        "shell:apiKey": { "type": "string", "default": null, "description": "Claude API Key (BYOK) fuer Cowan Chat" },
+        "shell:syncUrl": { "type": "string", "default": null, "description": "URL des Sync-Servers (z.B. https://100.x.x.x:3456)" },
+        "shell:ttsUrl": { "type": "string", "default": null, "description": "URL des Edge-TTS-Servers (Port 3457)" },
+        "shell:realtimeUrl": { "type": "string", "default": null, "description": "URL des Realtime-Voice-Servers (Port 3458)" },
+        "shell:syncToken": { "type": "string", "default": null, "description": "Auth-Token fuer alle drei Server" }
+      }
+    },
+    "overview": {
+      "description": "M01 — Projektdaten, Fortschritt",
+      "keys": {
+        "overview:bookProgress": { "type": "number", "default": 0, "description": "Buch-Fortschritt in Prozent (0-100)" },
+        "overview:chaptersTotal": { "type": "number", "default": 16 },
+        "overview:chaptersDone": { "type": "number", "default": 0 }
+      }
+    },
+    "tasks": {
+      "description": "M02 — Task-Liste, Status",
+      "keys": {
+        "tasks:items": { "type": "array", "default": [], "description": "Array von Task-Objekten {id, title, status, priority, created}" },
+        "tasks:filter": { "type": "string", "default": "all", "values": ["all", "open", "done", "blocked"] }
+      }
+    },
+    "sprint": {
+      "description": "M03 — Sprint-Daten",
+      "keys": {
+        "sprint:current": { "type": "object", "default": null, "description": "{name, start, end, goals[]}" },
+        "sprint:history": { "type": "array", "default": [] }
+      }
+    },
+    "content": {
+      "description": "M04 — Content-Pipeline-Status",
+      "keys": {
+        "content:chapters": { "type": "array", "default": [], "description": "Array von {id, title, status, wordcount, score}" },
+        "content:pipeline": { "type": "string", "default": "idle", "values": ["idle", "drafting", "reviewing", "final"] }
+      }
+    },
+    "publishing": {
+      "description": "M05 — KDP-Daten, ISBN, Preise",
+      "keys": {
+        "publishing:isbn": { "type": "string", "default": null },
+        "publishing:price": { "type": "number", "default": null },
+        "publishing:status": { "type": "string", "default": "draft", "values": ["draft", "review", "submitted", "live"] }
+      }
+    },
+    "wundertuete": {
+      "description": "M06 — Generator-Outputs (SOUL.md, AGENTS.md)",
+      "keys": {
+        "wundertuete:lastGenerated": { "type": "string", "default": null, "description": "ISO-Timestamp der letzten Generierung" },
+        "wundertuete:outputs": { "type": "array", "default": [] }
+      }
+    },
+    "wizard": {
+      "description": "M07 — Workspace-Wizard Fortschritt",
+      "keys": {
+        "wizard:step": { "type": "number", "default": 0, "description": "Aktueller Schritt (0-8)" },
+        "wizard:answers": { "type": "object", "default": {}, "description": "Antworten auf die 8 Wizard-Fragen" },
+        "wizard:generated": { "type": "boolean", "default": false }
+      }
+    },
+    "config": {
+      "description": "M08 — openclaw.json Einstellungen",
+      "keys": {
+        "config:agentName": { "type": "string", "default": null },
+        "config:model": { "type": "string", "default": "anthropic/claude-sonnet-4-6" },
+        "config:channel": { "type": "string", "default": "telegram" },
+        "config:output": { "type": "string", "default": null, "description": "Generiertes openclaw.json als String" }
+      }
+    },
+    "costs": {
+      "description": "M09 — Kalkulationen, Provider-Vergleich",
+      "keys": {
+        "costs:provider": { "type": "string", "default": "anthropic" },
+        "costs:monthlyEstimate": { "type": "number", "default": 0 },
+        "costs:calculations": { "type": "array", "default": [] }
+      }
+    },
+    "gallery": {
+      "description": "M10 — SOUL.md Template-Auswahl",
+      "keys": {
+        "gallery:selected": { "type": "string", "default": null, "description": "ID des ausgewaehlten Templates" },
+        "gallery:customized": { "type": "object", "default": null, "description": "Angepasstes Template" }
+      }
+    },
+    "cli": {
+      "description": "M11 — CLI-Suchverlauf",
+      "keys": {
+        "cli:searchHistory": { "type": "array", "default": [], "description": "Letzte Suchbegriffe" },
+        "cli:favorites": { "type": "array", "default": [], "description": "Gemerkte Befehle" }
+      }
+    },
+    "status": {
+      "description": "M12 — Gateway-Verbindung, Live-Daten",
+      "keys": {
+        "status:gatewayUrl": { "type": "string", "default": null },
+        "status:lastPing": { "type": "string", "default": null },
+        "status:connected": { "type": "boolean", "default": false }
+      }
+    }
+  }
+}

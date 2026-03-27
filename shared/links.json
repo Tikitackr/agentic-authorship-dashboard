@@ -1,0 +1,91 @@
+{
+  "_meta": {
+    "description": "Zentrale Link-Konfiguration fuer das gesamte Projekt. EINE Datei, ALLE URLs.",
+    "usage_dashboard": "Dashboard laedt diese Datei beim Start und ersetzt alle {{PLATZHALTER}} im HTML.",
+    "usage_buch": "kapitel-zu-pdf.py liest diese Datei und ersetzt Platzhalter im Markdown VOR der Konvertierung.",
+    "regel": "Wenn sich eine URL aendert (Domain-Umzug, Repo-Umbenennung), NUR diese Datei aendern. Kein Code, kein HTML, kein Markdown anfassen.",
+    "version": "1.0.0",
+    "updated": "2026-03-27"
+  },
+
+  "eigene_projekte": {
+    "DASHBOARD_URL":     "https://tikitackr.github.io/agentic-authorship-dashboard",
+    "DASHBOARD_OLD_URL": "https://tikitackr.github.io/OpenClaw-Dashboard",
+    "COWAN_URL":         "https://tikitackr.github.io/Cowan",
+    "COWAN_COMPANION":   "https://tikitackr.github.io/Cowan/?mode=companion",
+    "WEBSITE_URL":       "https://tikitackr.github.io/OpenClaw-Website",
+    "SETUP_SYNC_SH":     "https://tikitackr.github.io/OpenClaw-Website/setup-sync.sh",
+    "SETUP_TTS_SH":      "https://tikitackr.github.io/OpenClaw-Website/setup-tts.sh",
+    "SETUP_REALTIME_SH": "https://tikitackr.github.io/OpenClaw-Website/setup-realtime.sh",
+    "GITHUB_REPO":       "https://github.com/Tikitackr/agentic-authorship-dashboard",
+    "GITHUB_DASHBOARD_OLD": "https://github.com/Tikitackr/OpenClaw-Dashboard"
+  },
+
+  "openclaw": {
+    "OPENCLAW_DOCS":     "https://docs.openclaw.ai",
+    "OPENCLAW_INSTALL":  "https://docs.openclaw.ai/install.sh",
+    "OPENCLAW_GITHUB":   "https://github.com/openclaw/openclaw",
+    "OPENCLAW_DOCKER_COMPOSE": "https://raw.githubusercontent.com/OpenClaw/openclaw/main/docker-compose.yml",
+    "CLAWHUB_URL":       "https://clawhub.ai",
+    "CLAWHUB_HUMANIZER": "https://clawhub.ai/Tikitackr/humanizer-de",
+    "CHEATSHEET_URL":    "https://openclawcheatsheet.com"
+  },
+
+  "externe_tools": {
+    "TAILSCALE_INSTALL": "https://tailscale.com/install.sh",
+    "DOCKER_INSTALL":    "https://get.docker.com",
+    "NPM_FIX":          "https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally",
+    "CRONTAB_GURU":      "https://crontab.guru",
+    "QR_GENERATOR":      "https://www.qr-code-generator.com"
+  },
+
+  "api_provider": {
+    "ANTHROPIC_CONSOLE": "https://console.anthropic.com",
+    "ANTHROPIC_KEYS":    "https://console.anthropic.com/settings/keys",
+    "ANTHROPIC_DOCS":    "https://docs.anthropic.com",
+    "OPENAI_PLATFORM":   "https://platform.openai.com"
+  },
+
+  "dashboard_module": {
+    "M01_URL": "{{DASHBOARD_URL}}/m01/",
+    "M02_URL": "{{DASHBOARD_URL}}/m02/",
+    "M03_URL": "{{DASHBOARD_URL}}/m03/",
+    "M04_URL": "{{DASHBOARD_URL}}/m04/",
+    "M05_URL": "{{DASHBOARD_URL}}/m05/",
+    "M06_URL": "{{DASHBOARD_URL}}/m06/",
+    "M07_URL": "{{DASHBOARD_URL}}/m07/",
+    "M08_URL": "{{DASHBOARD_URL}}/m08/",
+    "M09_URL": "{{DASHBOARD_URL}}/m09/",
+    "M10_URL": "{{DASHBOARD_URL}}/m10/",
+    "M11_URL": "{{DASHBOARD_URL}}/m11/",
+    "M12_URL": "{{DASHBOARD_URL}}/m12/"
+  },
+
+  "qr_codes": {
+    "_info": "Jeder QR-Code zeigt auf ein Dashboard-Modul mit Kontext-Parameter. Format im Buch: [QR-CODE: ID – Beschreibung]",
+
+    "ECOSYSTEM-TOUR":   { "target": "{{DASHBOARD_URL}}/?tour=start",         "kapitel": "Vorwort",  "modul": "Shell",  "aktion": "Oekosystem-Tour starten" },
+    "INSTALL-START":    { "target": "{{DASHBOARD_URL}}/m02/?filter=install",  "kapitel": "Kap 2",    "modul": "M02",    "aktion": "Installations-Checkliste" },
+    "VPS-SETUP":        { "target": "{{DASHBOARD_URL}}/m08/?preset=vps",      "kapitel": "Kap 2",    "modul": "M08",    "aktion": "VPS-Entscheidungshilfe via Config Builder" },
+    "FIRST-START":      { "target": "{{DASHBOARD_URL}}/m12/?check=health",    "kapitel": "Kap 2",    "modul": "M12",    "aktion": "Automatischer Systemcheck" },
+    "INSTALL-TROUBLE":  { "target": "{{DASHBOARD_URL}}/m11/?search=install",  "kapitel": "Kap 2",    "modul": "M11",    "aktion": "CLI Troubleshooter" },
+    "DOCKER-COMPOSE":   { "target": "{{DASHBOARD_URL}}/m08/?preset=docker",   "kapitel": "Kap 3",    "modul": "M08",    "aktion": "Docker-Config validieren" },
+    "DOCKER-TROUBLE":   { "target": "{{DASHBOARD_URL}}/m11/?search=docker",   "kapitel": "Kap 3",    "modul": "M11",    "aktion": "Docker-Diagnose in CLI Referenz" },
+    "SOUL-EDITOR":      { "target": "{{DASHBOARD_URL}}/m10/?action=edit",     "kapitel": "Kap 4",    "modul": "M10",    "aktion": "SOUL.md interaktiv bearbeiten" },
+    "AGENTS-EDITOR":    { "target": "{{DASHBOARD_URL}}/m06/?tab=agents",      "kapitel": "Kap 4",    "modul": "M06",    "aktion": "AGENTS.md Generator" },
+    "TELEGRAM-SETUP":   { "target": "{{DASHBOARD_URL}}/m08/?preset=telegram", "kapitel": "Kap 5",    "modul": "M08",    "aktion": "Telegram-Config im Config Builder" },
+    "WHATSAPP-SETUP":   { "target": "{{DASHBOARD_URL}}/m08/?preset=whatsapp", "kapitel": "Kap 5",    "modul": "M08",    "aktion": "WhatsApp-Config im Config Builder" },
+    "CHANNEL-CHECK":    { "target": "{{DASHBOARD_URL}}/m12/?view=channels",   "kapitel": "Kap 5",    "modul": "M12",    "aktion": "Kanal-Status live pruefen" },
+    "SECURITY-CHECK":   { "target": "{{DASHBOARD_URL}}/m12/?check=security",  "kapitel": "Kap 6",    "modul": "M12",    "aktion": "Security-Audit im Status Dashboard" },
+    "DOCTOR":           { "target": "{{DASHBOARD_URL}}/m11/?search=doctor",   "kapitel": "Kap 7",    "modul": "M11",    "aktion": "openclaw doctor Referenz" },
+    "COST-CALC":        { "target": "{{DASHBOARD_URL}}/m09/",                 "kapitel": "Kap 8",    "modul": "M09",    "aktion": "Kosten selbst kalkulieren" },
+    "WORKSPACE-WIZARD": { "target": "{{DASHBOARD_URL}}/m07/",                 "kapitel": "Kap 9",    "modul": "M07",    "aktion": "Workspace-Dateien generieren" },
+    "PIPELINE-STATUS":  { "target": "{{DASHBOARD_URL}}/m04/",                 "kapitel": "Kap 10",   "modul": "M04",    "aktion": "Pipeline-Status verfolgen" },
+    "COST-OVERVIEW":    { "target": "{{DASHBOARD_URL}}/m09/?view=breakdown",  "kapitel": "Kap 11",   "modul": "M09",    "aktion": "Kosten-Aufschluesselung" },
+    "GALLERY-BROWSE":   { "target": "{{DASHBOARD_URL}}/m10/",                 "kapitel": "Kap 12",   "modul": "M10",    "aktion": "SOUL.md Templates browsen" },
+    "BLUEPRINT-START":  { "target": "{{DASHBOARD_URL}}/m02/?filter=blueprint","kapitel": "Kap 13",   "modul": "M02",    "aktion": "Blueprint-Checkliste" },
+    "BLUEPRINT-DONE":   { "target": "{{DASHBOARD_URL}}/m12/?check=all",       "kapitel": "Kap 13",   "modul": "M12",    "aktion": "Erfolgs-Check: Alles laeuft?" },
+    "PLAN-BUILDER":     { "target": "{{DASHBOARD_URL}}/m03/",                 "kapitel": "Kap 14",   "modul": "M03",    "aktion": "Sprint planen fuer eigenes Buch" },
+    "PUBLISH-CHECKLIST":{ "target": "{{DASHBOARD_URL}}/m05/",                 "kapitel": "Kap 15",   "modul": "M05",    "aktion": "KDP-Publishing-Checkliste" }
+  }
+}
