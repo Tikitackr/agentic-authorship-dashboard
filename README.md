@@ -39,6 +39,11 @@ Dieses Dashboard ist sowohl Projektmanagement-Tool als auch Werkzeugkasten fuer 
 
 Einfach `index.html` im Browser oeffnen. Kein Server noetig.
 
+## Links
+
+- [Buch-Projekt](https://github.com/Tikitackr)
+- [Website](https://tikitackr.github.io/OpenClaw-Website/)
+
 ## Lizenz
 
 Begleit-Material zum Buch "Agentic Authorship". Alle Rechte vorbehalten.
