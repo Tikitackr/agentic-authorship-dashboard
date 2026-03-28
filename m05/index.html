@@ -1,41 +1,750 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Publishing / KDP — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M05</div>
-    <h1>Publishing / KDP</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M05: Publishing / KDP — Agentic Authorship Dashboard -->
+<style>
+  /* ── M05 Scoped Styles ── */
+  .m05 { max-width: 100%; }
+
+  .m05-hero {
+    background: linear-gradient(135deg, rgba(244,114,182,0.12) 0%, rgba(167,139,250,0.08) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m05-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m05-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(244, 114, 182, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pink);
+    flex-shrink: 0;
+  }
+
+  .m05-hero-icon svg { width: 20px; height: 20px; }
+
+  .m05-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m05-hero h2 .status-tag {
+    margin-left: 0.5rem;
+    font-size: 0.72rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 8px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  .tag-prep { background: var(--amber-dim); color: var(--amber); }
+  .tag-live { background: rgba(34,197,94,0.15); color: var(--green); }
+
+  .m05-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m05-hero-desc strong { color: var(--text); }
+
+  /* Stats Row */
+  .m05-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m05-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .m05-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .m05-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+  }
+
+  .val-pink { color: var(--pink); }
+  .val-green { color: var(--green); }
+  .val-amber { color: var(--amber); }
+  .val-text { color: var(--text); }
+
+  /* Section */
+  .m05-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .m05-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m05-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
+  .m05-section-title .badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .badge-done { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-open { background: var(--amber-dim); color: var(--amber); }
+  .badge-info { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+  /* Publishing Pipeline */
+  .m05-pipeline {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .m05-pipe-step {
+    flex: 1;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    position: relative;
+    background: var(--bg-card);
+    border-right: 1px solid rgba(245,158,11,0.1);
+  }
+
+  .m05-pipe-step:last-child { border-right: none; }
+
+  .m05-pipe-step.done {
+    background: rgba(34,197,94,0.06);
+  }
+
+  .m05-pipe-step.active {
+    background: rgba(245,158,11,0.08);
+    box-shadow: inset 0 -3px 0 var(--amber);
+  }
+
+  .m05-pipe-step.future {
+    opacity: 0.4;
+  }
+
+  .m05-pipe-num {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  .done .m05-pipe-num { color: var(--green); }
+  .active .m05-pipe-num { color: var(--amber); }
+  .future .m05-pipe-num { color: var(--text-dim); }
+
+  .m05-pipe-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+  }
+
+  .done .m05-pipe-label { color: var(--green); }
+  .active .m05-pipe-label { color: var(--amber); }
+
+  /* Checklist */
+  .m05-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .m05-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .m05-check-item:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+  }
+
+  .m05-check-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.05rem;
+    transition: all 0.15s;
+    color: transparent;
+    font-size: 0.75rem;
+  }
+
+  .m05-check-item.checked .m05-check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .m05-check-info { flex: 1; min-width: 0; }
+
+  .m05-check-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .m05-check-item.checked .m05-check-title {
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+
+  .m05-check-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+
+  /* Metadata Cards */
+  .m05-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .m05-meta-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .m05-meta-label {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 0.3rem;
+  }
+
+  .m05-meta-value {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .m05-meta-value.pink { color: var(--pink); }
+  .m05-meta-value.green { color: var(--green); }
+  .m05-meta-value.amber { color: var(--amber); }
+
+  .m05-meta-note {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+  }
+
+  /* Royalty Calculator */
+  .m05-calc {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .m05-calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    font-size: 0.85rem;
+  }
+
+  .m05-calc-row + .m05-calc-row {
+    border-top: 1px solid rgba(245,158,11,0.08);
+  }
+
+  .m05-calc-label { color: var(--text-dim); }
+  .m05-calc-val { font-weight: 600; color: var(--text); }
+  .m05-calc-val.green { color: var(--green); }
+  .m05-calc-val.amber { color: var(--amber); }
+  .m05-calc-val.pink { color: var(--pink); }
+
+  .m05-calc-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.5rem 0;
+  }
+
+  .m05-calc-total {
+    font-size: 1rem;
+  }
+
+  /* Info Box */
+  .m05-info-box {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .m05-info-icon {
+    color: var(--blue);
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .m05-info-icon svg { width: 18px; height: 18px; }
+
+  .m05-info-text {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m05-info-text strong { color: var(--text); }
+
+  /* Front/Back Matter */
+  .m05-matter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .m05-matter-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .m05-matter-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-approved { background: var(--green); }
+  .dot-pending  { background: var(--amber); }
+  .dot-missing  { background: var(--text-dim); opacity: 0.3; }
+
+  .m05-matter-name {
+    font-size: 0.85rem;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .m05-matter-status {
+    font-size: 0.65rem;
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ms-approved { background: rgba(34,197,94,0.15); color: var(--green); }
+  .ms-pending  { background: var(--amber-dim); color: var(--amber); }
+  .ms-missing  { background: rgba(136,136,136,0.15); color: var(--text-dim); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m05-stats { grid-template-columns: repeat(2, 1fr); }
+    .m05-meta-grid { grid-template-columns: 1fr; }
+    .m05-pipe-label { font-size: 0.55rem; }
+    .m05-hero { padding: 1.25rem; }
+    .m05-pipeline { flex-wrap: wrap; }
+    .m05-pipe-step { min-width: 50%; }
+  }
+</style>
+
+<div class="m05">
+
+  <!-- Hero: Publishing Status -->
+  <div class="m05-hero">
+    <div class="m05-hero-header">
+      <div class="m05-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
+      <h2>Publishing / KDP <span class="status-tag tag-prep">Vorbereitung</span></h2>
+    </div>
+    <p class="m05-hero-desc">
+      Manuskript + PDFs stehen. Hier trackst du den Weg zum <strong>fertigen KDP-Upload</strong>: Checkliste, Metadaten, Royalty-Rechnung und AI-Disclosure.
+    </p>
   </div>
-</body>
-</html>
+
+  <!-- Statistiken -->
+  <div class="m05-stats">
+    <div class="m05-stat">
+      <div class="m05-stat-value val-pink">34,95</div>
+      <div class="m05-stat-label">Preis (EUR)</div>
+    </div>
+    <div class="m05-stat">
+      <div class="m05-stat-value val-green">18</div>
+      <div class="m05-stat-label">Break-Even</div>
+    </div>
+    <div class="m05-stat">
+      <div class="m05-stat-value val-amber">~350</div>
+      <div class="m05-stat-label">Kosten (EUR)</div>
+    </div>
+    <div class="m05-stat">
+      <div class="m05-stat-value val-text">60%</div>
+      <div class="m05-stat-label">Royalty</div>
+    </div>
+  </div>
+
+  <!-- Publishing Pipeline -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      Publishing-Pipeline
+    </div>
+    <div class="m05-pipeline">
+      <div class="m05-pipe-step done">
+        <div class="m05-pipe-num">&check;</div>
+        <div class="m05-pipe-label">Manuskript</div>
+      </div>
+      <div class="m05-pipe-step done">
+        <div class="m05-pipe-num">&check;</div>
+        <div class="m05-pipe-label">PDFs</div>
+      </div>
+      <div class="m05-pipe-step active">
+        <div class="m05-pipe-num">3</div>
+        <div class="m05-pipe-label">Finalisierung</div>
+      </div>
+      <div class="m05-pipe-step future">
+        <div class="m05-pipe-num">4</div>
+        <div class="m05-pipe-label">Review</div>
+      </div>
+      <div class="m05-pipe-step future">
+        <div class="m05-pipe-num">5</div>
+        <div class="m05-pipe-label">KDP Upload</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KDP Pre-Publishing Checkliste -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      KDP-Checkliste
+      <span class="badge badge-open" id="m05-checklist-badge">0/0</span>
+    </div>
+    <div class="m05-checklist" id="m05-checklist">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Front/Back Matter -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      Front- &amp; Back-Matter
+      <span class="badge badge-open">4/7 genehmigt</span>
+    </div>
+    <div class="m05-matter-list">
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-approved"></div>
+        <div class="m05-matter-name">Titelseite</div>
+        <span class="m05-matter-status ms-approved">Genehmigt</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-approved"></div>
+        <div class="m05-matter-name">Impressum (mit KI-Transparenz)</div>
+        <span class="m05-matter-status ms-approved">Genehmigt</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-approved"></div>
+        <div class="m05-matter-name">Danksagung</div>
+        <span class="m05-matter-status ms-approved">Genehmigt</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-approved"></div>
+        <div class="m05-matter-name">&Uuml;ber den Autor</div>
+        <span class="m05-matter-status ms-approved">Genehmigt</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-pending"></div>
+        <div class="m05-matter-name">Inhaltsverzeichnis (PDF-generiert)</div>
+        <span class="m05-matter-status ms-pending">Offen</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-missing"></div>
+        <div class="m05-matter-name">Cover (Front + Back)</div>
+        <span class="m05-matter-status ms-missing">Fehlt</span>
+      </div>
+      <div class="m05-matter-item">
+        <div class="m05-matter-dot dot-missing"></div>
+        <div class="m05-matter-name">ISBN (optional bei KDP)</div>
+        <span class="m05-matter-status ms-missing">Nicht beantragt</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buch-Metadaten -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      Buch-Metadaten
+    </div>
+    <div class="m05-meta-grid">
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Format</div>
+        <div class="m05-meta-value">6&times;9 Zoll (15,24 &times; 22,86 cm)</div>
+        <div class="m05-meta-note">KDP-Standard f&uuml;r Sachb&uuml;cher</div>
+      </div>
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Sprache</div>
+        <div class="m05-meta-value">Deutsch</div>
+        <div class="m05-meta-note">Englischer Titel, deutscher Inhalt</div>
+      </div>
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Kapitel</div>
+        <div class="m05-meta-value pink">16 Kapitel</div>
+        <div class="m05-meta-note">Vorwort + 15 Kapitel (inkl. 13.2)</div>
+      </div>
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Umfang</div>
+        <div class="m05-meta-value">~72.000 W&ouml;rter</div>
+        <div class="m05-meta-note">ca. 280&ndash;320 Seiten im Druck</div>
+      </div>
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Arbeitstitel</div>
+        <div class="m05-meta-value amber">Agentic Authorship</div>
+        <div class="m05-meta-note">Noch nicht final &mdash; Entscheidung vor Upload (B41)</div>
+      </div>
+      <div class="m05-meta-card">
+        <div class="m05-meta-label">Autor</div>
+        <div class="m05-meta-value">Thomas Iburg</div>
+        <div class="m05-meta-note">Texterin Gabi (Lektorat) sp&auml;ter erg&auml;nzen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Royalty Calculator -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      Royalty-Rechnung
+      <span class="badge badge-info">KDP 60%</span>
+    </div>
+    <div class="m05-calc">
+      <div class="m05-calc-row">
+        <span class="m05-calc-label">Verkaufspreis</span>
+        <span class="m05-calc-val">34,95 EUR</span>
+      </div>
+      <div class="m05-calc-row">
+        <span class="m05-calc-label">KDP-Royalty (60%)</span>
+        <span class="m05-calc-val green">20,97 EUR</span>
+      </div>
+      <div class="m05-calc-row">
+        <span class="m05-calc-label">Druckkosten (gesch&auml;tzt)</span>
+        <span class="m05-calc-val pink">&minus;5,50 EUR</span>
+      </div>
+      <hr class="m05-calc-divider">
+      <div class="m05-calc-row m05-calc-total">
+        <span class="m05-calc-label"><strong>Netto pro Exemplar</strong></span>
+        <span class="m05-calc-val green"><strong>~15,47 EUR</strong></span>
+      </div>
+      <hr class="m05-calc-divider">
+      <div class="m05-calc-row">
+        <span class="m05-calc-label">Produktionskosten gesamt</span>
+        <span class="m05-calc-val">320&ndash;370 EUR</span>
+      </div>
+      <div class="m05-calc-row">
+        <span class="m05-calc-label">Break-Even</span>
+        <span class="m05-calc-val amber">~18 Exemplare</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Disclosure -->
+  <div class="m05-section">
+    <div class="m05-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      KI-Transparenz &amp; Recht
+    </div>
+    <div class="m05-info-box" style="margin-bottom: 0.6rem;">
+      <div class="m05-info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      </div>
+      <div class="m05-info-text">
+        <strong>KDP AI-Disclosure ist Pflicht.</strong> Amazon verlangt bei KDP die Offenlegung, ob und wie KI bei der Erstellung verwendet wurde. Unser Impressum enth&auml;lt bereits die KI-Transparenzerkl&auml;rung.
+      </div>
+    </div>
+    <div class="m05-info-box">
+      <div class="m05-info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      </div>
+      <div class="m05-info-text">
+        <strong>EU AI Act Art. 50:</strong> Transparenzpflicht f&uuml;r KI-generierte Inhalte. Unser Buch ist ein Musterbeispiel &mdash; Kap 12 dokumentiert den kompletten Prozess, Impressum benennt die Tools.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── KDP Checkliste ──
+  var STORAGE_KEY = 'publishing:checklist';
+
+  var CHECKS = [
+    { id: 'manuscript',  title: 'Manuskript komplett (16 Kapitel)',                hint: 'Alle Kapitel im Final-Status, QA bestanden', done: true },
+    { id: 'pdfs',        title: 'Einzel-PDFs f\u00fcr alle Kapitel',              hint: '16 PDFs via WeasyPrint generiert (S132\u2013S142)', done: true },
+    { id: 'frontmatter', title: 'Front-Matter Texte genehmigt',                   hint: 'Titelseite, Impressum, KI-Transparenz \u2014 genehmigt S131', done: true },
+    { id: 'backmatter',  title: 'Back-Matter Texte genehmigt',                    hint: 'Danksagung, \u00dcber den Autor \u2014 genehmigt S131', done: true },
+    { id: 'gesamt_pdf',  title: 'Gesamt-PDF zusammenf\u00fcgen',                  hint: 'Front-Matter + Kapitel + Back-Matter als ein PDF', done: false },
+    { id: 'qr_codes',    title: 'QR-Codes generieren und einsetzen',              hint: '22 QR-Codes aus links.json, Platzhalter ersetzen', done: false },
+    { id: 'cover',       title: 'Cover gestalten (Front + Back + Spine)',          hint: 'KDP Cover Calculator f\u00fcr exakte Ma\u00dfe', done: false },
+    { id: 'review_gabi', title: 'Lektorat durch Gabi',                            hint: 'texter-in-hannover.de \u2014 noch nicht kontaktiert', done: false },
+    { id: 'titel_final', title: 'Buchtitel finalisieren',                          hint: 'Agentic Authorship vs. Alternativen? (B41)', done: false },
+    { id: 'ai_disclosure',title: 'KDP AI-Disclosure ausf\u00fcllen',              hint: 'Bei Upload: KI-Nutzung offenlegen (Pflicht)', done: false },
+    { id: 'kdp_upload',  title: 'KDP-Upload durchf\u00fchren',                    hint: 'Manuscript + Cover + Metadaten hochladen', done: false },
+    { id: 'proof',       title: 'Proof-Exemplar bestellen und pr\u00fcfen',       hint: 'Physisches Buch vor Ver\u00f6ffentlichung checken', done: false }
+  ];
+
+  // Load saved state
+  var savedState = {};
+  try {
+    var stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) savedState = JSON.parse(stored);
+  } catch(e) {}
+
+  // Apply saved state to CHECKS
+  for (var i = 0; i < CHECKS.length; i++) {
+    if (savedState[CHECKS[i].id] !== undefined) {
+      CHECKS[i].done = savedState[CHECKS[i].id];
+    }
+  }
+
+  function saveState() {
+    var state = {};
+    for (var i = 0; i < CHECKS.length; i++) {
+      state[CHECKS[i].id] = CHECKS[i].done;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      // Also update publishing namespace
+      var doneCount = 0;
+      for (var j = 0; j < CHECKS.length; j++) { if (CHECKS[j].done) doneCount++; }
+      var status = doneCount === CHECKS.length ? 'live' : doneCount > 8 ? 'submitted' : doneCount > 4 ? 'review' : 'draft';
+      localStorage.setItem('publishing:status', status);
+    } catch(e) {}
+  }
+
+  function updateBadge() {
+    var doneCount = 0;
+    for (var i = 0; i < CHECKS.length; i++) { if (CHECKS[i].done) doneCount++; }
+    var badge = document.getElementById('m05-checklist-badge');
+    if (badge) {
+      badge.textContent = doneCount + '/' + CHECKS.length;
+      badge.className = 'badge ' + (doneCount === CHECKS.length ? 'badge-done' : 'badge-open');
+    }
+  }
+
+  function renderChecklist() {
+    var el = document.getElementById('m05-checklist');
+    if (!el) return;
+
+    var html = '';
+    for (var i = 0; i < CHECKS.length; i++) {
+      var c = CHECKS[i];
+      html += '<div class="m05-check-item' + (c.done ? ' checked' : '') + '" data-idx="' + i + '">' +
+        '<div class="m05-check-box">' + (c.done ? '\u2713' : '') + '</div>' +
+        '<div class="m05-check-info">' +
+          '<div class="m05-check-title">' + c.title + '</div>' +
+          '<div class="m05-check-hint">' + c.hint + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+    el.innerHTML = html;
+
+    // Click handlers
+    var items = el.querySelectorAll('.m05-check-item');
+    for (var j = 0; j < items.length; j++) {
+      items[j].addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        CHECKS[idx].done = !CHECKS[idx].done;
+        this.classList.toggle('checked');
+        var box = this.querySelector('.m05-check-box');
+        box.textContent = CHECKS[idx].done ? '\u2713' : '';
+        var title = this.querySelector('.m05-check-title');
+        if (CHECKS[idx].done) {
+          title.style.textDecoration = 'line-through';
+          title.style.color = 'var(--text-dim)';
+          box.style.background = 'var(--green)';
+          box.style.borderColor = 'var(--green)';
+          box.style.color = '#fff';
+        } else {
+          title.style.textDecoration = 'none';
+          title.style.color = 'var(--text)';
+          box.style.background = 'transparent';
+          box.style.borderColor = 'var(--border)';
+          box.style.color = 'transparent';
+        }
+        saveState();
+        updateBadge();
+      });
+    }
+
+    updateBadge();
+  }
+
+  renderChecklist();
+  saveState();
+
+  // ── localStorage bookmark ──
+  try {
+    localStorage.setItem('shell:lastModule', 'm05');
+  } catch(e) {}
+
+})();
+</script>
