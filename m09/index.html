@@ -1,41 +1,478 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cost Calculator — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M09</div>
-    <h1>Cost Calculator</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M09: Cost Calculator — Agentic Authorship Dashboard -->
+<style>
+  .m09 { max-width: 100%; }
+
+  .m09-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(34,197,94,0.06) 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .m09-hero-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .m09-hero-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--amber-dim); display: flex; align-items: center; justify-content: center;
+    color: var(--amber); flex-shrink: 0;
+  }
+  .m09-hero-icon svg { width: 20px; height: 20px; }
+  .m09-hero h2 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+  .m09-hero-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+  .m09-hero-desc strong { color: var(--text); }
+
+  /* Layout */
+  .m09-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+  /* Left: Calculator Form */
+  .m09-form { display: flex; flex-direction: column; gap: 1rem; }
+
+  .m09-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1rem; background: rgba(0,0,0,0.1);
+  }
+
+  .m09-card-title {
+    font-size: 0.82rem; font-weight: 700; color: var(--text);
+    margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .m09-card-title svg { width: 16px; height: 16px; color: var(--amber); }
+
+  .m09-field { margin-bottom: 0.75rem; }
+  .m09-field:last-child { margin-bottom: 0; }
+
+  .m09-label {
+    display: block; font-size: 0.72rem; font-weight: 600; color: var(--text);
+    margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .m09-hint { font-size: 0.66rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+
+  .m09-input, .m09-select {
+    width: 100%; padding: 0.55rem 0.75rem;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: inherit; font-size: 0.82rem;
+    transition: border-color 0.15s; outline: none;
+  }
+  .m09-input:focus, .m09-select:focus { border-color: var(--amber); }
+  .m09-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.6rem center; padding-right: 1.8rem;
+  }
+  .m09-select option { background: #12121a; color: #e0e0e0; }
+
+  .m09-row { display: flex; gap: 0.5rem; }
+  .m09-row .m09-field { flex: 1; }
+
+  .m09-range {
+    width: 100%; height: 4px; -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 2px; outline: none; margin-top: 0.3rem;
+  }
+  .m09-range::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 8px;
+    background: var(--amber); cursor: pointer; border: 2px solid #0a0a0f;
+  }
+  .m09-range-val {
+    font-size: 0.75rem; color: var(--amber); font-weight: 600;
+    text-align: right; margin-top: 0.15rem;
+  }
+
+  /* Right: Results */
+  .m09-results { display: flex; flex-direction: column; gap: 0.75rem; position: sticky; top: 0; }
+
+  .m09-total-card {
+    background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+    border: 1px solid rgba(245,158,11,0.3); border-radius: var(--radius);
+    padding: 1.25rem; text-align: center;
+  }
+  .m09-total-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .m09-total-amount { font-size: 2.2rem; font-weight: 800; color: var(--amber); margin: 0.25rem 0; }
+  .m09-total-sub { font-size: 0.75rem; color: var(--text-dim); }
+
+  .m09-breakdown {
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  }
+  .m09-breakdown-title {
+    padding: 0.6rem 0.85rem; background: var(--bg-card);
+    font-size: 0.78rem; font-weight: 600; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .m09-breakdown-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.78rem;
+  }
+  .m09-breakdown-row:last-child { border-bottom: none; }
+  .m09-breakdown-label { color: var(--text-dim); }
+  .m09-breakdown-value { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .m09-breakdown-value.highlight { color: var(--amber); }
+
+  .m09-compare-card {
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  }
+  .m09-compare-title {
+    padding: 0.6rem 0.85rem; background: var(--bg-card);
+    font-size: 0.78rem; font-weight: 600; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m09-bar-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+  }
+  .m09-bar-name { font-size: 0.72rem; color: var(--text-dim); min-width: 80px; }
+  .m09-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .m09-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+  .m09-bar-cost { font-size: 0.72rem; color: var(--text); font-weight: 600; min-width: 55px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .m09-tip {
+    background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px; padding: 0.65rem; display: flex; gap: 0.5rem; align-items: flex-start;
+  }
+  .m09-tip svg { width: 14px; height: 14px; color: var(--blue); flex-shrink: 0; margin-top: 0.1rem; }
+  .m09-tip-text { font-size: 0.72rem; color: var(--text-dim); line-height: 1.45; }
+  .m09-tip-text strong { color: var(--text); }
+
+  @media (max-width: 768px) {
+    .m09-layout { grid-template-columns: 1fr; }
+    .m09-results { position: static; }
+    .m09-row { flex-direction: column; }
+  }
+</style>
+
+<div class="m09">
+
+  <div class="m09-hero">
+    <div class="m09-hero-header">
+      <div class="m09-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <h2>Cost Calculator</h2>
+    </div>
+    <p class="m09-hero-desc">
+      Berechne deine <strong>monatlichen API-Kosten</strong> f&uuml;r OpenClaw. W&auml;hle Provider, Modell, Nutzung &mdash; der Rechner zeigt Kosten pro Monat und vergleicht alle Provider.
+    </p>
   </div>
-</body>
-</html>
+
+  <div class="m09-layout">
+
+    <!-- ═══ LEFT: Calculator Form ═══ -->
+    <div class="m09-form">
+
+      <div class="m09-card">
+        <div class="m09-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Modell &amp; Provider
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Provider</label>
+          <select class="m09-select" id="m09-provider">
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="openai">OpenAI (GPT)</option>
+            <option value="google">Google (Gemini)</option>
+            <option value="mistral">Mistral</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="ollama">Ollama (lokal, gratis)</option>
+          </select>
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Modell</label>
+          <select class="m09-select" id="m09-model"></select>
+        </div>
+      </div>
+
+      <div class="m09-card">
+        <div class="m09-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Nutzung
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Nachrichten pro Tag</label>
+          <input class="m09-range" type="range" id="m09-msgs" min="5" max="500" value="50" step="5">
+          <div class="m09-range-val" id="m09-msgs-val">50</div>
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Tokens pro Nachricht (Input + Output)</label>
+          <div class="m09-hint">Chat: ~800 | Buchkapitel: ~4.000 | Code: ~2.000</div>
+          <input class="m09-range" type="range" id="m09-tokens" min="200" max="10000" value="1500" step="100">
+          <div class="m09-range-val" id="m09-tokens-val">1.500</div>
+        </div>
+        <div class="m09-row">
+          <div class="m09-field">
+            <label class="m09-label">Input/Output Ratio</label>
+            <select class="m09-select" id="m09-ratio">
+              <option value="0.7">70/30 (Chat)</option>
+              <option value="0.5">50/50 (Generierung)</option>
+              <option value="0.3">30/70 (Viel Output)</option>
+            </select>
+          </div>
+          <div class="m09-field">
+            <label class="m09-label">Aktive Tage/Monat</label>
+            <input class="m09-input" id="m09-days" type="number" value="25" min="1" max="31">
+          </div>
+        </div>
+      </div>
+
+      <div class="m09-card">
+        <div class="m09-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          Heartbeat-Kosten
+        </div>
+        <div class="m09-row">
+          <div class="m09-field">
+            <label class="m09-label">Heartbeats pro Tag</label>
+            <input class="m09-input" id="m09-hb-count" type="number" value="14" min="0" max="48">
+          </div>
+          <div class="m09-field">
+            <label class="m09-label">Heartbeat-Modell</label>
+            <select class="m09-select" id="m09-hb-model">
+              <option value="same">(gleich wie oben)</option>
+              <option value="haiku" selected>claude-haiku-4-5</option>
+              <option value="gpt4omini">gpt-4o-mini</option>
+              <option value="flash">gemini-flash-lite</option>
+              <option value="ollama">Ollama (gratis)</option>
+            </select>
+          </div>
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Tokens pro Heartbeat</label>
+          <div class="m09-hint">Typisch 500-1500 (Zusammenfassung, Checks)</div>
+          <input class="m09-input" id="m09-hb-tokens" type="number" value="800" min="100" max="5000">
+        </div>
+      </div>
+
+      <div class="m09-card">
+        <div class="m09-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Optimierungen
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Prompt Caching</label>
+          <div class="m09-hint">Anthropic: 90% g&uuml;nstiger auf Cache-Hits. Automatisch ab v2026.3.x.</div>
+          <select class="m09-select" id="m09-cache">
+            <option value="0">Kein Caching</option>
+            <option value="0.3">~30% Cache-Hits (realistisch)</option>
+            <option value="0.5" selected>~50% Cache-Hits (gut)</option>
+            <option value="0.7">~70% Cache-Hits (optimiert)</option>
+          </select>
+        </div>
+        <div class="m09-field">
+          <label class="m09-label">Batch API</label>
+          <div class="m09-hint">50% g&uuml;nstiger, aber asynchron (Ergebnis nach Minuten/Stunden)</div>
+          <select class="m09-select" id="m09-batch">
+            <option value="0" selected>Nicht nutzen</option>
+            <option value="0.3">~30% der Anfragen via Batch</option>
+            <option value="0.5">~50% via Batch</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ RIGHT: Results ═══ -->
+    <div class="m09-results">
+
+      <div class="m09-total-card">
+        <div class="m09-total-label">Gesch&auml;tzte Monatskosten</div>
+        <div class="m09-total-amount" id="m09-total">0,00 &euro;</div>
+        <div class="m09-total-sub" id="m09-total-sub">0,00 EUR/Tag</div>
+      </div>
+
+      <div class="m09-breakdown">
+        <div class="m09-breakdown-title">Aufschl&uuml;sselung</div>
+        <div id="m09-breakdown-rows"></div>
+      </div>
+
+      <div class="m09-compare-card">
+        <div class="m09-compare-title">Provider-Vergleich (gleiche Nutzung)</div>
+        <div id="m09-compare-bars"></div>
+      </div>
+
+      <div class="m09-tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div class="m09-tip-text" id="m09-tip"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Pricing: EUR per 1M tokens [input, output]
+  var MODELS = {
+    anthropic: {
+      label: 'Anthropic', color: '#d97706',
+      models: {
+        'claude-opus-4-6':   { label: 'Claude Opus 4.6',   input: 4.60, output: 23.00 },
+        'claude-sonnet-4-6': { label: 'Claude Sonnet 4.6',  input: 2.76, output: 13.80 },
+        'claude-haiku-4-5':  { label: 'Claude Haiku 4.5',   input: 0.74, output: 3.68 }
+      }
+    },
+    openai: {
+      label: 'OpenAI', color: '#22c55e',
+      models: {
+        'gpt-4o':      { label: 'GPT-4o',      input: 2.30, output: 9.20 },
+        'gpt-4o-mini': { label: 'GPT-4o Mini',  input: 0.14, output: 0.55 },
+        'gpt-4.1':     { label: 'GPT-4.1',      input: 1.84, output: 7.36 },
+        'o3-mini':     { label: 'o3-mini',       input: 1.01, output: 4.04 }
+      }
+    },
+    google: {
+      label: 'Google', color: '#3b82f6',
+      models: {
+        'gemini-2.5-pro':        { label: 'Gemini 2.5 Pro',        input: 1.15, output: 4.60 },
+        'gemini-2.5-flash':      { label: 'Gemini 2.5 Flash',      input: 0.07, output: 0.28 },
+        'gemini-3.1-flash-lite': { label: 'Gemini 3.1 Flash Lite', input: 0.03, output: 0.14 }
+      }
+    },
+    mistral: {
+      label: 'Mistral', color: '#f472b6',
+      models: {
+        'mistral-large':  { label: 'Mistral Large',  input: 1.84, output: 5.52 },
+        'mistral-medium': { label: 'Mistral Medium', input: 0.74, output: 2.21 },
+        'mistral-small':  { label: 'Mistral Small',  input: 0.09, output: 0.28 }
+      }
+    },
+    openrouter: {
+      label: 'OpenRouter', color: '#a78bfa',
+      models: {
+        'auto':  { label: 'Auto (guenstigstes)', input: 0.14, output: 0.55 },
+        'nitro': { label: 'Nitro (schnellstes)',  input: 0.55, output: 2.21 }
+      }
+    },
+    ollama: {
+      label: 'Ollama', color: '#6b7280',
+      models: {
+        'llama3':    { label: 'Llama 3 (8B)',  input: 0, output: 0 },
+        'mistral7b': { label: 'Mistral 7B',    input: 0, output: 0 },
+        'phi3':      { label: 'Phi-3 Mini',    input: 0, output: 0 }
+      }
+    }
+  };
+
+  var HB_PRICES = {
+    same: null,
+    haiku:     { input: 0.74, output: 3.68 },
+    gpt4omini: { input: 0.14, output: 0.55 },
+    flash:     { input: 0.03, output: 0.14 },
+    ollama:    { input: 0, output: 0 }
+  };
+
+  var providerEl = document.getElementById('m09-provider');
+  var modelEl = document.getElementById('m09-model');
+  var msgsEl = document.getElementById('m09-msgs');
+  var msgsValEl = document.getElementById('m09-msgs-val');
+  var tokensEl = document.getElementById('m09-tokens');
+  var tokensValEl = document.getElementById('m09-tokens-val');
+
+  function updateModels() {
+    var prov = MODELS[providerEl.value];
+    var keys = Object.keys(prov.models);
+    var html = '';
+    for (var i = 0; i < keys.length; i++) html += '<option value="' + keys[i] + '">' + prov.models[keys[i]].label + '</option>';
+    modelEl.innerHTML = html;
+    calculate();
+  }
+  providerEl.addEventListener('change', updateModels);
+
+  msgsEl.addEventListener('input', function() { msgsValEl.textContent = this.value; calculate(); });
+  tokensEl.addEventListener('input', function() { tokensValEl.textContent = Number(this.value).toLocaleString('de-DE'); calculate(); });
+
+  var allInputs = document.querySelectorAll('.m09-input, .m09-select, .m09-range');
+  for (var a = 0; a < allInputs.length; a++) {
+    allInputs[a].addEventListener('change', calculate);
+    allInputs[a].addEventListener('input', calculate);
+  }
+
+  function calculate() {
+    var provider = providerEl.value;
+    var modelKey = modelEl.value;
+    var model = MODELS[provider].models[modelKey];
+    if (!model) return;
+
+    var msgsPerDay = parseInt(msgsEl.value) || 50;
+    var tokPerMsg = parseInt(tokensEl.value) || 1500;
+    var ratio = parseFloat(document.getElementById('m09-ratio').value);
+    var days = parseInt(document.getElementById('m09-days').value) || 25;
+    var cacheRate = parseFloat(document.getElementById('m09-cache').value);
+    var batchRate = parseFloat(document.getElementById('m09-batch').value);
+    var hbCount = parseInt(document.getElementById('m09-hb-count').value) || 0;
+    var hbModelKey = document.getElementById('m09-hb-model').value;
+    var hbTokens = parseInt(document.getElementById('m09-hb-tokens').value) || 800;
+
+    var totalTok = msgsPerDay * tokPerMsg * days;
+    var inTok = totalTok * ratio;
+    var outTok = totalTok * (1 - ratio);
+
+    var cachedIn = inTok * cacheRate;
+    var uncachedIn = inTok - cachedIn;
+    var inCost = (uncachedIn * model.input / 1e6) + (cachedIn * model.input * 0.1 / 1e6);
+    var outCost = outTok * model.output / 1e6;
+    var batchSave = (inCost + outCost) * batchRate * 0.5;
+    var chatCost = inCost + outCost - batchSave;
+
+    var hbPrices = hbModelKey === 'same' ? { input: model.input, output: model.output } : HB_PRICES[hbModelKey];
+    var hbTotalTok = hbCount * hbTokens * days;
+    var hbCost = hbPrices ? (hbTotalTok * 0.7 * hbPrices.input / 1e6) + (hbTotalTok * 0.3 * hbPrices.output / 1e6) : 0;
+
+    var total = chatCost + hbCost;
+    var daily = days > 0 ? total / days : 0;
+
+    document.getElementById('m09-total').innerHTML = fmtE(total) + ' &euro;';
+    document.getElementById('m09-total-sub').textContent = fmtE(daily) + ' EUR/Tag \u00b7 ' + fmtTok(totalTok + hbTotalTok) + ' Tokens/Monat';
+
+    // Breakdown
+    var cacheSave = cachedIn * model.input * 0.9 / 1e6;
+    var bHtml = '';
+    bHtml += bRow('Chat (Input)', fmtE(inCost));
+    bHtml += bRow('Chat (Output)', fmtE(outCost));
+    if (cacheRate > 0) bHtml += bRow('Caching-Ersparnis', '&minus;' + fmtE(cacheSave), true);
+    if (batchRate > 0) bHtml += bRow('Batch-Ersparnis', '&minus;' + fmtE(batchSave), true);
+    bHtml += bRow('Heartbeat', fmtE(hbCost));
+    bHtml += '<div class="m09-breakdown-row" style="border-top:1px solid var(--border);font-weight:700"><span class="m09-breakdown-label" style="color:var(--text)">Gesamt</span><span class="m09-breakdown-value highlight">' + fmtE(total) + ' EUR</span></div>';
+    document.getElementById('m09-breakdown-rows').innerHTML = bHtml;
+
+    // Comparison
+    var results = [];
+    var pKeys = Object.keys(MODELS);
+    for (var p = 0; p < pKeys.length; p++) {
+      var pk = pKeys[p];
+      var pr = MODELS[pk];
+      var mKeys = Object.keys(pr.models);
+      var fl = pr.models[mKeys[0]];
+      var c = (inTok * fl.input / 1e6) + (outTok * fl.output / 1e6);
+      results.push({ name: pr.label, color: pr.color, cost: c, lbl: fl.label });
+    }
+    results.sort(function(a, b) { return a.cost - b.cost; });
+    var maxC = results[results.length - 1].cost || 1;
+    var cHtml = '';
+    for (var r = 0; r < results.length; r++) {
+      var pct = maxC > 0 ? Math.max(2, (results[r].cost / maxC) * 100) : 2;
+      cHtml += '<div class="m09-bar-row"><span class="m09-bar-name">' + results[r].name + '</span><div class="m09-bar-track"><div class="m09-bar-fill" style="width:' + pct + '%;background:' + results[r].color + '"></div></div><span class="m09-bar-cost">' + fmtE(results[r].cost) + ' &euro;</span></div>';
+    }
+    document.getElementById('m09-compare-bars').innerHTML = cHtml;
+
+    // Tips
+    var tips = [];
+    if (total > 50) tips.push('Kosten ueber 50 EUR/Monat? Pruefe ob ein guenstigeres Modell reicht.');
+    if (cacheRate === 0 && provider === 'anthropic') tips.push('<strong>Tipp:</strong> Prompt Caching aktivieren! Spart bei Anthropic bis zu 90% auf wiederholte System-Prompts.');
+    if (hbModelKey === 'same' && hbCost > 5) tips.push('<strong>Tipp:</strong> Guenstiges Heartbeat-Modell waehlen (z.B. Haiku). Spart ~' + fmtE(hbCost * 0.8) + ' EUR/Monat.');
+    if (provider === 'ollama') tips.push('Ollama ist gratis, braucht aber dauerhaft laufende Hardware. Ideal als Fallback oder Heartbeat-Modell.');
+    if (total < 5 && total > 0) tips.push('Unter 5 EUR/Monat — sehr guenstig! Die meisten Leser landen hier.');
+    if (tips.length === 0) tips.push('Preise basieren auf offiziellen Listenpreisen (Stand: Maerz 2026, EUR). Prompt Caching und Batch API senken die Kosten deutlich.');
+    document.getElementById('m09-tip').innerHTML = tips.join('<br>');
+
+    try { localStorage.setItem('costs:monthlyEstimate', total.toFixed(2)); localStorage.setItem('shell:lastModule', 'm09'); } catch(e) {}
+  }
+
+  function bRow(l, v, isSave) {
+    var s = isSave ? ' style="color:#22c55e"' : '';
+    return '<div class="m09-breakdown-row"><span class="m09-breakdown-label">' + l + '</span><span class="m09-breakdown-value"' + s + '>' + v + ' EUR</span></div>';
+  }
+  function fmtE(n) { return n === 0 ? '0,00' : n < 0.01 ? '<0,01' : n.toFixed(2).replace('.', ','); }
+  function fmtTok(n) { return n >= 1e6 ? (n/1e6).toFixed(1).replace('.',',')+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n); }
+
+  updateModels();
+  try { localStorage.setItem('shell:lastModule', 'm09'); } catch(e) {}
+})();
+</script>
