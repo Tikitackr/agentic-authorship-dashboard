@@ -1,41 +1,879 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sprint-Verwaltung — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M03</div>
-    <h1>Sprint-Verwaltung</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M03: Sprint-Verwaltung — Agentic Authorship Dashboard -->
+<style>
+  /* ── M03 Scoped Styles ── */
+  .m03 { max-width: 100%; }
+
+  /* Hero: Aktueller Sprint */
+  .m03-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(239,68,68,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m03-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m03-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--amber-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .m03-hero-icon svg { width: 20px; height: 20px; }
+
+  .m03-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .m03-hero h2 .pct {
+    color: var(--amber);
+    margin-left: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .m03-sprint-badge {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-active { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-none { background: rgba(136,136,136,0.15); color: var(--text-dim); }
+
+  .m03-hero-meta {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .m03-hero-meta strong { color: var(--text); }
+
+  .m03-progress-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+  }
+
+  .m03-progress-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    transition: width 0.6s ease;
+  }
+
+  .m03-progress-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* Stats */
+  .m03-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m03-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem;
+    text-align: center;
+  }
+
+  .m03-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .m03-stat-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.2rem;
+  }
+
+  /* Section */
+  .m03-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .m03-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m03-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
+
+  /* Sprint erstellen / bearbeiten */
+  .m03-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .m03-form-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .m03-form-row:last-child { margin-bottom: 0; }
+
+  .m03-input-group {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .m03-input-group label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.3rem;
+  }
+
+  .m03-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .m03-input:focus { border-color: var(--amber); }
+  .m03-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  .m03-btn {
+    background: var(--amber-dim);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+    color: var(--amber);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .m03-btn:hover { background: rgba(245,158,11,0.25); }
+
+  .m03-btn-green {
+    background: rgba(34,197,94,0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .m03-btn-green:hover { background: rgba(34,197,94,0.25); }
+
+  .m03-btn-red {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.4);
+    color: var(--red);
+  }
+
+  .m03-btn-red:hover { background: rgba(239,68,68,0.2); }
+
+  .m03-btn-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Ziele / Goals */
+  .m03-goal-input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m03-goal-input-row .m03-input { flex: 1; }
+
+  .m03-goals {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .m03-goal {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0.4rem;
+    border-bottom: 1px solid rgba(245,158,11,0.06);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .m03-goal:hover { background: rgba(255,255,255,0.02); }
+  .m03-goal:last-child { border-bottom: none; }
+  .m03-goal.goal-done { opacity: 0.45; }
+
+  .m03-goal-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--text-dim);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .m03-goal:hover .m03-goal-check { border-color: var(--amber); }
+
+  .m03-goal.goal-done .m03-goal-check {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .m03-goal-check svg { width: 12px; height: 12px; color: #fff; display: none; }
+  .m03-goal.goal-done .m03-goal-check svg { display: block; }
+
+  .m03-goal-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .m03-goal.goal-done .m03-goal-text {
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+
+  .m03-goal-delete {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .m03-goal:hover .m03-goal-delete { opacity: 0.6; }
+  .m03-goal-delete:hover { opacity: 1 !important; color: var(--red); }
+  .m03-goal-delete svg { width: 14px; height: 14px; }
+
+  /* Empty State */
+  .m03-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+
+  /* Velocity Chart */
+  .m03-velocity {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 120px;
+    padding: 0 0.5rem;
+  }
+
+  .m03-vel-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .m03-vel-bar {
+    width: 100%;
+    max-width: 40px;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(180deg, var(--amber) 0%, rgba(245,158,11,0.4) 100%);
+    transition: height 0.4s ease;
+    min-height: 2px;
+  }
+
+  .m03-vel-label {
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .m03-vel-count {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--amber);
+  }
+
+  /* History */
+  .m03-history-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m03-history-item:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+  }
+
+  .m03-history-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .m03-history-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .m03-history-pct {
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .m03-history-dates {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-bottom: 0.4rem;
+  }
+
+  .m03-history-goals {
+    display: none;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .m03-history-item.expanded .m03-history-goals { display: block; }
+
+  .m03-history-goal {
+    font-size: 0.75rem;
+    padding: 0.2rem 0;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .m03-history-goal .done-mark { color: var(--green); }
+  .m03-history-goal .open-mark { color: var(--text-dim); opacity: 0.4; }
+
+  .m03-history-mini-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .m03-history-mini-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--green);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m03-stats { grid-template-columns: repeat(3, 1fr); }
+    .m03-hero { padding: 1.25rem; }
+    .m03-form-row { flex-direction: column; }
+    .m03-velocity { height: 90px; }
+  }
+</style>
+
+<div class="m03">
+
+  <!-- Hero: Aktueller Sprint -->
+  <div class="m03-hero">
+    <div class="m03-hero-header">
+      <div class="m03-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      </div>
+      <h2 id="m03-hero-title">Sprint-Verwaltung</h2>
+      <span class="m03-sprint-badge" id="m03-badge">Kein Sprint</span>
+    </div>
+    <div id="m03-hero-body"></div>
   </div>
-</body>
-</html>
+
+  <!-- Stats -->
+  <div class="m03-stats">
+    <div class="m03-stat">
+      <div class="m03-stat-value" id="m03-stat-total">0</div>
+      <div class="m03-stat-label">Sprints</div>
+    </div>
+    <div class="m03-stat">
+      <div class="m03-stat-value" id="m03-stat-goals">0</div>
+      <div class="m03-stat-label">Ziele gesamt</div>
+    </div>
+    <div class="m03-stat">
+      <div class="m03-stat-value" id="m03-stat-avg">0</div>
+      <div class="m03-stat-label">&#8709; pro Sprint</div>
+    </div>
+  </div>
+
+  <!-- Sprint-Aktionen -->
+  <div class="m03-section" id="m03-sprint-section"></div>
+
+  <!-- Velocity -->
+  <div class="m03-section" id="m03-velocity-section"></div>
+
+  <!-- Sprint-Historie -->
+  <div class="m03-section" id="m03-history-section"></div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var xSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+  // ── State ──
+  var currentSprint = null;
+  var history = [];
+
+  function loadState() {
+    try {
+      var c = localStorage.getItem('sprint:current');
+      if (c) currentSprint = JSON.parse(c);
+      var h = localStorage.getItem('sprint:history');
+      if (h) history = JSON.parse(h);
+    } catch(e) {}
+  }
+
+  function saveState() {
+    try {
+      if (currentSprint) {
+        localStorage.setItem('sprint:current', JSON.stringify(currentSprint));
+      } else {
+        localStorage.removeItem('sprint:current');
+      }
+      localStorage.setItem('sprint:history', JSON.stringify(history));
+    } catch(e) {}
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    var dd = ('0' + d.getDate()).slice(-2);
+    return d.getFullYear() + '-' + mm + '-' + dd;
+  }
+
+  function formatDate(str) {
+    if (!str) return '';
+    var parts = str.split('-');
+    if (parts.length !== 3) return str;
+    return parts[2] + '.' + parts[1] + '.' + parts[0];
+  }
+
+  // ── Sprint Actions ──
+  function startSprint(name, start, end) {
+    currentSprint = {
+      name: name || 'Sprint ' + (history.length + 1),
+      start: start || todayStr(),
+      end: end || '',
+      goals: []
+    };
+    saveState();
+    render();
+  }
+
+  function completeSprint() {
+    if (!currentSprint) return;
+    var entry = {
+      name: currentSprint.name,
+      start: currentSprint.start,
+      end: currentSprint.end || todayStr(),
+      completed: todayStr(),
+      goals: currentSprint.goals.slice()
+    };
+    history.unshift(entry);
+    currentSprint = null;
+    saveState();
+    render();
+  }
+
+  function cancelSprint() {
+    if (!currentSprint) return;
+    if (!confirm('Sprint abbrechen? Ziele gehen verloren.')) return;
+    currentSprint = null;
+    saveState();
+    render();
+  }
+
+  function addGoal(text) {
+    if (!currentSprint || !text.trim()) return;
+    currentSprint.goals.push({ text: text.trim(), done: false });
+    saveState();
+    render();
+  }
+
+  function toggleGoal(idx) {
+    if (!currentSprint || idx < 0 || idx >= currentSprint.goals.length) return;
+    currentSprint.goals[idx].done = !currentSprint.goals[idx].done;
+    saveState();
+    render();
+  }
+
+  function deleteGoal(idx) {
+    if (!currentSprint || idx < 0 || idx >= currentSprint.goals.length) return;
+    currentSprint.goals.splice(idx, 1);
+    saveState();
+    render();
+  }
+
+  function deleteHistoryItem(idx) {
+    if (idx < 0 || idx >= history.length) return;
+    if (!confirm('Sprint "' + history[idx].name + '" aus der Historie entfernen?')) return;
+    history.splice(idx, 1);
+    saveState();
+    render();
+  }
+
+  // ── Counts ──
+  function getGoalCounts(goals) {
+    var done = 0;
+    for (var i = 0; i < goals.length; i++) {
+      if (goals[i].done) done++;
+    }
+    return { total: goals.length, done: done };
+  }
+
+  // ── Render ──
+  function render() {
+    renderHero();
+    renderStats();
+    renderSprintSection();
+    renderVelocity();
+    renderHistory();
+  }
+
+  function renderHero() {
+    var title = document.getElementById('m03-hero-title');
+    var badge = document.getElementById('m03-badge');
+    var body = document.getElementById('m03-hero-body');
+
+    if (currentSprint) {
+      var counts = getGoalCounts(currentSprint.goals);
+      var pct = counts.total > 0 ? Math.round(counts.done / counts.total * 100) : 0;
+
+      title.innerHTML = escHtml(currentSprint.name) + ' <span class="pct">' + pct + '%</span>';
+      badge.textContent = 'Aktiv';
+      badge.className = 'm03-sprint-badge badge-active';
+
+      var dateText = formatDate(currentSprint.start);
+      if (currentSprint.end) dateText += ' \u2013 ' + formatDate(currentSprint.end);
+
+      body.innerHTML =
+        '<p class="m03-hero-meta"><strong>' + dateText + '</strong> \u00b7 ' + counts.done + ' von ' + counts.total + ' Zielen erreicht</p>' +
+        '<div class="m03-progress-wrap"><div class="m03-progress-bar" style="width:' + pct + '%"></div></div>' +
+        '<p class="m03-progress-label">' + (counts.total === 0 ? 'Noch keine Ziele hinzugefuegt' : counts.done + ' von ' + counts.total + ' Zielen erledigt') + '</p>';
+    } else {
+      title.textContent = 'Sprint-Verwaltung';
+      badge.textContent = 'Kein Sprint';
+      badge.className = 'm03-sprint-badge badge-none';
+      body.innerHTML = '<p class="m03-hero-meta">Plane Sprints, setze Ziele und verfolge deinen Fortschritt. Jeder Sprint fokussiert eine Woche oder Session.</p>';
+    }
+  }
+
+  function renderStats() {
+    var totalSprints = history.length + (currentSprint ? 1 : 0);
+    var totalGoals = 0;
+    var totalDone = 0;
+
+    for (var i = 0; i < history.length; i++) {
+      for (var j = 0; j < history[i].goals.length; j++) {
+        totalGoals++;
+        if (history[i].goals[j].done) totalDone++;
+      }
+    }
+    if (currentSprint) {
+      var cc = getGoalCounts(currentSprint.goals);
+      totalGoals += cc.total;
+      totalDone += cc.done;
+    }
+
+    var avg = history.length > 0 ? Math.round(totalDone / history.length * 10) / 10 : 0;
+
+    document.getElementById('m03-stat-total').textContent = totalSprints;
+    document.getElementById('m03-stat-goals').textContent = totalDone + '/' + totalGoals;
+    document.getElementById('m03-stat-avg').textContent = avg;
+  }
+
+  function renderSprintSection() {
+    var sec = document.getElementById('m03-sprint-section');
+    var html = '';
+
+    if (!currentSprint) {
+      // Sprint erstellen
+      html += '<div class="m03-section-title">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
+      html += 'Neuen Sprint starten</div>';
+      html += '<div class="m03-form">';
+      html += '<div class="m03-form-row">';
+      html += '<div class="m03-input-group"><label>Name</label><input class="m03-input" id="m03-name" type="text" placeholder="z.B. Sprint 1: Dashboard-Umbau"></div>';
+      html += '</div>';
+      html += '<div class="m03-form-row">';
+      html += '<div class="m03-input-group"><label>Start</label><input class="m03-input" id="m03-start" type="date" value="' + todayStr() + '"></div>';
+      html += '<div class="m03-input-group"><label>Ende (optional)</label><input class="m03-input" id="m03-end" type="date"></div>';
+      html += '</div>';
+      html += '<div class="m03-form-row"><button class="m03-btn" id="m03-start-btn">Sprint starten</button></div>';
+      html += '</div>';
+    } else {
+      // Ziele verwalten
+      html += '<div class="m03-section-title">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>';
+      html += 'Sprint-Ziele</div>';
+
+      // Add goal input
+      html += '<div class="m03-goal-input-row">';
+      html += '<input class="m03-input" id="m03-goal-input" type="text" placeholder="Neues Ziel hinzufuegen...">';
+      html += '<button class="m03-btn" id="m03-add-goal-btn">+</button>';
+      html += '</div>';
+
+      // Goals list
+      if (currentSprint.goals.length === 0) {
+        html += '<div class="m03-empty">Noch keine Ziele. Fuege dein erstes Sprint-Ziel hinzu.</div>';
+      } else {
+        html += '<div class="m03-goals">';
+        for (var i = 0; i < currentSprint.goals.length; i++) {
+          var g = currentSprint.goals[i];
+          html += '<div class="m03-goal' + (g.done ? ' goal-done' : '') + '" data-idx="' + i + '">';
+          html += '<div class="m03-goal-check">' + checkSvg + '</div>';
+          html += '<span class="m03-goal-text">' + escHtml(g.text) + '</span>';
+          html += '<div class="m03-goal-delete" data-delete="' + i + '">' + xSvg + '</div>';
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+
+      // Sprint controls
+      html += '<div class="m03-btn-row" style="margin-top:1rem;">';
+      html += '<button class="m03-btn m03-btn-green" id="m03-complete-btn">Sprint abschliessen</button>';
+      html += '<button class="m03-btn m03-btn-red" id="m03-cancel-btn">Abbrechen</button>';
+      html += '</div>';
+    }
+
+    sec.innerHTML = html;
+
+    // Event handlers
+    if (!currentSprint) {
+      var startBtn = document.getElementById('m03-start-btn');
+      if (startBtn) {
+        startBtn.addEventListener('click', function() {
+          var name = document.getElementById('m03-name').value;
+          var start = document.getElementById('m03-start').value;
+          var end = document.getElementById('m03-end').value;
+          startSprint(name, start, end);
+        });
+      }
+    } else {
+      var goalInput = document.getElementById('m03-goal-input');
+      var addBtn = document.getElementById('m03-add-goal-btn');
+
+      if (addBtn) {
+        addBtn.addEventListener('click', function() {
+          addGoal(goalInput.value);
+        });
+      }
+      if (goalInput) {
+        goalInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { addGoal(this.value); }
+        });
+      }
+
+      // Goal toggle
+      var goals = sec.querySelectorAll('.m03-goal');
+      for (var gi = 0; gi < goals.length; gi++) {
+        (function(el) {
+          el.addEventListener('click', function(e) {
+            if (e.target.closest('.m03-goal-delete')) return;
+            toggleGoal(parseInt(el.getAttribute('data-idx')));
+          });
+        })(goals[gi]);
+      }
+
+      // Goal delete
+      var delBtns = sec.querySelectorAll('.m03-goal-delete');
+      for (var di = 0; di < delBtns.length; di++) {
+        (function(el) {
+          el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteGoal(parseInt(el.getAttribute('data-delete')));
+          });
+        })(delBtns[di]);
+      }
+
+      var completeBtn = document.getElementById('m03-complete-btn');
+      if (completeBtn) completeBtn.addEventListener('click', completeSprint);
+
+      var cancelBtn = document.getElementById('m03-cancel-btn');
+      if (cancelBtn) cancelBtn.addEventListener('click', cancelSprint);
+    }
+  }
+
+  function renderVelocity() {
+    var sec = document.getElementById('m03-velocity-section');
+    if (history.length === 0) {
+      sec.innerHTML = '';
+      return;
+    }
+
+    var html = '<div class="m03-section-title">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>';
+    html += 'Velocity</div>';
+
+    // Letzte 8 Sprints (neueste rechts)
+    var shown = history.slice(0, 8).reverse();
+    var maxGoals = 1;
+    for (var i = 0; i < shown.length; i++) {
+      var c = getGoalCounts(shown[i].goals);
+      if (c.done > maxGoals) maxGoals = c.done;
+    }
+
+    html += '<div class="m03-velocity">';
+    for (var j = 0; j < shown.length; j++) {
+      var sp = shown[j];
+      var counts = getGoalCounts(sp.goals);
+      var barH = maxGoals > 0 ? Math.max(4, Math.round(counts.done / maxGoals * 90)) : 4;
+
+      html += '<div class="m03-vel-bar-wrap">';
+      html += '<span class="m03-vel-count">' + counts.done + '</span>';
+      html += '<div class="m03-vel-bar" style="height:' + barH + 'px"></div>';
+      var label = sp.name.length > 10 ? sp.name.substring(0, 9) + '\u2026' : sp.name;
+      html += '<span class="m03-vel-label">' + escHtml(label) + '</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    sec.innerHTML = html;
+  }
+
+  function renderHistory() {
+    var sec = document.getElementById('m03-history-section');
+    if (history.length === 0) {
+      sec.innerHTML = '';
+      return;
+    }
+
+    var html = '<div class="m03-section-title">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+    html += 'Sprint-Historie</div>';
+
+    for (var i = 0; i < history.length; i++) {
+      var sp = history[i];
+      var counts = getGoalCounts(sp.goals);
+      var pct = counts.total > 0 ? Math.round(counts.done / counts.total * 100) : 0;
+      var pctColor = pct === 100 ? 'color:var(--green)' : pct >= 50 ? 'color:var(--amber)' : 'color:var(--red)';
+
+      html += '<div class="m03-history-item" data-history="' + i + '">';
+      html += '<div class="m03-history-top">';
+      html += '<span class="m03-history-name">' + escHtml(sp.name) + '</span>';
+      html += '<span class="m03-history-pct" style="' + pctColor + '">' + pct + '% (' + counts.done + '/' + counts.total + ')</span>';
+      html += '</div>';
+      html += '<div class="m03-history-dates">' + formatDate(sp.start) + ' \u2013 ' + formatDate(sp.completed || sp.end) + '</div>';
+      html += '<div class="m03-history-mini-bar"><div class="m03-history-mini-fill" style="width:' + pct + '%"></div></div>';
+
+      // Expandable goals
+      html += '<div class="m03-history-goals">';
+      for (var j = 0; j < sp.goals.length; j++) {
+        var g = sp.goals[j];
+        html += '<div class="m03-history-goal">';
+        html += g.done ? '<span class="done-mark">\u2713</span>' : '<span class="open-mark">\u2013</span>';
+        html += '<span>' + escHtml(g.text) + '</span>';
+        html += '</div>';
+      }
+      html += '<div style="margin-top:0.5rem;text-align:right;"><button class="m03-btn m03-btn-red" data-del-history="' + i + '" style="font-size:0.7rem;padding:0.25rem 0.6rem;">Entfernen</button></div>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    sec.innerHTML = html;
+
+    // Toggle expand
+    var items = sec.querySelectorAll('.m03-history-item');
+    for (var k = 0; k < items.length; k++) {
+      (function(el) {
+        el.addEventListener('click', function(e) {
+          if (e.target.closest('[data-del-history]')) {
+            e.stopPropagation();
+            deleteHistoryItem(parseInt(e.target.closest('[data-del-history]').getAttribute('data-del-history')));
+            return;
+          }
+          el.classList.toggle('expanded');
+        });
+      })(items[k]);
+    }
+  }
+
+  // ── Helpers ──
+  function escHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  // ── Init ──
+  try { localStorage.setItem('shell:lastModule', 'm03'); } catch(e) {}
+  loadState();
+  render();
+
+})();
+</script>
