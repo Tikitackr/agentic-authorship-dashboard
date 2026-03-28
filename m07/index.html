@@ -1,41 +1,1223 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workspace Wizard — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M07</div>
-    <h1>Workspace Wizard</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M07: Workspace Wizard — Agentic Authorship Dashboard -->
+<style>
+  /* ── M07 Scoped Styles ── */
+  .m07 { max-width: 100%; }
+
+  .m07-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(251,191,36,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m07-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m07-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--amber-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .m07-hero-icon svg { width: 20px; height: 20px; }
+
+  .m07-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m07-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m07-hero-desc strong { color: var(--text); }
+
+  /* Progress Bar */
+  .m07-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 1.5rem;
+    padding: 0 0.25rem;
+  }
+
+  .m07-progress-step {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .m07-progress-step.done { background: var(--amber); }
+  .m07-progress-step.active { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+
+  .m07-progress-step:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .m07-step-counter {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .m07-step-counter strong { color: var(--amber); }
+
+  /* Wizard Step Content */
+  .m07-step { display: none; }
+  .m07-step.active { display: block; }
+
+  .m07-step-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .m07-step-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+    line-height: 1.4;
+  }
+
+  /* Form Elements */
+  .m07-field { margin-bottom: 1rem; }
+
+  .m07-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .m07-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+  }
+
+  .m07-input, .m07-textarea, .m07-select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .m07-input:focus, .m07-textarea:focus, .m07-select:focus {
+    border-color: var(--amber);
+  }
+
+  .m07-textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .m07-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  .m07-select option { background: #12121a; color: #e0e0e0; }
+
+  /* Tone Picker */
+  .m07-tones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .m07-tone {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .m07-tone:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+
+  .m07-tone.selected {
+    border-color: var(--amber);
+    background: var(--amber-dim);
+  }
+
+  .m07-tone-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.1rem;
+  }
+
+  .m07-tone.selected .m07-tone-name { color: var(--amber); }
+
+  .m07-tone-desc {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  /* Navigation Buttons */
+  .m07-nav {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .m07-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+  }
+
+  .m07-btn svg { width: 16px; height: 16px; }
+
+  .m07-btn-back {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .m07-btn-back:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .m07-btn-next {
+    background: linear-gradient(135deg, var(--amber), #d97706);
+    color: #0a0a0f;
+    font-weight: 700;
+  }
+
+  .m07-btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .m07-btn-generate {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .m07-btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* Info Box */
+  .m07-info-box {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    padding: 0.75rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .m07-info-box svg { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; margin-top: 0.1rem; }
+
+  .m07-info-text {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .m07-info-text strong { color: var(--text); }
+
+  /* Output Page */
+  .m07-output-page { display: none; }
+  .m07-output-page.active { display: block; }
+
+  .m07-output-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .m07-toggle-btn {
+    flex: 1;
+    padding: 0.65rem;
+    text-align: center;
+    background: var(--bg-card);
+    border: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-right: 1px solid rgba(245,158,11,0.1);
+  }
+
+  .m07-toggle-btn:last-child { border-right: none; }
+  .m07-toggle-btn:hover { background: var(--bg-card-hover); color: var(--text); }
+
+  .m07-toggle-btn.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  .m07-file-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+  }
+
+  .m07-file-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-card);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .m07-file-header:hover { background: var(--bg-card-hover); }
+
+  .m07-file-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--amber);
+  }
+
+  .m07-file-name svg { width: 14px; height: 14px; }
+
+  .m07-file-badge {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    background: rgba(245,158,11,0.1);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .m07-file-badge.new {
+    color: #22c55e;
+    background: rgba(34,197,94,0.1);
+  }
+
+  .m07-file-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .m07-copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.55rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m07-copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .m07-copy-btn.copied { border-color: var(--green); color: var(--green); }
+  .m07-copy-btn svg { width: 12px; height: 12px; }
+
+  .m07-chevron {
+    color: var(--text-dim);
+    transition: transform 0.2s;
+  }
+
+  .m07-chevron svg { width: 16px; height: 16px; }
+
+  .m07-file-card.open .m07-chevron { transform: rotate(180deg); }
+
+  .m07-file-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .m07-file-card.open .m07-file-body { display: block; }
+
+  .m07-file-output {
+    background: #0d0d15;
+    padding: 0.85rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .m07-copy-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--amber), #d97706);
+    border: none;
+    border-radius: 10px;
+    color: #0a0a0f;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.75rem;
+  }
+
+  .m07-copy-all:hover { opacity: 0.9; transform: translateY(-1px); }
+  .m07-copy-all svg { width: 18px; height: 18px; }
+
+  .m07-restart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.5rem;
+  }
+
+  .m07-restart:hover { border-color: var(--amber); color: var(--text); }
+  .m07-restart svg { width: 14px; height: 14px; }
+
+  .m07-hidden { display: none !important; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m07-tones { grid-template-columns: 1fr 1fr; }
+    .m07-hero { padding: 1.25rem; }
+    .m07-nav { flex-direction: column; }
+    .m07-output-toggle { flex-wrap: wrap; }
+    .m07-toggle-btn { min-width: 50%; }
+  }
+</style>
+
+<div class="m07">
+
+  <!-- Hero -->
+  <div class="m07-hero">
+    <div class="m07-hero-header">
+      <div class="m07-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>
+      </div>
+      <h2>Workspace Wizard</h2>
+    </div>
+    <p class="m07-hero-desc">
+      <strong>8 Fragen, 10 Dateien.</strong> Beantworte die Fragen und der Wizard generiert deinen kompletten <strong>~/.openclaw/workspace/</strong> &mdash; bereit zum Einf&uuml;gen.
+    </p>
   </div>
-</body>
-</html>
+
+  <!-- Progress Bar -->
+  <div class="m07-progress" id="m07-progress"></div>
+  <div class="m07-step-counter" id="m07-counter"></div>
+
+  <!-- ═══ STEP 1: Identity ═══ -->
+  <div class="m07-step active" data-step="0">
+    <div class="m07-step-title">Agent-Identit&auml;t</div>
+    <div class="m07-step-subtitle">Wer ist dein Agent? Name, Emoji und Rolle definieren die Grundlage f&uuml;r IDENTITY.md.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Agent-Name</label>
+      <div class="m07-hint">Der Name, mit dem dein Agent sich vorstellt</div>
+      <input class="m07-input" id="m07-agent-name" type="text" placeholder="z.B. Atlas, Cowan, Luna...">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Emoji</label>
+      <div class="m07-hint">Ein einzelnes Emoji als Erkennungszeichen</div>
+      <input class="m07-input" id="m07-agent-emoji" type="text" placeholder="z.B. 🦉 🤖 🔥" maxlength="4" style="max-width:120px;">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Rolle / Beruf</label>
+      <div class="m07-hint">Was ist dein Agent von Beruf?</div>
+      <input class="m07-input" id="m07-agent-role" type="text" placeholder="z.B. Sachbuch-Lektor, DevOps-Assistent, Lernbegleiter...">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Ziele (kommagetrennt)</label>
+      <div class="m07-hint">Was soll dein Agent erreichen?</div>
+      <input class="m07-input" id="m07-agent-goals" type="text" placeholder="z.B. Qualit&auml;t sichern, Nutzer befaehigen, Deadlines halten">
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2: Personality ═══ -->
+  <div class="m07-step" data-step="1">
+    <div class="m07-step-title">Pers&ouml;nlichkeit</div>
+    <div class="m07-step-subtitle">Ton, Werte und Grenzen &mdash; das Herz deiner SOUL.md.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Grundton</label>
+      <div class="m07-tones" id="m07-tones">
+        <div class="m07-tone selected" data-tone="lesch"><div class="m07-tone-name">Harald Lesch</div><div class="m07-tone-desc">Begeistert, bildreich</div></div>
+        <div class="m07-tone" data-tone="sachlich"><div class="m07-tone-name">Sachlich</div><div class="m07-tone-desc">Pr&auml;zise, neutral</div></div>
+        <div class="m07-tone" data-tone="coach"><div class="m07-tone-name">Coach</div><div class="m07-tone-desc">Motivierend, Schritt f&uuml;r Schritt</div></div>
+        <div class="m07-tone" data-tone="kumpel"><div class="m07-tone-name">Kumpel</div><div class="m07-tone-desc">Locker, mit Humor</div></div>
+        <div class="m07-tone" data-tone="mentor"><div class="m07-tone-name">Mentor</div><div class="m07-tone-desc">Weise, geduldig</div></div>
+        <div class="m07-tone" data-tone="custom"><div class="m07-tone-name">Eigener Stil</div><div class="m07-tone-desc">Freitext</div></div>
+      </div>
+    </div>
+
+    <div class="m07-field m07-hidden" id="m07-custom-tone-wrap">
+      <label class="m07-label">Eigener Stil</label>
+      <textarea class="m07-textarea" id="m07-custom-tone" placeholder="Beschreibe den Ton deines Agents..."></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">3-T&ouml;ne-Persona</label>
+      <div class="m07-hint">Drei Facetten deines Agents (kommagetrennt)</div>
+      <input class="m07-input" id="m07-persona-tones" type="text" placeholder="z.B. Erkl&auml;rer, Mahner, Praktiker">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Werte / Leitprinzipien</label>
+      <div class="m07-hint">Wof&uuml;r steht dein Agent?</div>
+      <textarea class="m07-textarea" id="m07-values" placeholder="z.B. Ehrlichkeit vor Schmeichelei&#10;Werkzeug, nicht Ersatz&#10;Qualit&auml;t vor Geschwindigkeit"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Tabus / Verbote</label>
+      <div class="m07-hint">Was darf dein Agent NICHT tun?</div>
+      <textarea class="m07-textarea" id="m07-taboos" placeholder="z.B. Keine Fachbegriffe ohne Erkl&auml;rung&#10;Niemals &uuml;berheblich&#10;Kein Denglisch"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Sprache</label>
+      <select class="m07-select" id="m07-lang">
+        <option value="de">Deutsch (Du-Form)</option>
+        <option value="de-sie">Deutsch (Sie-Form)</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3: User Profile ═══ -->
+  <div class="m07-step" data-step="2">
+    <div class="m07-step-title">Dein Profil</div>
+    <div class="m07-step-subtitle">Damit dein Agent dich kennt &mdash; f&uuml;r USER.md.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Dein Name</label>
+      <input class="m07-input" id="m07-user-name" type="text" placeholder="z.B. Thomas">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Hintergrund</label>
+      <div class="m07-hint">Beruf, Erfahrung, relevanter Kontext</div>
+      <textarea class="m07-textarea" id="m07-user-bg" placeholder="z.B. Komme aus dem Automobilbau, kein Entwickler. Lerne schnell, brauche aber klare Anleitungen."></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Pr&auml;ferenzen</label>
+      <div class="m07-hint">Wie arbeitest du am liebsten?</div>
+      <textarea class="m07-textarea" id="m07-user-prefs" placeholder="z.B. Kurze Antworten, keine Geschwafel&#10;Terminal-Befehle immer zum Kopieren&#10;Keine AskUser-Popups"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 4: Operations ═══ -->
+  <div class="m07-step" data-step="3">
+    <div class="m07-step-title">Betriebsregeln</div>
+    <div class="m07-step-subtitle">Priorit&auml;ten, Workflow und Regeln &mdash; f&uuml;r AGENTS.md.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Top-3-Priorit&auml;ten</label>
+      <div class="m07-hint">Was ist deinem Agent am wichtigsten? (kommagetrennt)</div>
+      <input class="m07-input" id="m07-priorities" type="text" placeholder="z.B. Qualit&auml;t, Deadlines, Nutzererlebnis">
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Workflow-Regeln</label>
+      <div class="m07-hint">Feste Regeln f&uuml;r den t&auml;glichen Betrieb</div>
+      <textarea class="m07-textarea" id="m07-workflow" placeholder="z.B. Immer erst Outline, dann Text&#10;Jedes Kapitel unter 5.000 Woerter&#10;Code-Beispiele immer testen"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Do's &amp; Don'ts (optional)</label>
+      <textarea class="m07-textarea" id="m07-dos-donts" placeholder="z.B. DO: Frage nach wenn unklar&#10;DON'T: Eigene Entscheidungen treffen ohne Rueckfrage"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 5: Tools ═══ -->
+  <div class="m07-step" data-step="4">
+    <div class="m07-step-title">Tools &amp; Integrationen</div>
+    <div class="m07-step-subtitle">Welche Tools nutzt du? F&uuml;r TOOLS.md.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Haupttools</label>
+      <div class="m07-hint">Kalender, Notiz-Apps, IDEs, Projektmanagement...</div>
+      <textarea class="m07-textarea" id="m07-tools" placeholder="z.B. Google Calendar, Obsidian, VS Code, GitHub&#10;Telegram als Haupt-Channel&#10;Google Drive fuer Dokumente"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Konventionen</label>
+      <div class="m07-hint">Namens-Konventionen, Ordnerstruktur, Dateiformat...</div>
+      <textarea class="m07-textarea" id="m07-conventions" placeholder="z.B. Dateien immer kebab-case&#10;Markdown fuer Texte&#10;JSON fuer Configs"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 6: Heartbeat ═══ -->
+  <div class="m07-step" data-step="5">
+    <div class="m07-step-title">Heartbeat</div>
+    <div class="m07-step-subtitle">Periodische Aufgaben die dein Agent automatisch erledigt &mdash; f&uuml;r HEARTBEAT.md.</div>
+
+    <div class="m07-info-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <div class="m07-info-text">
+        Der <strong>Heartbeat</strong> ist ein Cron-Job. Dein Agent wacht regelm&auml;ssig auf und arbeitet eine Checkliste ab. Ideal f&uuml;r Zusammenfassungen, Erinnerungen oder Monitoring.
+      </div>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Intervall</label>
+      <select class="m07-select" id="m07-hb-interval">
+        <option value="30min">Alle 30 Minuten</option>
+        <option value="1h" selected>Jede Stunde</option>
+        <option value="4h">Alle 4 Stunden</option>
+        <option value="daily">T&auml;glich</option>
+      </select>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Checkliste</label>
+      <div class="m07-hint">Was soll der Agent bei jedem Heartbeat pr&uuml;fen? (eine Aufgabe pro Zeile)</div>
+      <textarea class="m07-textarea" id="m07-hb-tasks" style="min-height:100px;" placeholder="z.B. Ungelesene Nachrichten zusammenfassen&#10;Kalender-Termine der naechsten 2h melden&#10;Offene Tasks pruefen&#10;Tagesprotokoll aktualisieren"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 7: Boot & Bootstrap ═══ -->
+  <div class="m07-step" data-step="6">
+    <div class="m07-step-title">Boot &amp; Bootstrap</div>
+    <div class="m07-step-subtitle">Was passiert beim Start? BOOT.md (jeder Neustart) und BOOTSTRAP.md (nur beim allerersten Mal).</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Boot-Ritual (bei jedem Gateway-Start)</label>
+      <div class="m07-hint">Schritte die dein Agent bei JEDEM Neustart durchl&auml;uft</div>
+      <textarea class="m07-textarea" id="m07-boot" placeholder="z.B. SOUL.md laden und bestaetigen&#10;Offene Tasks aus Memory lesen&#10;Guten-Morgen-Nachricht senden"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Bootstrap-Interview (nur beim ersten Start)</label>
+      <div class="m07-hint">Fragen die dein Agent EINMALIG stellt um den Nutzer kennenzulernen. Datei wird danach gel&ouml;scht.</div>
+      <textarea class="m07-textarea" id="m07-bootstrap" placeholder="z.B. Wie soll ich dich ansprechen?&#10;Welche Themen interessieren dich?&#10;Hast du Vorerfahrung mit AI-Agents?&#10;Wann bist du normalerweise online?"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 8: Memory ═══ -->
+  <div class="m07-step" data-step="7">
+    <div class="m07-step-title">Memory</div>
+    <div class="m07-step-subtitle">Langzeit-Ged&auml;chtnis und Tagesprotokolle &mdash; f&uuml;r MEMORY.md + memory/ Ordner.</div>
+
+    <div class="m07-field">
+      <label class="m07-label">Langzeit-Erinnerungen</label>
+      <div class="m07-hint">Was soll dein Agent IMMER wissen? (wird manuell kuratiert)</div>
+      <textarea class="m07-textarea" id="m07-memory-long" placeholder="z.B. Nutzer bevorzugt Terminal-Befehle zum Kopieren&#10;Projekt gestartet am 17.02.2026&#10;Partnerin heisst Iza (nicht 'Freundin')"></textarea>
+    </div>
+
+    <div class="m07-field">
+      <label class="m07-label">Tagesprotokoll-Format</label>
+      <div class="m07-hint">Vorlage f&uuml;r die automatischen Tageseintr&auml;ge</div>
+      <select class="m07-select" id="m07-memory-format">
+        <option value="standard">Standard (Datum, Zusammenfassung, Highlights, Offen)</option>
+        <option value="minimal">Minimal (Datum + Stichpunkte)</option>
+        <option value="detailed">Detailliert (mit Zeitstempeln und Metriken)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ═══ OUTPUT PAGE ═══ -->
+  <div class="m07-output-page" id="m07-output-page">
+    <div class="m07-step-title" style="margin-bottom:0.25rem;">Dein Workspace ist fertig!</div>
+    <div class="m07-step-subtitle">Klappe eine Datei auf, pr&uuml;fe den Inhalt und kopiere sie in deinen <strong>~/.openclaw/workspace/</strong> Ordner.</div>
+
+    <div class="m07-output-toggle">
+      <button class="m07-toggle-btn active" data-filter="core">Kern (5)</button>
+      <button class="m07-toggle-btn" data-filter="extended">Erweitert (5)</button>
+      <button class="m07-toggle-btn" data-filter="all">Alle (10)</button>
+    </div>
+
+    <div id="m07-file-list"></div>
+
+    <button class="m07-copy-all" id="m07-copy-all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      Alle Dateien kopieren (Clipboard)
+    </button>
+
+    <button class="m07-restart" id="m07-restart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+      Wizard neu starten
+    </button>
+  </div>
+
+  <!-- Navigation (shared) -->
+  <div class="m07-nav" id="m07-nav">
+    <button class="m07-btn m07-btn-back" id="m07-back" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Zur&uuml;ck
+    </button>
+    <button class="m07-btn m07-btn-next" id="m07-next">
+      Weiter
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var TOTAL_STEPS = 8;
+  var currentStep = 0;
+  var selectedTone = 'lesch';
+
+  var STEP_LABELS = [
+    'Identitaet', 'Persoenlichkeit', 'Dein Profil', 'Betriebsregeln',
+    'Tools', 'Heartbeat', 'Boot & Bootstrap', 'Memory'
+  ];
+
+  var TONE_MAP = {
+    lesch: 'Begeistert und bildreich wie Harald Lesch. Erklaert komplexe Themen mit Analogien aus dem Alltag. Bringt Tiefgang, ohne trocken zu werden. Nutzt rhetorische Fragen um zum Nachdenken anzuregen.',
+    sachlich: 'Neutral und praezise. Fakten stehen im Vordergrund, keine Wertungen. Klare Struktur, kurze Saetze, technisch korrekt. Fachbegriffe werden eingefuehrt und erklaert.',
+    coach: 'Motivierend und strukturiert. Fuehrt Schritt fuer Schritt durch Aufgaben. Feiert kleine Erfolge, gibt konstruktives Feedback. "Du schaffst das" statt "Man sollte".',
+    kumpel: 'Locker und nahbar. Duzt, nutzt Umgangssprache, macht gelegentlich Witze. Erklaert ohne erhobenen Zeigefinger. Fehler sind normal und kein Drama.',
+    mentor: 'Weise und geduldig. Teilt Erfahrung statt Regeln. Stellt Fragen statt Antworten zu geben. Ermutigt zum eigenen Denken. Langjaehrige Expertise spuerbar.'
+  };
+
+  // ── Progress Bar ──
+  var progressEl = document.getElementById('m07-progress');
+  var counterEl = document.getElementById('m07-counter');
+
+  function buildProgress() {
+    var html = '';
+    for (var i = 0; i < TOTAL_STEPS; i++) {
+      var cls = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+      html += '<div class="m07-progress-step ' + cls + '" data-label="' + STEP_LABELS[i] + '" data-idx="' + i + '"></div>';
+    }
+    progressEl.innerHTML = html;
+    counterEl.innerHTML = 'Schritt <strong>' + (currentStep + 1) + '</strong> von ' + TOTAL_STEPS + ' &mdash; ' + STEP_LABELS[currentStep];
+
+    // Click on progress steps to navigate
+    var bars = progressEl.querySelectorAll('.m07-progress-step');
+    for (var j = 0; j < bars.length; j++) {
+      bars[j].addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        if (idx <= currentStep) goToStep(idx);
+      });
+    }
+  }
+
+  // ── Navigation ──
+  var steps = document.querySelectorAll('.m07-step');
+  var outputPage = document.getElementById('m07-output-page');
+  var navEl = document.getElementById('m07-nav');
+  var backBtn = document.getElementById('m07-back');
+  var nextBtn = document.getElementById('m07-next');
+
+  function goToStep(idx) {
+    currentStep = idx;
+    for (var i = 0; i < steps.length; i++) {
+      steps[i].classList.toggle('active', i === currentStep);
+    }
+    outputPage.classList.remove('active');
+    navEl.style.display = 'flex';
+    progressEl.style.display = 'flex';
+    counterEl.style.display = 'block';
+
+    backBtn.style.display = currentStep > 0 ? 'flex' : 'none';
+
+    if (currentStep === TOTAL_STEPS - 1) {
+      nextBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Workspace generieren';
+      nextBtn.className = 'm07-btn m07-btn-generate';
+    } else {
+      nextBtn.innerHTML = 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+      nextBtn.className = 'm07-btn m07-btn-next';
+    }
+    buildProgress();
+  }
+
+  backBtn.addEventListener('click', function() {
+    if (currentStep > 0) goToStep(currentStep - 1);
+  });
+
+  nextBtn.addEventListener('click', function() {
+    if (currentStep < TOTAL_STEPS - 1) {
+      goToStep(currentStep + 1);
+    } else {
+      generateAll();
+    }
+  });
+
+  // ── Tone Selection ──
+  var toneContainer = document.getElementById('m07-tones');
+  var customToneWrap = document.getElementById('m07-custom-tone-wrap');
+
+  if (toneContainer) {
+    toneContainer.addEventListener('click', function(e) {
+      var tone = e.target.closest('.m07-tone');
+      if (!tone) return;
+      selectedTone = tone.getAttribute('data-tone');
+      var all = toneContainer.querySelectorAll('.m07-tone');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('selected');
+      tone.classList.add('selected');
+      customToneWrap.classList.toggle('m07-hidden', selectedTone !== 'custom');
+    });
+  }
+
+  // ── Helper: get value ──
+  function val(id, fallback) {
+    var el = document.getElementById(id);
+    return el && el.value.trim() ? el.value.trim() : (fallback || '');
+  }
+
+  function lines(id) {
+    var v = val(id);
+    if (!v) return [];
+    return v.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+  }
+
+  function bullets(arr) {
+    return arr.map(function(l) { return '- ' + l; }).join('\n');
+  }
+
+  // ── File Definitions ──
+  var FILES = [
+    { id: 'identity', name: 'IDENTITY.md', cat: 'core', badge: 'NEU', gen: genIdentity },
+    { id: 'soul',     name: 'SOUL.md',     cat: 'core', badge: null,  gen: genSoul },
+    { id: 'agents',   name: 'AGENTS.md',   cat: 'core', badge: null,  gen: genAgents },
+    { id: 'user',     name: 'USER.md',     cat: 'core', badge: null,  gen: genUser },
+    { id: 'tools',    name: 'TOOLS.md',    cat: 'core', badge: null,  gen: genTools },
+    { id: 'heartbeat',name: 'HEARTBEAT.md',cat: 'ext',  badge: null,  gen: genHeartbeat },
+    { id: 'boot',     name: 'BOOT.md',     cat: 'ext',  badge: 'NEU', gen: genBoot },
+    { id: 'bootstrap',name: 'BOOTSTRAP.md',cat: 'ext',  badge: 'NEU', gen: genBootstrap },
+    { id: 'memory',   name: 'MEMORY.md',   cat: 'ext',  badge: null,  gen: genMemory },
+    { id: 'memoryday',name: 'memory/YYYY-MM-DD.md', cat: 'ext', badge: null, gen: genMemoryDay }
+  ];
+
+  // ── Generators ──
+  function genIdentity() {
+    var name = val('m07-agent-name', 'MeinAgent');
+    var emoji = val('m07-agent-emoji', '🤖');
+    var role = val('m07-agent-role', 'Allround-Assistent');
+    var goals = val('m07-agent-goals', 'Nutzer befaehigen, Qualitaet sichern');
+    var md = '# IDENTITY.md\n\n';
+    md += '## Name\n\n' + emoji + ' **' + name + '**\n\n';
+    md += '## Rolle\n\n' + role + '\n\n';
+    md += '## Ziele\n\n';
+    goals.split(',').forEach(function(g) {
+      g = g.trim();
+      if (g) md += '- ' + g + '\n';
+    });
+    md += '\n## Abgrenzung\n\n';
+    md += 'Ich bin Werkzeug, nicht Ersatz. Ich entscheide nicht eigenstaendig ueber Projektrichtung.\n';
+    return md;
+  }
+
+  function genSoul() {
+    var name = val('m07-agent-name', 'MeinAgent');
+    var toneDesc = TONE_MAP[selectedTone] || '';
+    if (selectedTone === 'custom') toneDesc = val('m07-custom-tone', 'Eigener Stil nach Wahl.');
+    var tones = val('m07-persona-tones', 'Erklaerer, Praktiker, Motivator');
+    var values = lines('m07-values');
+    var taboos = lines('m07-taboos');
+    var lang = val('m07-lang', 'de');
+    var langLabel = lang === 'de' ? 'Deutsch, Du-Form' : lang === 'de-sie' ? 'Deutsch, Sie-Form' : 'English';
+
+    var md = '# SOUL.md — ' + name + '\n\n';
+    md += '## Stil\n\n' + toneDesc + '\n\n';
+    md += '## Meine 3 Toene\n\n';
+    tones.split(',').forEach(function(t) {
+      t = t.trim();
+      if (t) md += '- **' + t + '**\n';
+    });
+    md += '\nIch wechsle zwischen diesen Toenen je nach Kontext. Nie nur belehren, nie nur unterhalten.\n\n';
+    md += '## Sprache\n\n' + langLabel + '\n\n';
+    if (values.length) {
+      md += '## Werte\n\n' + bullets(values) + '\n\n';
+    }
+    if (taboos.length) {
+      md += '## Tabus\n\n' + bullets(taboos) + '\n\n';
+    }
+    md += '## Leitprinzip\n\nIch bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
+    return md;
+  }
+
+  function genAgents() {
+    var name = val('m07-agent-name', 'MeinAgent');
+    var prios = val('m07-priorities', 'Qualitaet, Deadlines, Nutzererlebnis');
+    var workflow = lines('m07-workflow');
+    var dosDonts = lines('m07-dos-donts');
+
+    var md = '# AGENTS.md — Betriebsanweisungen fuer ' + name + '\n\n';
+    md += '## Prioritaeten\n\n';
+    prios.split(',').forEach(function(p, i) {
+      p = p.trim();
+      if (p) md += (i + 1) + '. ' + p + '\n';
+    });
+    if (workflow.length) {
+      md += '\n## Workflow-Regeln\n\n' + bullets(workflow) + '\n';
+    }
+    if (dosDonts.length) {
+      md += '\n## Do\'s & Don\'ts\n\n' + bullets(dosDonts) + '\n';
+    }
+    md += '\n## Allgemein\n\n';
+    md += '- Lies SOUL.md fuer Ton und Persoenlichkeit\n';
+    md += '- Lies USER.md fuer Kontext zum Nutzer\n';
+    md += '- Melde Probleme oder Unsicherheiten sofort\n';
+    md += '- Keine eigenstaendigen Entscheidungen ohne Rueckfrage\n';
+    return md;
+  }
+
+  function genUser() {
+    var userName = val('m07-user-name', 'Nutzer');
+    var bg = val('m07-user-bg', '');
+    var prefs = lines('m07-user-prefs');
+
+    var md = '# USER.md — ' + userName + '\n\n';
+    if (bg) {
+      md += '## Hintergrund\n\n' + bg + '\n\n';
+    }
+    if (prefs.length) {
+      md += '## Praeferenzen\n\n' + bullets(prefs) + '\n\n';
+    }
+    md += '## Hinweis\n\nDiese Datei wird manuell gepflegt. Wenn sich Praeferenzen aendern, Datei aktualisieren.\n';
+    return md;
+  }
+
+  function genTools() {
+    var tools = lines('m07-tools');
+    var convs = lines('m07-conventions');
+
+    var md = '# TOOLS.md\n\n';
+    if (tools.length) {
+      md += '## Tools & Integrationen\n\n' + bullets(tools) + '\n\n';
+    } else {
+      md += '## Tools & Integrationen\n\n- (Hier deine Tools eintragen)\n\n';
+    }
+    if (convs.length) {
+      md += '## Konventionen\n\n' + bullets(convs) + '\n\n';
+    }
+    md += '## Kalender-IDs\n\n- (Optional: Google Calendar ID, Notion DB ID etc.)\n';
+    return md;
+  }
+
+  function genHeartbeat() {
+    var interval = val('m07-hb-interval', '1h');
+    var tasks = lines('m07-hb-tasks');
+    var intervalLabel = { '30min': 'Alle 30 Minuten', '1h': 'Jede Stunde', '4h': 'Alle 4 Stunden', 'daily': 'Taeglich' };
+
+    var md = '# HEARTBEAT.md\n\n';
+    md += '## Intervall\n\n' + (intervalLabel[interval] || interval) + '\n\n';
+    md += '## Checkliste\n\n';
+    if (tasks.length) {
+      tasks.forEach(function(t, i) { md += '- [ ] ' + t + '\n'; });
+    } else {
+      md += '- [ ] Ungelesene Nachrichten zusammenfassen\n';
+      md += '- [ ] Offene Tasks pruefen\n';
+      md += '- [ ] Tagesprotokoll aktualisieren\n';
+    }
+    md += '\n## Hinweis\n\nNur abarbeiten, nicht eigenstaendig handeln. Ergebnisse an den Nutzer melden.\n';
+    return md;
+  }
+
+  function genBoot() {
+    var bootSteps = lines('m07-boot');
+    var name = val('m07-agent-name', 'MeinAgent');
+
+    var md = '# BOOT.md — Startup-Ritual fuer ' + name + '\n\n';
+    md += '> Wird bei JEDEM Gateway-Neustart ausgefuehrt.\n\n';
+    md += '## Schritte\n\n';
+    if (bootSteps.length) {
+      bootSteps.forEach(function(s, i) { md += (i + 1) + '. ' + s + '\n'; });
+    } else {
+      md += '1. SOUL.md laden und Persoenlichkeit aktivieren\n';
+      md += '2. MEMORY.md lesen — offene Punkte identifizieren\n';
+      md += '3. Kurze Begruessung an den Nutzer senden\n';
+    }
+    return md;
+  }
+
+  function genBootstrap() {
+    var questions = lines('m07-bootstrap');
+
+    var md = '# BOOTSTRAP.md — Erstlauf-Interview\n\n';
+    md += '> Wird NUR beim allerersten Start ausgefuehrt. Danach diese Datei loeschen.\n\n';
+    md += '## Fragen an den Nutzer\n\n';
+    if (questions.length) {
+      questions.forEach(function(q, i) { md += (i + 1) + '. ' + q + '\n'; });
+    } else {
+      md += '1. Wie soll ich dich ansprechen?\n';
+      md += '2. Welche Themen interessieren dich?\n';
+      md += '3. Hast du Vorerfahrung mit AI-Agents?\n';
+      md += '4. Wann bist du normalerweise online?\n';
+    }
+    md += '\n## Nach dem Interview\n\n';
+    md += 'Antworten in USER.md und MEMORY.md eintragen. Dann diese Datei loeschen.\n';
+    return md;
+  }
+
+  function genMemory() {
+    var longMem = lines('m07-memory-long');
+
+    var md = '# MEMORY.md — Langzeit-Gedaechtnis\n\n';
+    md += '> Manuell kuratiert. Nur Dinge die DAUERHAFT relevant sind.\n\n';
+    if (longMem.length) {
+      md += '## Fakten\n\n' + bullets(longMem) + '\n\n';
+    } else {
+      md += '## Fakten\n\n- (Hier langfristig relevante Fakten eintragen)\n\n';
+    }
+    md += '## Regeln\n\n- Neue Eintraege nur mit Bestaetigung des Nutzers\n';
+    md += '- Veraltete Eintraege regelmaessig aufraeumen\n';
+    return md;
+  }
+
+  function genMemoryDay() {
+    var fmt = val('m07-memory-format', 'standard');
+    var today = new Date().toISOString().slice(0, 10);
+
+    var md = '# ' + today + '\n\n';
+    if (fmt === 'minimal') {
+      md += '- \n- \n- \n';
+    } else if (fmt === 'detailed') {
+      md += '## Zusammenfassung\n\n(Was wurde heute gemacht?)\n\n';
+      md += '## Timeline\n\n';
+      md += '| Zeit | Aktion | Ergebnis |\n';
+      md += '|------|--------|----------|\n';
+      md += '| 09:00 | ... | ... |\n\n';
+      md += '## Metriken\n\n- Nachrichten: 0\n- Tasks erledigt: 0\n- Kosten: 0 EUR\n\n';
+      md += '## Offen\n\n- \n';
+    } else {
+      md += '## Zusammenfassung\n\n(Was wurde heute gemacht?)\n\n';
+      md += '## Highlights\n\n- \n\n';
+      md += '## Offen\n\n- \n';
+    }
+    return md;
+  }
+
+  // ── Generate All ──
+  function generateAll() {
+    // Hide wizard, show output
+    for (var i = 0; i < steps.length; i++) steps[i].classList.remove('active');
+    navEl.style.display = 'none';
+    progressEl.style.display = 'none';
+    counterEl.style.display = 'none';
+    outputPage.classList.add('active');
+
+    // Generate content for each file
+    var generated = {};
+    for (var f = 0; f < FILES.length; f++) {
+      generated[FILES[f].id] = FILES[f].gen();
+    }
+
+    renderFileList(generated, 'core');
+
+    // Store generated data
+    outputPage._generated = generated;
+
+    // Save to localStorage
+    try {
+      localStorage.setItem('wizard:generated', 'true');
+      localStorage.setItem('wizard:step', String(TOTAL_STEPS));
+      localStorage.setItem('shell:lastModule', 'm07');
+    } catch(e) {}
+  }
+
+  // ── Render File Cards ──
+  function renderFileList(generated, filter) {
+    var listEl = document.getElementById('m07-file-list');
+    var html = '';
+    var chevronSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    var copySvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+    var fileSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+
+    for (var f = 0; f < FILES.length; f++) {
+      var file = FILES[f];
+      var show = filter === 'all' || (filter === 'core' && file.cat === 'core') || (filter === 'extended' && file.cat === 'ext');
+      if (!show) continue;
+
+      var badgeHtml = file.badge ? '<span class="m07-file-badge new">' + file.badge + '</span>' : '';
+
+      html += '<div class="m07-file-card" data-file="' + file.id + '">';
+      html += '<div class="m07-file-header">';
+      html += '<div class="m07-file-name">' + fileSvg + ' ' + file.name + ' ' + badgeHtml + '</div>';
+      html += '<div class="m07-file-actions">';
+      html += '<button class="m07-copy-btn" data-file-id="' + file.id + '">' + copySvg + ' Kopieren</button>';
+      html += '<span class="m07-chevron">' + chevronSvg + '</span>';
+      html += '</div></div>';
+      html += '<div class="m07-file-body"><div class="m07-file-output" id="m07-out-' + file.id + '"></div></div>';
+      html += '</div>';
+    }
+    listEl.innerHTML = html;
+
+    // Fill content
+    for (var g = 0; g < FILES.length; g++) {
+      var outEl = document.getElementById('m07-out-' + FILES[g].id);
+      if (outEl && generated[FILES[g].id]) outEl.textContent = generated[FILES[g].id];
+    }
+
+    // Accordion toggle
+    var headers = listEl.querySelectorAll('.m07-file-header');
+    for (var h = 0; h < headers.length; h++) {
+      headers[h].addEventListener('click', function(e) {
+        if (e.target.closest('.m07-copy-btn')) return;
+        this.parentElement.classList.toggle('open');
+      });
+    }
+
+    // Copy buttons
+    var copyBtns = listEl.querySelectorAll('.m07-copy-btn');
+    for (var c = 0; c < copyBtns.length; c++) {
+      copyBtns[c].addEventListener('click', function(e) {
+        e.stopPropagation();
+        var fileId = this.getAttribute('data-file-id');
+        var content = generated[fileId] || '';
+        var btn = this;
+        copyText(content, btn);
+      });
+    }
+  }
+
+  // ── Filter Toggle ──
+  document.querySelector('.m07-output-toggle').addEventListener('click', function(e) {
+    var btn = e.target.closest('.m07-toggle-btn');
+    if (!btn) return;
+    var filter = btn.getAttribute('data-filter');
+    var all = document.querySelectorAll('.m07-toggle-btn');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
+    btn.classList.add('active');
+    var generated = outputPage._generated || {};
+    renderFileList(generated, filter);
+  });
+
+  // ── Copy All ──
+  document.getElementById('m07-copy-all').addEventListener('click', function() {
+    var generated = outputPage._generated || {};
+    var allText = '';
+    for (var f = 0; f < FILES.length; f++) {
+      var file = FILES[f];
+      allText += '# ═══════════════════════════════════════\n';
+      allText += '# Datei: ' + file.name + '\n';
+      allText += '# ═══════════════════════════════════════\n\n';
+      allText += (generated[file.id] || '') + '\n\n';
+    }
+    copyText(allText, this);
+  });
+
+  // ── Restart ──
+  document.getElementById('m07-restart').addEventListener('click', function() {
+    outputPage.classList.remove('active');
+    try {
+      localStorage.removeItem('wizard:generated');
+      localStorage.setItem('wizard:step', '0');
+    } catch(e) {}
+    goToStep(0);
+  });
+
+  // ── Copy Helper ──
+  function copyText(text, btn) {
+    try {
+      navigator.clipboard.writeText(text).then(function() {
+        btn.classList.add('copied');
+        var origHTML = btn.innerHTML;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Kopiert!';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.innerHTML = origHTML;
+        }, 2000);
+      });
+    } catch(err) {
+      // Fallback: select text
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e2) {}
+      document.body.removeChild(ta);
+    }
+  }
+
+  // ── Init ──
+  buildProgress();
+
+  try {
+    localStorage.setItem('shell:lastModule', 'm07');
+  } catch(e) {}
+
+})();
+</script>
