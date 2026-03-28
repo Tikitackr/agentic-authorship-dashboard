@@ -1,41 +1,956 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Config Builder — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M08</div>
-    <h1>Config Builder</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M08: Config Builder — Agentic Authorship Dashboard -->
+<style>
+  .m08 { max-width: 100%; }
+
+  .m08-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(59,130,246,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m08-hero-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+
+  .m08-hero-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--amber-dim); display: flex; align-items: center; justify-content: center;
+    color: var(--amber); flex-shrink: 0;
+  }
+  .m08-hero-icon svg { width: 20px; height: 20px; }
+  .m08-hero h2 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+  .m08-hero-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+  .m08-hero-desc strong { color: var(--text); }
+
+  /* Layout: Form + Preview */
+  .m08-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+  /* Accordion Sections */
+  .m08-sections { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .m08-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .m08-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 0.85rem;
+    background: var(--bg-card);
+    cursor: pointer; user-select: none;
+    transition: background 0.15s;
+  }
+  .m08-section-header:hover { background: var(--bg-card-hover); }
+
+  .m08-section-label {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.82rem; font-weight: 600; color: var(--text);
+  }
+  .m08-section-label svg { width: 16px; height: 16px; color: var(--amber); }
+
+  .m08-section-badge {
+    font-size: 0.58rem; font-weight: 500; padding: 0.1rem 0.4rem;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .m08-badge-required { color: var(--amber); background: rgba(245,158,11,0.12); }
+  .m08-badge-optional { color: var(--text-dim); background: rgba(255,255,255,0.05); }
+
+  .m08-chevron { color: var(--text-dim); transition: transform 0.2s; display: flex; }
+  .m08-chevron svg { width: 16px; height: 16px; }
+  .m08-section.open .m08-chevron { transform: rotate(180deg); }
+
+  .m08-section-body {
+    display: none;
+    padding: 0.85rem;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.15);
+  }
+  .m08-section.open .m08-section-body { display: block; }
+
+  /* Form */
+  .m08-field { margin-bottom: 0.85rem; }
+  .m08-field:last-child { margin-bottom: 0; }
+
+  .m08-label {
+    display: block; font-size: 0.72rem; font-weight: 600; color: var(--text);
+    margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .m08-hint {
+    font-size: 0.66rem; color: var(--text-dim); margin-bottom: 0.25rem; line-height: 1.35;
+  }
+
+  .m08-input, .m08-select {
+    width: 100%; padding: 0.55rem 0.75rem;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: inherit; font-size: 0.82rem;
+    transition: border-color 0.15s; outline: none;
+  }
+  .m08-input:focus, .m08-select:focus { border-color: var(--amber); }
+  .m08-input.error { border-color: #ef4444; }
+
+  .m08-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.6rem center; padding-right: 1.8rem;
+  }
+  .m08-select option { background: #12121a; color: #e0e0e0; }
+
+  .m08-row { display: flex; gap: 0.5rem; }
+  .m08-row .m08-field { flex: 1; }
+
+  .m08-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+  .m08-toggle-label { font-size: 0.78rem; color: var(--text); }
+
+  .m08-toggle {
+    width: 36px; height: 20px; border-radius: 10px;
+    background: var(--border); border: none; cursor: pointer;
+    position: relative; transition: background 0.2s;
+  }
+  .m08-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 8px;
+    background: var(--text-dim); transition: all 0.2s;
+  }
+  .m08-toggle.on { background: var(--amber); }
+  .m08-toggle.on::after { left: 18px; background: #0a0a0f; }
+
+  /* Preview Panel */
+  .m08-preview-wrap {
+    position: sticky; top: 0;
+  }
+
+  .m08-preview-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .m08-preview-title {
+    font-size: 0.82rem; font-weight: 600; color: var(--amber);
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .m08-preview-title svg { width: 14px; height: 14px; }
+
+  .m08-preview-actions { display: flex; gap: 0.35rem; }
+
+  .m08-action-btn {
+    display: flex; align-items: center; gap: 0.25rem;
+    padding: 0.25rem 0.5rem; background: transparent;
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text-dim); font-family: inherit; font-size: 0.66rem;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .m08-action-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .m08-action-btn.copied { border-color: var(--green); color: var(--green); }
+  .m08-action-btn svg { width: 12px; height: 12px; }
+
+  .m08-preview {
+    background: #0d0d15; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 0.85rem; font-family: 'SF Mono','Fira Code','Consolas',monospace;
+    font-size: 0.72rem; line-height: 1.65; color: var(--text);
+    white-space: pre-wrap; word-break: break-word;
+    max-height: calc(100vh - 180px); overflow-y: auto; min-height: 300px;
+  }
+
+  /* Syntax Coloring */
+  .m08-key { color: #f59e0b; }
+  .m08-str { color: #22c55e; }
+  .m08-num { color: #818cf8; }
+  .m08-bool { color: #f472b6; }
+  .m08-comment { color: #555; font-style: italic; }
+  .m08-bracket { color: #888; }
+
+  /* Validation Bar */
+  .m08-validation {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 0.75rem; border-radius: 8px;
+    margin-top: 0.5rem; font-size: 0.72rem;
+  }
+  .m08-validation svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .m08-validation.valid { background: rgba(34,197,94,0.08); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+  .m08-validation.warning { background: rgba(245,158,11,0.08); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+  .m08-validation.error { background: rgba(239,68,68,0.08); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+
+  /* Info box */
+  .m08-info-box {
+    background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px; padding: 0.65rem; display: flex; gap: 0.5rem;
+    align-items: flex-start; margin-bottom: 0.75rem;
+  }
+  .m08-info-box svg { width: 14px; height: 14px; color: var(--blue); flex-shrink: 0; margin-top: 0.1rem; }
+  .m08-info-text { font-size: 0.72rem; color: var(--text-dim); line-height: 1.45; }
+  .m08-info-text strong { color: var(--text); }
+
+  /* Warning box */
+  .m08-warn-box {
+    background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px; padding: 0.65rem; display: flex; gap: 0.5rem;
+    align-items: flex-start; margin-bottom: 0.75rem;
+  }
+  .m08-warn-box svg { width: 14px; height: 14px; color: var(--amber); flex-shrink: 0; margin-top: 0.1rem; }
+
+  @media (max-width: 768px) {
+    .m08-layout { grid-template-columns: 1fr; }
+    .m08-preview-wrap { position: static; }
+    .m08-preview { max-height: 350px; }
+    .m08-row { flex-direction: column; }
+  }
+</style>
+
+<div class="m08">
+
+  <div class="m08-hero">
+    <div class="m08-hero-header">
+      <div class="m08-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <h2>Config Builder</h2>
+    </div>
+    <p class="m08-hero-desc">
+      Baue deine <strong>openclaw.json</strong> interaktiv. Felder ausf&uuml;llen, Live-Preview rechts pr&uuml;fen, kopieren, fertig. Basiert auf <strong>v2026.3.23</strong> (35 Sektionen).
+    </p>
   </div>
-</body>
-</html>
+
+  <div class="m08-layout">
+
+    <!-- ═══ LEFT: Accordion Sections ═══ -->
+    <div class="m08-sections" id="m08-sections">
+
+      <!-- 1. Identity -->
+      <div class="m08-section open" data-section="identity">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            Identity &amp; Agent
+            <span class="m08-section-badge m08-badge-required">Pflicht</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Agent-Name</label>
+              <input class="m08-input" id="m08-name" type="text" placeholder="z.B. Cowan" data-key="identity.name">
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Emoji</label>
+              <input class="m08-input" id="m08-emoji" type="text" placeholder="z.B. 🦉" maxlength="4" style="max-width:80px;" data-key="identity.emoji">
+            </div>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Theme</label>
+            <div class="m08-hint">Farbschema f&uuml;r Dashboard und TUI</div>
+            <select class="m08-select" id="m08-theme" data-key="identity.theme">
+              <option value="default">default</option>
+              <option value="ocean">ocean</option>
+              <option value="forest">forest</option>
+              <option value="sunset">sunset</option>
+              <option value="midnight">midnight</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Workspace-Pfad</label>
+            <div class="m08-hint">Relativ zum .openclaw-Ordner</div>
+            <input class="m08-input" id="m08-workspace" type="text" value="workspace" data-key="agent.workspace">
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Model -->
+      <div class="m08-section" data-section="model">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Modell &amp; Provider
+            <span class="m08-section-badge m08-badge-required">Pflicht</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-field">
+            <label class="m08-label">Prim&auml;rmodell</label>
+            <select class="m08-select" id="m08-model" data-key="agent.model.primary">
+              <option value="anthropic/claude-sonnet-4-6">anthropic/claude-sonnet-4-6</option>
+              <option value="anthropic/claude-opus-4-6">anthropic/claude-opus-4-6</option>
+              <option value="anthropic/claude-haiku-4-5">anthropic/claude-haiku-4-5</option>
+              <option value="openai/gpt-4o">openai/gpt-4o</option>
+              <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
+              <option value="google/gemini-3.1-flash-lite">google/gemini-3.1-flash-lite</option>
+              <option value="mistral/mistral-large-latest">mistral/mistral-large-latest</option>
+              <option value="openrouter/auto">openrouter/auto</option>
+              <option value="ollama/llama3">ollama/llama3 (lokal)</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Fallback-Modelle</label>
+            <div class="m08-hint">Kommagetrennt, werden der Reihe nach versucht</div>
+            <input class="m08-input" id="m08-fallbacks" type="text" placeholder="z.B. anthropic/claude-haiku-4-5, openai/gpt-4o-mini" data-key="agent.model.fallbacks">
+          </div>
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Context Window</label>
+              <input class="m08-input" id="m08-context" type="number" value="200000" data-key="agent.model.params.context1m">
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Timeout (s)</label>
+              <input class="m08-input" id="m08-timeout" type="number" value="120" data-key="agent.timeout">
+            </div>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Thinking-Modus</label>
+            <select class="m08-select" id="m08-thinking" data-key="agent.thinkingDefault">
+              <option value="medium">medium (Standard)</option>
+              <option value="off">off</option>
+              <option value="low">low</option>
+              <option value="high">high</option>
+              <option value="xhigh">xhigh</option>
+              <option value="adaptive">adaptive</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Reasoning-Modus</label>
+            <select class="m08-select" id="m08-reasoning" data-key="agent.reasoningDefault">
+              <option value="off">off (Standard)</option>
+              <option value="on">on</option>
+              <option value="stream">stream</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Channels -->
+      <div class="m08-section" data-section="channels">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            Channels
+            <span class="m08-section-badge m08-badge-required">Pflicht</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <!-- Telegram -->
+          <div class="m08-toggle-row">
+            <span class="m08-toggle-label">Telegram</span>
+            <button class="m08-toggle on" id="m08-tg-enabled" data-key="channels.telegram.enabled"></button>
+          </div>
+          <div class="m08-field" id="m08-tg-fields">
+            <label class="m08-label">Bot-Token</label>
+            <div class="m08-hint">Von @BotFather, Format: 123456:ABC-DEF...</div>
+            <input class="m08-input" id="m08-tg-token" type="password" placeholder="Bot-Token hier" data-key="channels.telegram.botToken">
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="m08-toggle-row" style="margin-top:0.75rem;">
+            <span class="m08-toggle-label">WhatsApp</span>
+            <button class="m08-toggle" id="m08-wa-enabled" data-key="channels.whatsapp.enabled"></button>
+          </div>
+          <div class="m08-field" id="m08-wa-fields" style="display:none;">
+            <label class="m08-label">AllowFrom</label>
+            <div class="m08-hint">Telefonnummern die zugreifen d&uuml;rfen (kommagetrennt)</div>
+            <input class="m08-input" id="m08-wa-allow" type="text" placeholder="z.B. 491701234567" data-key="channels.whatsapp.allowFrom">
+            <div class="m08-field" style="margin-top:0.5rem;">
+              <label class="m08-label">Group Policy</label>
+              <select class="m08-select" id="m08-wa-group" data-key="channels.whatsapp.groupPolicy">
+                <option value="ignore">ignore</option>
+                <option value="allowAll">allowAll</option>
+                <option value="allowListed">allowListed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Discord -->
+          <div class="m08-toggle-row" style="margin-top:0.75rem;">
+            <span class="m08-toggle-label">Discord</span>
+            <button class="m08-toggle" id="m08-dc-enabled" data-key="channels.discord.enabled"></button>
+          </div>
+          <div class="m08-field" id="m08-dc-fields" style="display:none;">
+            <label class="m08-label">Bot-Token</label>
+            <input class="m08-input" id="m08-dc-token" type="password" placeholder="Discord Bot Token" data-key="channels.discord.token">
+            <div class="m08-field" style="margin-top:0.5rem;">
+              <label class="m08-label">AllowFrom</label>
+              <div class="m08-hint">Discord User-IDs (kommagetrennt)</div>
+              <input class="m08-input" id="m08-dc-allow" type="text" placeholder="z.B. 123456789012345678" data-key="channels.discord.allowFrom">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Gateway & Auth -->
+      <div class="m08-section" data-section="gateway">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Gateway &amp; Auth
+            <span class="m08-section-badge m08-badge-required">Pflicht</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-warn-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="m08-info-text">
+              <strong>Breaking Change ab v2026.3.7:</strong> Wenn Token UND Passwort gesetzt sind, MUSS <code>gateway.auth.mode</code> explizit auf &quot;token&quot; oder &quot;password&quot; stehen!
+            </div>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Auth-Modus</label>
+            <select class="m08-select" id="m08-auth-mode" data-key="gateway.auth.mode">
+              <option value="token">token (empfohlen)</option>
+              <option value="password">password</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Token</label>
+            <div class="m08-hint">Zufaelliger String, z.B. via <code>openssl rand -hex 32</code></div>
+            <input class="m08-input" id="m08-auth-token" type="password" placeholder="Auth-Token" data-key="gateway.auth.token">
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Bind-Adresse</label>
+            <div class="m08-hint">0.0.0.0 = oeffentlich, 127.0.0.1 = nur lokal, 100.x.x.x = nur Tailscale</div>
+            <select class="m08-select" id="m08-bind" data-key="gateway.bind">
+              <option value="100.0.0.0">100.x.x.x (Tailscale, empfohlen)</option>
+              <option value="127.0.0.1">127.0.0.1 (nur lokal)</option>
+              <option value="0.0.0.0">0.0.0.0 (oeffentlich, Vorsicht!)</option>
+            </select>
+          </div>
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Port</label>
+              <input class="m08-input" id="m08-port" type="number" value="18789" data-key="gateway.port">
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Tailscale Mode</label>
+              <select class="m08-select" id="m08-tailscale" data-key="gateway.tailscale.mode">
+                <option value="serve">serve (empfohlen)</option>
+                <option value="funnel">funnel (oeffentlich)</option>
+                <option value="off">off</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Security -->
+      <div class="m08-section" data-section="security">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Security
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-toggle-row">
+            <span class="m08-toggle-label">Sandbox aktiviert</span>
+            <button class="m08-toggle on" id="m08-sandbox" data-key="security.sandboxEnabled"></button>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">DM Policy</label>
+            <select class="m08-select" id="m08-dm-policy" data-key="security.dmPolicy">
+              <option value="owner">owner (nur du)</option>
+              <option value="allowListed">allowListed</option>
+              <option value="open">open (Vorsicht!)</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Group Policy</label>
+            <select class="m08-select" id="m08-group-policy" data-key="security.groupPolicy">
+              <option value="ignore">ignore</option>
+              <option value="allowAll">allowAll</option>
+              <option value="allowListed">allowListed</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Trust Model</label>
+            <select class="m08-select" id="m08-trust" data-key="security.trust_model">
+              <option value="strict">strict (empfohlen)</option>
+              <option value="relaxed">relaxed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Heartbeat -->
+      <div class="m08-section" data-section="heartbeat">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            Heartbeat
+            <span class="m08-section-badge m08-badge-optional">Optional</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Intervall</label>
+              <input class="m08-input" id="m08-hb-every" type="text" placeholder="z.B. 1h, 30m, 4h" value="1h" data-key="agent.heartbeat.every">
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Target</label>
+              <select class="m08-select" id="m08-hb-target" data-key="agent.heartbeat.target">
+                <option value="owner">owner</option>
+                <option value="all">all</option>
+              </select>
+            </div>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Heartbeat-Modell</label>
+            <div class="m08-hint">Guenstigeres Modell fuer Heartbeats spart Kosten</div>
+            <select class="m08-select" id="m08-hb-model" data-key="agent.heartbeat.model">
+              <option value="">(gleich wie Primaermodell)</option>
+              <option value="anthropic/claude-haiku-4-5">anthropic/claude-haiku-4-5</option>
+              <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
+              <option value="google/gemini-3.1-flash-lite">google/gemini-3.1-flash-lite</option>
+              <option value="ollama/llama3">ollama/llama3 (lokal, gratis)</option>
+            </select>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Aktive Stunden</label>
+            <div class="m08-hint">Format: start-end, z.B. 08:00-22:00</div>
+            <div class="m08-row">
+              <div class="m08-field">
+                <input class="m08-input" id="m08-hb-start" type="text" placeholder="08:00" data-key="agent.heartbeat.activeHours.start">
+              </div>
+              <div class="m08-field">
+                <input class="m08-input" id="m08-hb-end" type="text" placeholder="22:00" data-key="agent.heartbeat.activeHours.end">
+              </div>
+              <div class="m08-field">
+                <input class="m08-input" id="m08-hb-tz" type="text" placeholder="Europe/Berlin" value="Europe/Berlin" data-key="agent.heartbeat.activeHours.timezone">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Subagents -->
+      <div class="m08-section" data-section="subagents">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Subagents
+            <span class="m08-section-badge m08-badge-optional">Optional</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-toggle-row">
+            <span class="m08-toggle-label">Subagents erlauben</span>
+            <button class="m08-toggle on" id="m08-sub-allow" data-key="subagents.allowAgents"></button>
+          </div>
+          <div class="m08-field">
+            <label class="m08-label">Subagent-Modell</label>
+            <div class="m08-hint">Separates Modell fuer Subagents (Kosten sparen)</div>
+            <select class="m08-select" id="m08-sub-model" data-key="subagents.model">
+              <option value="">(gleich wie Primaermodell)</option>
+              <option value="anthropic/claude-haiku-4-5">anthropic/claude-haiku-4-5</option>
+              <option value="anthropic/claude-sonnet-4-6">anthropic/claude-sonnet-4-6</option>
+              <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
+            </select>
+          </div>
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Max Concurrent</label>
+              <input class="m08-input" id="m08-sub-max" type="number" value="4" data-key="subagents.maxConcurrent">
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Timeout (s)</label>
+              <input class="m08-input" id="m08-sub-timeout" type="number" value="900" data-key="subagents.runTimeoutSeconds">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Logging -->
+      <div class="m08-section" data-section="logging">
+        <div class="m08-section-header">
+          <div class="m08-section-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Logging
+            <span class="m08-section-badge m08-badge-optional">Optional</span>
+          </div>
+          <span class="m08-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="m08-section-body">
+          <div class="m08-row">
+            <div class="m08-field">
+              <label class="m08-label">Log-Level</label>
+              <select class="m08-select" id="m08-log-level" data-key="logging.level">
+                <option value="info">info (Standard)</option>
+                <option value="debug">debug</option>
+                <option value="warn">warn</option>
+                <option value="error">error</option>
+              </select>
+            </div>
+            <div class="m08-field">
+              <label class="m08-label">Console-Level</label>
+              <select class="m08-select" id="m08-log-console" data-key="logging.consoleLevel">
+                <option value="info">info</option>
+                <option value="debug">debug</option>
+                <option value="warn">warn</option>
+              </select>
+            </div>
+          </div>
+          <div class="m08-toggle-row">
+            <span class="m08-toggle-label">In Datei loggen</span>
+            <button class="m08-toggle" id="m08-log-file" data-key="logging.file"></button>
+          </div>
+          <div class="m08-toggle-row">
+            <span class="m08-toggle-label">Sensible Daten redigieren</span>
+            <button class="m08-toggle on" id="m08-log-redact" data-key="logging.redactSensitive"></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ RIGHT: Live Preview ═══ -->
+    <div class="m08-preview-wrap">
+      <div class="m08-preview-header">
+        <span class="m08-preview-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          openclaw.json
+        </span>
+        <div class="m08-preview-actions">
+          <button class="m08-action-btn" id="m08-copy-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopieren
+          </button>
+          <button class="m08-action-btn" id="m08-download-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .json
+          </button>
+        </div>
+      </div>
+      <div class="m08-preview" id="m08-preview"></div>
+      <div class="m08-validation" id="m08-validation"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Accordion ──
+  var headers = document.querySelectorAll('.m08-section-header');
+  for (var h = 0; h < headers.length; h++) {
+    headers[h].addEventListener('click', function() {
+      this.parentElement.classList.toggle('open');
+    });
+  }
+
+  // ── Toggle Buttons ──
+  var toggles = document.querySelectorAll('.m08-toggle');
+  for (var t = 0; t < toggles.length; t++) {
+    toggles[t].addEventListener('click', function() {
+      this.classList.toggle('on');
+      handleToggleVisibility(this);
+      updatePreview();
+    });
+  }
+
+  function handleToggleVisibility(toggle) {
+    var id = toggle.id;
+    if (id === 'm08-tg-enabled') {
+      document.getElementById('m08-tg-fields').style.display = toggle.classList.contains('on') ? '' : 'none';
+    } else if (id === 'm08-wa-enabled') {
+      document.getElementById('m08-wa-fields').style.display = toggle.classList.contains('on') ? '' : 'none';
+    } else if (id === 'm08-dc-enabled') {
+      document.getElementById('m08-dc-fields').style.display = toggle.classList.contains('on') ? '' : 'none';
+    }
+  }
+
+  // ── Live Update on Input ──
+  var inputs = document.querySelectorAll('.m08-input, .m08-select');
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('input', updatePreview);
+    inputs[i].addEventListener('change', updatePreview);
+  }
+
+  // ── Build Config Object ──
+  function buildConfig() {
+    var c = {};
+
+    // Identity
+    var name = val('m08-name');
+    var emoji = val('m08-emoji');
+    var theme = val('m08-theme');
+    if (name || emoji || theme !== 'default') {
+      c.identity = {};
+      if (name) c.identity.name = name;
+      if (emoji) c.identity.emoji = emoji;
+      if (theme !== 'default') c.identity.theme = theme;
+    }
+
+    // Agent
+    c.agent = {};
+    var ws = val('m08-workspace');
+    if (ws && ws !== 'workspace') c.agent.workspace = ws;
+
+    c.agent.model = { primary: val('m08-model') || 'anthropic/claude-sonnet-4-6' };
+    var fb = val('m08-fallbacks');
+    if (fb) c.agent.model.fallbacks = fb.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    var ctx = numVal('m08-context');
+    if (ctx && ctx !== 200000) c.agent.model.params = { context1m: ctx };
+
+    var timeout = numVal('m08-timeout');
+    if (timeout && timeout !== 120) c.agent.timeout = timeout;
+
+    var thinking = val('m08-thinking');
+    if (thinking && thinking !== 'medium') c.agent.thinkingDefault = thinking;
+
+    var reasoning = val('m08-reasoning');
+    if (reasoning && reasoning !== 'off') c.agent.reasoningDefault = reasoning;
+
+    // Heartbeat
+    var hbEvery = val('m08-hb-every');
+    if (hbEvery) {
+      c.agent.heartbeat = { every: hbEvery };
+      var hbTarget = val('m08-hb-target');
+      if (hbTarget && hbTarget !== 'owner') c.agent.heartbeat.target = hbTarget;
+      var hbModel = val('m08-hb-model');
+      if (hbModel) c.agent.heartbeat.model = hbModel;
+      var hbStart = val('m08-hb-start');
+      var hbEnd = val('m08-hb-end');
+      if (hbStart && hbEnd) {
+        c.agent.heartbeat.activeHours = {
+          start: hbStart, end: hbEnd,
+          timezone: val('m08-hb-tz') || 'Europe/Berlin'
+        };
+      }
+    }
+
+    // Channels
+    c.channels = {};
+    if (isOn('m08-tg-enabled')) {
+      c.channels.telegram = { enabled: true };
+      var tgToken = val('m08-tg-token');
+      if (tgToken) c.channels.telegram.botToken = tgToken;
+    }
+    if (isOn('m08-wa-enabled')) {
+      c.channels.whatsapp = { enabled: true };
+      var waAllow = val('m08-wa-allow');
+      if (waAllow) c.channels.whatsapp.allowFrom = waAllow.split(',').map(function(s) { return s.trim(); });
+      var waGroup = val('m08-wa-group');
+      if (waGroup !== 'ignore') c.channels.whatsapp.groupPolicy = waGroup;
+    }
+    if (isOn('m08-dc-enabled')) {
+      c.channels.discord = { enabled: true };
+      var dcToken = val('m08-dc-token');
+      if (dcToken) c.channels.discord.token = dcToken;
+      var dcAllow = val('m08-dc-allow');
+      if (dcAllow) c.channels.discord.allowFrom = dcAllow.split(',').map(function(s) { return s.trim(); });
+    }
+
+    // Gateway
+    c.gateway = {};
+    c.gateway.auth = { mode: val('m08-auth-mode') || 'token' };
+    var authToken = val('m08-auth-token');
+    if (authToken) c.gateway.auth.token = authToken;
+    var bind = val('m08-bind');
+    if (bind && bind !== '100.0.0.0') c.gateway.bind = bind;
+    var port = numVal('m08-port');
+    if (port && port !== 18789) c.gateway.port = port;
+    var ts = val('m08-tailscale');
+    if (ts && ts !== 'serve') c.gateway.tailscale = { mode: ts };
+
+    // Security
+    c.security = {};
+    c.security.sandboxEnabled = isOn('m08-sandbox');
+    var dm = val('m08-dm-policy');
+    if (dm) c.security.dmPolicy = dm;
+    var gp = val('m08-group-policy');
+    if (gp !== 'ignore') c.security.groupPolicy = gp;
+    var trust = val('m08-trust');
+    if (trust !== 'strict') c.security.trust_model = trust;
+
+    // Subagents
+    if (isOn('m08-sub-allow')) {
+      c.subagents = { allowAgents: true };
+      var subModel = val('m08-sub-model');
+      if (subModel) c.subagents.model = subModel;
+      var subMax = numVal('m08-sub-max');
+      if (subMax && subMax !== 4) c.subagents.maxConcurrent = subMax;
+      var subTimeout = numVal('m08-sub-timeout');
+      if (subTimeout && subTimeout !== 900) c.subagents.runTimeoutSeconds = subTimeout;
+    }
+
+    // Logging
+    var logLevel = val('m08-log-level');
+    var logConsole = val('m08-log-console');
+    var logFile = isOn('m08-log-file');
+    var logRedact = isOn('m08-log-redact');
+    if (logLevel !== 'info' || logConsole !== 'info' || logFile || !logRedact) {
+      c.logging = {};
+      if (logLevel !== 'info') c.logging.level = logLevel;
+      if (logConsole !== 'info') c.logging.consoleLevel = logConsole;
+      if (logFile) c.logging.file = true;
+      if (!logRedact) c.logging.redactSensitive = false;
+    }
+
+    return c;
+  }
+
+  // ── Syntax-Highlighted JSON5 ──
+  function toJSON5(obj, indent) {
+    indent = indent || 0;
+    var pad = '  '.repeat(indent);
+    var pad1 = '  '.repeat(indent + 1);
+
+    if (obj === null || obj === undefined) return '<span class="m08-bool">null</span>';
+    if (typeof obj === 'boolean') return '<span class="m08-bool">' + obj + '</span>';
+    if (typeof obj === 'number') return '<span class="m08-num">' + obj + '</span>';
+    if (typeof obj === 'string') {
+      // Mask tokens/passwords
+      if (obj.length > 10 && (obj.match(/^[0-9]+:/) || obj.match(/^[A-Za-z0-9_-]{20,}/))) {
+        var masked = obj.substring(0, 6) + '...' + obj.substring(obj.length - 4);
+        return '<span class="m08-str">"' + escHtml(masked) + '"</span>';
+      }
+      return '<span class="m08-str">"' + escHtml(obj) + '"</span>';
+    }
+    if (Array.isArray(obj)) {
+      if (obj.length === 0) return '<span class="m08-bracket">[]</span>';
+      if (obj.length <= 3 && obj.every(function(v) { return typeof v === 'string' && v.length < 30; })) {
+        var items = obj.map(function(v) { return '<span class="m08-str">"' + escHtml(v) + '"</span>'; });
+        return '<span class="m08-bracket">[</span>' + items.join(', ') + '<span class="m08-bracket">]</span>';
+      }
+      var lines = obj.map(function(v) { return pad1 + toJSON5(v, indent + 1); });
+      return '<span class="m08-bracket">[</span>\n' + lines.join(',\n') + '\n' + pad + '<span class="m08-bracket">]</span>';
+    }
+    if (typeof obj === 'object') {
+      var keys = Object.keys(obj);
+      if (keys.length === 0) return '<span class="m08-bracket">{}</span>';
+      var entries = keys.map(function(k) {
+        var safeKey = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k) ? k : '"' + k + '"';
+        return pad1 + '<span class="m08-key">' + escHtml(safeKey) + '</span>: ' + toJSON5(obj[k], indent + 1);
+      });
+      return '<span class="m08-bracket">{</span>\n' + entries.join(',\n') + '\n' + pad + '<span class="m08-bracket">}</span>';
+    }
+    return String(obj);
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Validation ──
+  function validate(config) {
+    var issues = [];
+    // Must have at least one channel
+    var channels = config.channels || {};
+    var hasChannel = channels.telegram || channels.whatsapp || channels.discord;
+    if (!hasChannel) issues.push({ level: 'error', msg: 'Mindestens ein Channel muss aktiviert sein' });
+
+    // Token check
+    if (channels.telegram && channels.telegram.enabled && !channels.telegram.botToken) {
+      issues.push({ level: 'warning', msg: 'Telegram aktiviert, aber kein Bot-Token gesetzt' });
+    }
+
+    // Auth token
+    if (!config.gateway || !config.gateway.auth || !config.gateway.auth.token) {
+      issues.push({ level: 'warning', msg: 'Kein Auth-Token gesetzt — Gateway ist ungeschuetzt!' });
+    }
+
+    // Agent name
+    if (!config.identity || !config.identity.name) {
+      issues.push({ level: 'warning', msg: 'Kein Agent-Name gesetzt (identity.name)' });
+    }
+
+    return issues;
+  }
+
+  // ── Update Preview ──
+  function updatePreview() {
+    var config = buildConfig();
+    var previewEl = document.getElementById('m08-preview');
+    var validationEl = document.getElementById('m08-validation');
+
+    // Render JSON5 with syntax highlighting
+    var comment = '<span class="m08-comment">// openclaw.json — generiert mit dem Agentic Authorship Dashboard</span>\n';
+    comment += '<span class="m08-comment">// Basis: OpenClaw v2026.3.23</span>\n';
+    previewEl.innerHTML = comment + toJSON5(config);
+
+    // Validation
+    var issues = validate(config);
+    if (issues.length === 0) {
+      validationEl.className = 'm08-validation valid';
+      validationEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Config ist valide — bereit zum Kopieren';
+    } else {
+      var worst = issues.some(function(i) { return i.level === 'error'; }) ? 'error' : 'warning';
+      validationEl.className = 'm08-validation ' + worst;
+      validationEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ' + issues.map(function(i) { return i.msg; }).join(' · ');
+    }
+
+    // Store
+    try {
+      localStorage.setItem('config:output', JSON.stringify(config));
+      localStorage.setItem('shell:lastModule', 'm08');
+    } catch(e) {}
+  }
+
+  // ── Copy ──
+  document.getElementById('m08-copy-btn').addEventListener('click', function() {
+    var config = buildConfig();
+    var json = JSON.stringify(config, null, 2);
+    var comment = '// openclaw.json — generiert mit dem Agentic Authorship Dashboard\n// Basis: OpenClaw v2026.3.23\n';
+    var btn = this;
+    copyText(comment + json, btn);
+  });
+
+  // ── Download ──
+  document.getElementById('m08-download-btn').addEventListener('click', function() {
+    var config = buildConfig();
+    var json = JSON.stringify(config, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'openclaw.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── Helpers ──
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+  function numVal(id) {
+    var v = val(id);
+    return v ? parseInt(v, 10) : null;
+  }
+  function isOn(id) {
+    var el = document.getElementById(id);
+    return el ? el.classList.contains('on') : false;
+  }
+
+  function copyText(text, btn) {
+    try {
+      navigator.clipboard.writeText(text).then(function() {
+        btn.classList.add('copied');
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Kopiert!';
+        setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+      });
+    } catch(e) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(e2) {}
+      document.body.removeChild(ta);
+    }
+  }
+
+  // ── Init ──
+  updatePreview();
+  try { localStorage.setItem('shell:lastModule', 'm08'); } catch(e) {}
+
+})();
+</script>
