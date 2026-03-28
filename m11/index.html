@@ -1,41 +1,988 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLI Referenz — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M11</div>
-    <h1>CLI Referenz</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M11: CLI-Referenz — Agentic Authorship Dashboard -->
+<style>
+  /* ── M11 Scoped Styles ── */
+  .m11 { max-width: 100%; }
+
+  .m11-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(34,211,238,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m11-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m11-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--amber-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .m11-hero-icon svg { width: 20px; height: 20px; }
+
+  .m11-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m11-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m11-hero-desc strong { color: var(--text); }
+
+  /* Tabs */
+  .m11-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .m11-tab {
+    flex: 1;
+    padding: 0.85rem 0.5rem;
+    text-align: center;
+    background: var(--bg-card);
+    border: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-right: 1px solid rgba(245,158,11,0.1);
+  }
+
+  .m11-tab:last-child { border-right: none; }
+  .m11-tab:hover { background: var(--bg-card-hover); color: var(--text); }
+
+  .m11-tab.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    font-weight: 600;
+    box-shadow: inset 0 -3px 0 var(--amber);
+  }
+
+  .m11-tab-icon { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
+
+  .m11-panel { display: none; }
+  .m11-panel.active { display: block; }
+
+  /* Search */
+  .m11-search {
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    outline: none;
+    margin-bottom: 1.25rem;
+    transition: border-color 0.15s;
+  }
+
+  .m11-search:focus { border-color: var(--amber); }
+
+  .m11-search-wrap {
+    position: relative;
+  }
+
+  .m11-search-wrap svg {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+
+  /* Category Accordion */
+  .m11-category {
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+
+  .m11-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .m11-cat-header:hover { background: var(--bg-card-hover); }
+
+  .m11-cat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .m11-cat-icon svg { width: 16px; height: 16px; }
+
+  .m11-cat-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .m11-cat-count {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.05);
+    padding: 0.15rem 0.55rem;
+    border-radius: 10px;
+  }
+
+  .m11-cat-chevron {
+    color: var(--text-dim);
+    transition: transform 0.2s;
+  }
+
+  .m11-cat-chevron svg { width: 16px; height: 16px; }
+
+  .m11-category.open .m11-cat-chevron { transform: rotate(180deg); }
+
+  .m11-cat-body {
+    display: none;
+    padding: 0 1rem 0.85rem;
+  }
+
+  .m11-category.open .m11-cat-body { display: block; }
+
+  /* Command Items */
+  .m11-cmd {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .m11-cmd:last-child { border-bottom: none; }
+
+  .m11-cmd-name {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    color: var(--amber);
+    white-space: nowrap;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+
+  .m11-cmd-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* Slash Command Cards */
+  .m11-slash-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .m11-slash {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.15s;
+  }
+
+  .m11-slash:hover { border-color: var(--border-hover); }
+
+  .m11-slash-name {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cyan, #22d3ee);
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+
+  .m11-slash-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  .m11-slash-new {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: var(--green);
+    color: #000;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  /* Code Snippets */
+  .m11-snippet {
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+
+  .m11-snippet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .m11-snippet-header:hover { background: var(--bg-card-hover); }
+
+  .m11-snippet-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m11-snippet-lang {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.06);
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .m11-snippet-code {
+    display: none;
+    padding: 0.85rem;
+    background: #0d0d14;
+    border-top: 1px solid rgba(245,158,11,0.1);
+    position: relative;
+  }
+
+  .m11-snippet.open .m11-snippet-code { display: block; }
+
+  .m11-snippet-code pre {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: #d4d4d8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  .m11-copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(245,158,11,0.15);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--amber);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.55rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .m11-copy-btn:hover { background: rgba(245,158,11,0.3); }
+
+  /* Snippet Chapter Group */
+  .m11-chapter-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .m11-chapter-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(245,158,11,0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .m11-chapter-part {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.06);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  /* Troubleshooting */
+  .m11-fix {
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.65rem;
+  }
+
+  .m11-fix-problem {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--red);
+    margin-bottom: 0.4rem;
+  }
+
+  .m11-fix-solution {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .m11-fix-cmd {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    background: #0d0d14;
+    border: 1px solid rgba(245,158,11,0.1);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    color: #d4d4d8;
+    margin-top: 0.45rem;
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Stats bar */
+  .m11-stats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .m11-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+  }
+
+  .m11-stat-val {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .m11-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .m11-cmd { flex-direction: column; gap: 0.2rem; }
+    .m11-cmd-name { min-width: auto; }
+    .m11-slash { flex-direction: column; gap: 0.3rem; }
+    .m11-slash-name { min-width: auto; }
+    .m11-tab { font-size: 0.7rem; padding: 0.65rem 0.3rem; }
+  }
+</style>
+
+<div class="m11">
+  <!-- Hero -->
+  <div class="m11-hero">
+    <div class="m11-hero-header">
+      <div class="m11-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </div>
+      <h2>CLI-Referenz</h2>
+    </div>
+    <div class="m11-hero-desc">
+      Alle <strong>OpenClaw CLI-Befehle</strong>, <strong>Slash-Commands</strong> und <strong>Code-Snippets</strong> auf einen Blick.
+      Dazu die haeufigsten Probleme mit Loesungen. Basierend auf v2026.3.23.
+    </div>
   </div>
-</body>
-</html>
+
+  <!-- Stats -->
+  <div class="m11-stats">
+    <div class="m11-stat"><div class="m11-stat-val">50+</div><div class="m11-stat-label">CLI-Befehle</div></div>
+    <div class="m11-stat"><div class="m11-stat-val">20</div><div class="m11-stat-label">Slash-Commands</div></div>
+    <div class="m11-stat"><div class="m11-stat-val">34</div><div class="m11-stat-label">Code-Snippets</div></div>
+    <div class="m11-stat"><div class="m11-stat-val">10</div><div class="m11-stat-label">Troubleshooting</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="m11-tabs">
+    <button class="m11-tab active" data-tab="cli"><span class="m11-tab-icon">&gt;_</span>CLI</button>
+    <button class="m11-tab" data-tab="slash"><span class="m11-tab-icon">/</span>Slash</button>
+    <button class="m11-tab" data-tab="snippets"><span class="m11-tab-icon">{}</span>Snippets</button>
+    <button class="m11-tab" data-tab="trouble"><span class="m11-tab-icon">!</span>Fixes</button>
+  </div>
+
+  <!-- TAB 1: CLI-Befehle -->
+  <div class="m11-panel active" id="m11-cli">
+    <div class="m11-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="m11-search" placeholder="Befehl suchen..." id="m11-cli-search">
+    </div>
+
+    <!-- Gateway -->
+    <div class="m11-category open" data-cat="gateway">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(245,158,11,0.15);color:var(--amber)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <span class="m11-cat-name">Gateway</span>
+        <span class="m11-cat-count">6</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw status</span><span class="m11-cmd-desc">Zeigt Gateway-Status, aktives Modell, Laufzeit</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw start</span><span class="m11-cmd-desc">Gateway starten (Hintergrund)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw stop</span><span class="m11-cmd-desc">Gateway stoppen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw restart</span><span class="m11-cmd-desc">Gateway neu starten (Config neu laden)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw dashboard</span><span class="m11-cmd-desc">Web-Dashboard im Browser oeffnen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">openclaw tui</span><span class="m11-cmd-desc">Terminal-UI (interaktiver Chat im Terminal)</span></div>
+      </div>
+    </div>
+
+    <!-- Channels -->
+    <div class="m11-category" data-cat="channels">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(59,130,246,0.15);color:var(--blue)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <span class="m11-cat-name">Channels</span>
+        <span class="m11-cat-count">7</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">channels list</span><span class="m11-cmd-desc">Alle konfigurierten Kanaele anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels status --probe</span><span class="m11-cmd-desc">Kanaele aktiv pruefen (Verbindungstest)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels login</span><span class="m11-cmd-desc">Kanal-Authentifizierung (WhatsApp QR etc.)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels add</span><span class="m11-cmd-desc">Neuen Kanal hinzufuegen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels logs</span><span class="m11-cmd-desc">Kanal-spezifische Logs anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels remove --delete</span><span class="m11-cmd-desc">Kanal entfernen (mit Config loeschen)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">channels status</span><span class="m11-cmd-desc">Kanal-Status ohne aktiven Probe</span></div>
+      </div>
+    </div>
+
+    <!-- Agents -->
+    <div class="m11-category" data-cat="agents">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="m11-cat-name">Agents</span>
+        <span class="m11-cat-count">7</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">agents list</span><span class="m11-cmd-desc">Alle registrierten Agenten anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents list --bindings</span><span class="m11-cmd-desc">Agenten + Kanal-Zuordnungen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents add</span><span class="m11-cmd-desc">Neuen Agenten registrieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents delete</span><span class="m11-cmd-desc">Agent entfernen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents bindings</span><span class="m11-cmd-desc">Kanal-Zuordnungen verwalten</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents bind / unbind</span><span class="m11-cmd-desc">Agent an Kanal binden / loesen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">agents set-identity</span><span class="m11-cmd-desc">IDENTITY.md eines Agenten setzen</span></div>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="m11-category" data-cat="logs">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(34,197,94,0.15);color:var(--green)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <span class="m11-cat-name">Logs &amp; Diagnose</span>
+        <span class="m11-cat-count">7</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">logs --follow</span><span class="m11-cmd-desc">Live-Logs (wie tail -f)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">logs --json --limit N</span><span class="m11-cmd-desc">Letzte N Eintraege als JSON</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">status --all --deep</span><span class="m11-cmd-desc">Kompletter System-Check (alle Komponenten)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">status --usage</span><span class="m11-cmd-desc">Token-Verbrauch der aktiven Session</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">doctor</span><span class="m11-cmd-desc">Automatischer Gesundheits-Check</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">doctor --deep --yes</span><span class="m11-cmd-desc">Deep-Check mit Auto-Fix</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">health --json</span><span class="m11-cmd-desc">Health-Status als JSON (fuer Monitoring)</span></div>
+      </div>
+    </div>
+
+    <!-- Plugins/Skills -->
+    <div class="m11-category" data-cat="plugins">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(244,114,182,0.15);color:var(--pink)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="m11-cat-name">Plugins &amp; Skills</span>
+        <span class="m11-cat-count">12</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">plugins list</span><span class="m11-cmd-desc">Installierte Plugins anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">plugins info &lt;name&gt;</span><span class="m11-cmd-desc">Plugin-Details (Version, Abhaengigkeiten)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">plugins enable / disable</span><span class="m11-cmd-desc">Plugin aktivieren / deaktivieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">plugins install &lt;name&gt;</span><span class="m11-cmd-desc">Plugin installieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">doctor plugins</span><span class="m11-cmd-desc">Plugin-Gesundheits-Check</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">skills list</span><span class="m11-cmd-desc">Verfuegbare Skills anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">skills info &lt;name&gt;</span><span class="m11-cmd-desc">Skill-Details</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">skills check</span><span class="m11-cmd-desc">Skills auf Kompatibilitaet pruefen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">skills install / update</span><span class="m11-cmd-desc">Skill installieren / aktualisieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">clawhub search &lt;query&gt;</span><span class="m11-cmd-desc">ClawHub nach Skills durchsuchen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">clawhub install &lt;name&gt;</span><span class="m11-cmd-desc">Skill von ClawHub installieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">clawhub update --all</span><span class="m11-cmd-desc">Alle ClawHub-Skills aktualisieren</span></div>
+      </div>
+    </div>
+
+    <!-- Sessions/Update -->
+    <div class="m11-category" data-cat="sessions">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(34,211,238,0.15);color:var(--cyan)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <span class="m11-cat-name">Sessions &amp; Update</span>
+        <span class="m11-cat-count">9</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">sessions cleanup</span><span class="m11-cmd-desc">Alte Sessions aufraeumen (Speicher freigeben)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">memory search &lt;q&gt;</span><span class="m11-cmd-desc">Im Langzeitgedaechtnis suchen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">cron list</span><span class="m11-cmd-desc">Alle geplanten Aufgaben anzeigen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">cron add / rm</span><span class="m11-cmd-desc">Cron-Jobs erstellen / loeschen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">cron enable / disable</span><span class="m11-cmd-desc">Cron-Jobs aktivieren / deaktivieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">cron run &lt;id&gt;</span><span class="m11-cmd-desc">Cron-Job manuell ausfuehren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">update --dry-run</span><span class="m11-cmd-desc">Verfuegbare Updates anzeigen (ohne installieren)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">update --channel stable</span><span class="m11-cmd-desc">Auf Stable-Channel aktualisieren</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">update --channel beta|dev</span><span class="m11-cmd-desc">Auf Beta/Dev-Channel wechseln</span></div>
+      </div>
+    </div>
+
+    <!-- Backup -->
+    <div class="m11-category" data-cat="backup">
+      <div class="m11-cat-header">
+        <div class="m11-cat-icon" style="background:rgba(239,68,68,0.15);color:var(--red)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <span class="m11-cat-name">Backup</span>
+        <span class="m11-cat-count">4</span>
+        <span class="m11-cat-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      <div class="m11-cat-body">
+        <div class="m11-cmd"><span class="m11-cmd-name">backup create</span><span class="m11-cmd-desc">Komplettes Backup erstellen</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">backup --only-config</span><span class="m11-cmd-desc">Nur Config sichern (schnell)</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">backup --no-include-workspace</span><span class="m11-cmd-desc">Backup ohne Workspace-Dateien</span></div>
+        <div class="m11-cmd"><span class="m11-cmd-name">backup verify</span><span class="m11-cmd-desc">Backup-Integritaet pruefen</span></div>
+      </div>
+    </div>
+
+    <div class="m11-no-results" style="display:none;text-align:center;padding:2rem;color:var(--text-dim);font-size:0.9rem">Kein Befehl gefunden.</div>
+  </div>
+
+  <!-- TAB 2: Slash-Commands -->
+  <div class="m11-panel" id="m11-slash">
+    <div class="m11-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="m11-search" placeholder="Slash-Command suchen..." id="m11-slash-search">
+    </div>
+
+    <div class="m11-slash-grid">
+      <div class="m11-slash"><span class="m11-slash-name">/status</span><span class="m11-slash-desc">Model, Context, Queue, Runtime, Provider Usage</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/new [model]</span><span class="m11-slash-desc">Frische Session starten (Alias: /reset). Spart Kontext-Kosten!</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/compact [instr]</span><span class="m11-slash-desc">Kontext zusammenfassen, Tokens freigeben</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/stop</span><span class="m11-slash-desc">Aktuelle Verarbeitung abbrechen + Queue leeren</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/think [level]</span><span class="m11-slash-desc">Denk-Tiefe: off, minimal, low, medium, high, xhigh, adaptive</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/model [id]</span><span class="m11-slash-desc">Modell wechseln. Ohne Argument: Liste + aktuelles Modell</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/usage [mode]</span><span class="m11-slash-desc">Token-Verbrauch: off, tokens, full, cost</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/fast</span><span class="m11-slash-desc">Fast Mode Toggle (Anthropic/OpenAI) <span class="m11-slash-new">v2026.3.12</span></span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/tts [mode]</span><span class="m11-slash-desc">Text-to-Speech: on, off, always, inbound</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/send [mode]</span><span class="m11-slash-desc">Zustellung uebersteuern: on, off, inherit (Owner-only)</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/reasoning [mode]</span><span class="m11-slash-desc">Separates Reasoning: on, off, stream</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/elevated [mode]</span><span class="m11-slash-desc">Exec-Genehmigungslevel: on, off, ask, full</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/whoami</span><span class="m11-slash-desc">Absender-Identitaet anzeigen (Alias: /id)</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/context</span><span class="m11-slash-desc">Token-Verbrauch pro Datei (list, detail, json)</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/subagents</span><span class="m11-slash-desc">Sub-Agenten verwalten: spawn, list, kill, steer</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/export-session</span><span class="m11-slash-desc">Aktuelle Session als HTML exportieren</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/approve</span><span class="m11-slash-desc">Allow-once oder deny fuer Exec-Prompts</span></div>
+      <div class="m11-slash"><span class="m11-slash-name">/check-updates</span><span class="m11-slash-desc">Update-Zusammenfassung anzeigen</span></div>
+    </div>
+
+    <div class="m11-no-results" style="display:none;text-align:center;padding:2rem;color:var(--text-dim);font-size:0.9rem">Kein Slash-Command gefunden.</div>
+
+    <!-- Stop Phrases Info -->
+    <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:10px;">
+      <div style="font-size:0.82rem;font-weight:600;color:var(--blue);margin-bottom:0.3rem">Stop Phrases (NEU in v2026.3.23)</div>
+      <div style="font-size:0.78rem;color:var(--text-dim);line-height:1.5">Natuerlichsprachiger Abbruch in 10 Sprachen. Beispiele: "stop openclaw", "please stop", "STOP!", "do not do that", "Hoer auf".</div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Code-Snippets -->
+  <div class="m11-panel" id="m11-snippets">
+    <div class="m11-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="m11-search" placeholder="Snippet suchen..." id="m11-snippet-search">
+    </div>
+    <div id="m11-snippet-list"></div>
+    <div class="m11-no-results" style="display:none;text-align:center;padding:2rem;color:var(--text-dim);font-size:0.9rem">Kein Snippet gefunden.</div>
+  </div>
+
+  <!-- TAB 4: Troubleshooting -->
+  <div class="m11-panel" id="m11-trouble">
+    <div class="m11-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="m11-search" placeholder="Problem suchen..." id="m11-trouble-search">
+    </div>
+
+    <div id="m11-trouble-list">
+      <div class="m11-fix" data-q="port konflikt besetzt 18789 belegt">
+        <div class="m11-fix-problem">Port-Konflikt (18789 belegt)</div>
+        <div class="m11-fix-solution">Ein anderer Prozess belegt den Gateway-Port.</div>
+        <code class="m11-fix-cmd">lsof -i :18789
+# Prozess beenden:
+kill -9 &lt;PID&gt;</code>
+      </div>
+
+      <div class="m11-fix" data-q="context voll token limit speicher kontext">
+        <div class="m11-fix-problem">Context voll (Token-Limit erreicht)</div>
+        <div class="m11-fix-solution">Kontext zusammenfassen oder neue Session starten.</div>
+        <code class="m11-fix-cmd">/compact
+# Oder komplett neu:
+/new</code>
+      </div>
+
+      <div class="m11-fix" data-q="channel down kanal offline verbindung telegram">
+        <div class="m11-fix-problem">Channel down (Kanal offline)</div>
+        <div class="m11-fix-solution">Kanal-Status pruefen und neu verbinden.</div>
+        <code class="m11-fix-cmd">openclaw channels status --probe
+# Telegram neu verbinden:
+openclaw channels login telegram</code>
+      </div>
+
+      <div class="m11-fix" data-q="whatsapp drops qr scan verbindung abreisst">
+        <div class="m11-fix-problem">WhatsApp-Verbindung reisst ab</div>
+        <div class="m11-fix-solution">QR-Code neu scannen. WhatsApp Web muss auf dem Handy aktiv bleiben.</div>
+        <code class="m11-fix-cmd">openclaw channels login whatsapp
+# QR-Code im Terminal scannen</code>
+      </div>
+
+      <div class="m11-fix" data-q="config invalid ungueltig json syntax fehler">
+        <div class="m11-fix-problem">Config invalid (JSON-Syntaxfehler)</div>
+        <div class="m11-fix-solution">Config-Datei validieren. JSON5 erlaubt Kommentare + Trailing Commas.</div>
+        <code class="m11-fix-cmd">openclaw config validate</code>
+      </div>
+
+      <div class="m11-fix" data-q="auth pairing fails token password gateway authentifizierung">
+        <div class="m11-fix-problem">Auth/Pairing schlaegt fehl</div>
+        <div class="m11-fix-solution">Ab v2026.3.7+: Wenn sowohl Token als auch Passwort gesetzt sind, MUSS gateway.auth.mode explizit auf 'token' oder 'password' stehen.</div>
+        <code class="m11-fix-cmd">// In openclaw.json:
+"gateway": {
+  "auth": {
+    "mode": "token",  // EXPLIZIT setzen!
+    "token": "dein-token"
+  }
+}</code>
+      </div>
+
+      <div class="m11-fix" data-q="restart loop neustart schleife endlos crash">
+        <div class="m11-fix-problem">Restart-Loop (Gateway startet endlos neu)</div>
+        <div class="m11-fix-solution">Oft ein Config-Problem. Update auf mindestens v2026.2.22+.</div>
+        <code class="m11-fix-cmd">docker logs openclaw --tail 50
+openclaw config validate
+openclaw update --channel stable</code>
+      </div>
+
+      <div class="m11-fix" data-q="disk full speicher voll platz sessions cleanup">
+        <div class="m11-fix-problem">Disk full (Speicherplatz voll)</div>
+        <div class="m11-fix-solution">Alte Sessions und Docker-Artefakte aufraeumen.</div>
+        <code class="m11-fix-cmd">openclaw sessions cleanup
+docker system prune -f
+df -h</code>
+      </div>
+
+      <div class="m11-fix" data-q="container laeuft nicht docker stop crash start">
+        <div class="m11-fix-problem">Container laeuft nicht</div>
+        <div class="m11-fix-solution">Logs pruefen und Container neu starten.</div>
+        <code class="m11-fix-cmd">docker logs openclaw --tail 100
+docker restart openclaw
+# Oder komplett:
+docker compose down &amp;&amp; docker compose up -d</code>
+      </div>
+
+      <div class="m11-fix" data-q="tailscale vpn verbindung tunnel nicht erreichbar">
+        <div class="m11-fix-problem">Tailscale verbindet nicht</div>
+        <div class="m11-fix-solution">Tailscale-Daemon neu starten und Status pruefen.</div>
+        <code class="m11-fix-cmd">sudo tailscale status
+sudo systemctl restart tailscaled
+sudo tailscale up</code>
+      </div>
+    </div>
+
+    <div class="m11-no-results" style="display:none;text-align:center;padding:2rem;color:var(--text-dim);font-size:0.9rem">Kein Troubleshooting-Eintrag gefunden.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // HTML escaping helper
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Tab Switching ──
+  var tabs = document.querySelectorAll('.m11-tab');
+  var panels = document.querySelectorAll('.m11-panel');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('m11-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // URL param support for QR deep-links
+  var hash = window.location.hash;
+  if (hash.indexOf('tab=') > -1) {
+    var tabId = hash.split('tab=')[1].split('&')[0];
+    var targetTab = document.querySelector('.m11-tab[data-tab="' + tabId + '"]');
+    if (targetTab) targetTab.click();
+  }
+
+  // ── Category Accordion ──
+  document.querySelectorAll('.m11-cat-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+      header.parentElement.classList.toggle('open');
+    });
+  });
+
+  // ── Code Snippets (migrated from old dashboard) ──
+  var SNIPPETS = {
+    1: { title: "Kap 1 \u2014 Einfuehrung", part: "A", items: [
+      { title: "OpenClaw Version pruefen", lang: "bash", code: "openclaw --version" },
+      { title: "OpenClaw Hilfe", lang: "bash", code: "openclaw --help" }
+    ]},
+    2: { title: "Kap 2 \u2014 Installation", part: "A", items: [
+      { title: "Per SSH verbinden", lang: "bash", code: "ssh root@DEINE_SERVER_IP" },
+      { title: "System updaten", lang: "bash", code: "apt update && apt upgrade -y" },
+      { title: "Docker pruefen", lang: "bash", code: "docker --version\ndocker compose version" },
+      { title: "OpenClaw Container Status", lang: "bash", code: "docker ps | grep openclaw" },
+      { title: "OpenClaw Logs", lang: "bash", code: "docker logs openclaw --tail 50 -f" }
+    ]},
+    3: { title: "Kap 3 \u2014 Docker", part: "A", items: [
+      { title: "docker-compose.yml", lang: "yaml", code: "version: '3.8'\nservices:\n  openclaw:\n    image: node:22-alpine\n    container_name: openclaw\n    restart: unless-stopped\n    volumes:\n      - ./workspace:/root/.openclaw/workspace\n      - ./content:/app/content\n    environment:\n      - ANTHROPIC_API_KEY=dein-api-key\n    command: sh -c \"npm i -g openclaw@latest && openclaw gateway --port 18789\"\n    ports: [\"18789:18789\"]\n    security_opt: [no-new-privileges:true]" },
+      { title: "Container neustarten", lang: "bash", code: "cd /dein/projekt/pfad\ndocker compose down\ndocker compose up -d" },
+      { title: "Alle Container anzeigen", lang: "bash", code: "docker ps -a" },
+      { title: "Volumes auflisten", lang: "bash", code: "docker volume ls" }
+    ]},
+    4: { title: "Kap 4 \u2014 Agent-Konzepte", part: "A", items: [
+      { title: "Agent-Architektur Ueberblick", lang: "text", code: "OpenClaw Agent-Architektur:\n\n1 Agent = 1 SOUL.md (Persoenlichkeit + Regeln)\n        + 1 AGENTS.md (Bedienungsanleitung + Modi)\n\nDateien im Workspace:\n  ~/.openclaw/workspace/\n    SOUL.md          <- Wer ist der Agent?\n    AGENTS.md        <- Bedienungsanleitung + Modi\n    USER.md          <- Wer ist der Mensch?\n    IDENTITY.md      <- Rolle/Name/Ziele\n    MEMORY.md        <- Langzeitgedaechtnis\n    TOOLS.md         <- Werkzeug-Notizen\n    BOOT.md          <- Startup-Ritual\n    BOOTSTRAP.md     <- Erstlauf-Interview\n    HEARTBEAT.md     <- Periodische Laeufe\n    memory/          <- Tagesnotizen" },
+      { title: "SOUL.md Aufbau (Auszug)", lang: "markdown", code: "# SOUL.md - Dein Buchprojekt\n\n## Wer Du Bist\nDu leitest die Produktion eines deutschsprachigen Sachbuchs.\n\n## Stil-Regeln\n1. Du-Form. Immer.\n2. Erklaere jeden Code-Block.\n3. Keine Anglizismen ohne Erklaerung.\n4. Kurze Saetze. Max 20 Woerter.\n5. Aktive Sprache.\n6. Praxis vor Theorie." },
+      { title: "AGENTS.md Modi (Auszug)", lang: "markdown", code: "## Modi - Buchprojekt\n\n### WRITER\nTrigger: job_type = \"write_chapter\"\nErzeugt Rohtext aus Outline + Constraints\n\n### EDITOR\nTrigger: job_type = \"revise_chapter\"\nBereinigt Markdown, prueft Stil + Struktur\n\n### QA\nTrigger: job_type = \"qa_chapter\"\nPrueft Logik, Code-Syntax, Konsistenz\n\nPipeline: architect - writer - checker - editor - consistency - [Mensch]" }
+    ]},
+    5: { title: "Kap 5 \u2014 Multi-Channel", part: "A", items: [
+      { title: "Telegram Bot erstellen", lang: "text", code: "1. Telegram oeffnen\n2. @BotFather suchen\n3. /newbot senden\n4. Bot-Name eingeben\n5. Token KOPIEREN und sicher speichern!" },
+      { title: "Bot-Token in Config", lang: "json", code: "{\n  \"channels\": {\n    \"telegram\": {\n      \"botToken\": \"DEIN_BOT_TOKEN\",\n      \"allowFrom\": [\"DEINE_TELEGRAM_ID\"]\n    }\n  }\n}" },
+      { title: "Telegram-ID herausfinden", lang: "text", code: "1. @userinfobot in Telegram suchen\n2. /start senden\n3. Deine ID notieren" }
+    ]},
+    6: { title: "Kap 6 \u2014 Security", part: "A", items: [
+      { title: "Tailscale installieren (VPS)", lang: "bash", code: "ssh root@DEINE_SERVER_IP\ncurl -fsSL https://tailscale.com/install.sh | sh\nsudo tailscale up\n\n# Link im Terminal oeffnen und bestaetigen!\ntailscale ip -4  # => Deine Tailscale-IP" },
+      { title: "Tailscale Serve aktivieren", lang: "bash", code: "# HTTPS-Zugang zum Dashboard:\nsudo tailscale serve --bg http://localhost:18789" },
+      { title: "Verbindung testen", lang: "bash", code: "ping DEINE_TAILSCALE_IP" },
+      { title: "allowFrom setzen!", lang: "json", code: "{\n  \"channels\": {\n    \"telegram\": {\n      \"allowFrom\": [\"DEINE_TELEGRAM_ID\"]\n    }\n  }\n}" },
+      { title: "Port-Check: 18789 NICHT oeffentlich!", lang: "bash", code: "# Port NICHT in der Firewall oeffnen!\n# Zugriff NUR ueber Tailscale VPN\ncurl -m 5 http://DEINE_SERVER_IP:18789 || echo \"Gut! Port ist zu.\"" }
+    ]},
+    7: { title: "Kap 7 \u2014 Troubleshooting", part: "A", items: [
+      { title: "Container laeuft nicht?", lang: "bash", code: "docker logs openclaw --tail 100\ndocker restart openclaw\ndocker compose up -d" },
+      { title: "Tailscale verbindet nicht?", lang: "bash", code: "sudo tailscale status\nsudo systemctl restart tailscaled\nsudo tailscale up" },
+      { title: "API-Key testen", lang: "bash", code: "curl -s https://api.anthropic.com/v1/messages \\\n  -H \"x-api-key: DEIN_API_KEY\" \\\n  -H \"content-type: application/json\" \\\n  -H \"anthropic-version: 2023-06-01\" \\\n  -d '{\"model\":\"claude-sonnet-4-20250514\",\"max_tokens\":50,\"messages\":[{\"role\":\"user\",\"content\":\"Hi\"}]}'" },
+      { title: "Speicherplatz pruefen", lang: "bash", code: "df -h\ndocker system df" }
+    ]},
+    9: { title: "Kap 9 \u2014 Architektur", part: "B", items: [
+      { title: "Agent-Pipeline Ueberblick", lang: "text", code: "Telegram Trigger\n  => Content Architect (Outline)\n  => Technical Writer (Draft)\n  => Fact Checker (Verify)\n  => German Editor (Polish)\n  => Consistency Checker (Cross-Ref)\n  => Save to Git" }
+    ]},
+    10: { title: "Kap 10 \u2014 Multi-Agent Pipeline", part: "B", items: [
+      { title: "Pipeline starten", lang: "bash", code: "# Via Telegram oder CLI:\nopenclaw agent --message \"Starte Kapitel-Pipeline fuer Kapitel 3\"" },
+      { title: "Kapitel-Pipeline Workflow", lang: "json", code: "{\n  \"name\": \"Kapitel-Pipeline\",\n  \"nodes\": [\n    {\"name\": \"Telegram Trigger\"},\n    {\"name\": \"Architect\"},\n    {\"name\": \"Writer\"},\n    {\"name\": \"Checker\"},\n    {\"name\": \"Save\"},\n    {\"name\": \"Notify\"}\n  ]\n}" }
+    ]},
+    11: { title: "Kap 11 \u2014 Kosten", part: "B", items: [
+      { title: "API-Verbrauch pruefen", lang: "bash", code: "# Anthropic Console:\n# https://console.anthropic.com/usage" }
+    ]},
+    13: { title: "Kap 13 \u2014 Setup Guide", part: "C", items: [
+      { title: "Komplett-Setup in 10 Minuten", lang: "bash", code: "# 1. SSH zum Server\nssh root@DEINE_SERVER_IP\n\n# 2. Projekt-Ordner anlegen\nmkdir -p /docker/openclaw && cd /docker/openclaw\n\n# 3. docker-compose.yml erstellen\nnano docker-compose.yml\n\n# 4. Starten\ndocker compose up -d\n\n# 5. Tailscale\ncurl -fsSL https://tailscale.com/install.sh | sh\nsudo tailscale up\nsudo tailscale serve --bg http://localhost:18789\n\n# 6. Testen (HTTPS!)" }
+    ]},
+    15: { title: "Kap 15 \u2014 Marketing", part: "C", items: [
+      { title: "EPUB generieren", lang: "bash", code: "pandoc buch.md -o openclaw.epub \\\n  --toc \\\n  --epub-cover-image=cover.jpg \\\n  --metadata title=\"OpenClaw\"" },
+      { title: "PDF fuer KDP Print (6x9)", lang: "bash", code: "pandoc buch.md -o openclaw.pdf \\\n  --pdf-engine=xelatex \\\n  -V geometry:paperwidth=6in \\\n  -V geometry:paperheight=9in \\\n  -V geometry:margin=0.8in" }
+    ]}
+  };
+
+  // Render snippets
+  var snippetList = document.getElementById('m11-snippet-list');
+  var chapterKeys = Object.keys(SNIPPETS).sort(function(a,b) { return Number(a) - Number(b); });
+
+  chapterKeys.forEach(function(ch) {
+    var group = SNIPPETS[ch];
+    var groupDiv = document.createElement('div');
+    groupDiv.className = 'm11-chapter-group';
+    groupDiv.innerHTML = '<div class="m11-chapter-label">' + group.title + ' <span class="m11-chapter-part">Teil ' + group.part + '</span></div>';
+
+    group.items.forEach(function(item) {
+      var s = document.createElement('div');
+      s.className = 'm11-snippet';
+      s.dataset.q = (item.title + ' ' + item.lang + ' ' + item.code).toLowerCase();
+      s.innerHTML = '<div class="m11-snippet-header">' +
+        '<span class="m11-snippet-title">' + escHtml(item.title) + ' <span class="m11-snippet-lang">' + item.lang + '</span></span>' +
+        '<span class="m11-cat-chevron" style="color:var(--text-dim)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>' +
+        '</div>' +
+        '<div class="m11-snippet-code">' +
+        '<button class="m11-copy-btn">Kopieren</button>' +
+        '<pre>' + escHtml(item.code) + '</pre></div>';
+      groupDiv.appendChild(s);
+    });
+
+    snippetList.appendChild(groupDiv);
+  });
+
+  // Copy button handler
+  snippetList.addEventListener('click', function(e) {
+    var btn = e.target.closest('.m11-copy-btn');
+    if (btn) {
+      e.stopPropagation();
+      var pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.textContent).then(function() {
+        btn.textContent = 'Kopiert!';
+        setTimeout(function() { btn.textContent = 'Kopieren'; }, 1500);
+      });
+      return;
+    }
+    var header = e.target.closest('.m11-snippet-header');
+    if (header) header.parentElement.classList.toggle('open');
+  });
+
+  // ── Search ──
+  function setupSearch(inputId, panelId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+
+    input.addEventListener('input', function() {
+      var q = input.value.toLowerCase().trim();
+      var panel = document.getElementById(panelId);
+
+      // CLI tab: search within categories
+      if (panelId === 'm11-cli') {
+        var totalVisible = 0;
+        panel.querySelectorAll('.m11-category').forEach(function(cat) {
+          var cmds = cat.querySelectorAll('.m11-cmd');
+          var catVisible = 0;
+          cmds.forEach(function(cmd) {
+            var show = !q || cmd.textContent.toLowerCase().indexOf(q) > -1;
+            cmd.style.display = show ? '' : 'none';
+            if (show) catVisible++;
+          });
+          cat.style.display = (catVisible > 0 || !q) ? '' : 'none';
+          if (q && catVisible > 0) cat.classList.add('open');
+          totalVisible += catVisible;
+        });
+        var nr = panel.querySelector('.m11-no-results');
+        if (nr) nr.style.display = (totalVisible === 0 && q) ? 'block' : 'none';
+        return;
+      }
+
+      // Slash tab
+      if (panelId === 'm11-slash') {
+        var visible = 0;
+        panel.querySelectorAll('.m11-slash').forEach(function(item) {
+          var show = !q || item.textContent.toLowerCase().indexOf(q) > -1;
+          item.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        var nr2 = panel.querySelector('.m11-no-results');
+        if (nr2) nr2.style.display = (visible === 0 && q) ? 'block' : 'none';
+        return;
+      }
+
+      // Snippets tab
+      if (panelId === 'm11-snippets') {
+        var sVisible = 0;
+        panel.querySelectorAll('.m11-snippet').forEach(function(item) {
+          var text = (item.textContent + ' ' + (item.dataset.q || '')).toLowerCase();
+          var show = !q || text.indexOf(q) > -1;
+          item.style.display = show ? '' : 'none';
+          if (show) sVisible++;
+        });
+        panel.querySelectorAll('.m11-chapter-group').forEach(function(grp) {
+          var hasVisible = grp.querySelector('.m11-snippet:not([style*="display: none"])');
+          grp.style.display = hasVisible || !q ? '' : 'none';
+        });
+        var nr3 = panel.querySelector('.m11-no-results');
+        if (nr3) nr3.style.display = (sVisible === 0 && q) ? 'block' : 'none';
+        return;
+      }
+
+      // Trouble tab
+      if (panelId === 'm11-trouble') {
+        var tVisible = 0;
+        panel.querySelectorAll('.m11-fix').forEach(function(item) {
+          var text = (item.textContent + ' ' + (item.dataset.q || '')).toLowerCase();
+          var show = !q || text.indexOf(q) > -1;
+          item.style.display = show ? '' : 'none';
+          if (show) tVisible++;
+        });
+        var nr4 = panel.querySelector('.m11-no-results');
+        if (nr4) nr4.style.display = (tVisible === 0 && q) ? 'block' : 'none';
+      }
+    });
+  }
+
+  setupSearch('m11-cli-search', 'm11-cli');
+  setupSearch('m11-slash-search', 'm11-slash');
+  setupSearch('m11-snippet-search', 'm11-snippets');
+  setupSearch('m11-trouble-search', 'm11-trouble');
+})();
+</script>
