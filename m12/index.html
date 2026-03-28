@@ -1,41 +1,542 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Status Dashboard — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M12</div>
-    <h1>Status Dashboard</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M12: System Status — Agentic Authorship Dashboard -->
+<style>
+  .m12 { max-width: 100%; }
+
+  .m12-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(34,197,94,0.06) 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .m12-hero-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .m12-hero-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--amber-dim); display: flex; align-items: center; justify-content: center;
+    color: var(--amber); flex-shrink: 0;
+  }
+  .m12-hero-icon svg { width: 20px; height: 20px; }
+  .m12-hero h2 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+  .m12-hero-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+  .m12-hero-desc strong { color: var(--text); }
+
+  /* Mode Toggle */
+  .m12-mode-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0.85rem; margin-bottom: 1.25rem;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .m12-mode-label { font-size: 0.78rem; color: var(--text-dim); }
+  .m12-mode-label strong { color: var(--text); }
+  .m12-mode-toggle {
+    display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .m12-mode-btn {
+    padding: 0.35rem 0.75rem; background: transparent; border: none;
+    font-family: inherit; font-size: 0.72rem; font-weight: 500;
+    color: var(--text-dim); cursor: pointer; transition: all 0.15s;
+  }
+  .m12-mode-btn.active { background: var(--amber-dim); color: var(--amber); font-weight: 600; }
+  .m12-mode-btn:hover:not(.active) { background: rgba(255,255,255,0.03); }
+
+  /* Grid */
+  .m12-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+  }
+
+  .m12-widget {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .m12-widget.span2 { grid-column: span 2; }
+  .m12-widget.span3 { grid-column: span 3; }
+
+  .m12-widget-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0.85rem; background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+  .m12-widget-title {
+    font-size: 0.78rem; font-weight: 600; color: var(--text);
+    display: flex; align-items: center; gap: 0.35rem;
+  }
+  .m12-widget-title svg { width: 14px; height: 14px; color: var(--amber); }
+
+  .m12-widget-body { padding: 0.75rem 0.85rem; }
+
+  /* Status Dot */
+  .m12-dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.3rem;
+  }
+  .m12-dot.green { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+  .m12-dot.yellow { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+  .m12-dot.red { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+  .m12-dot.gray { background: #555; }
+
+  /* Big Stat */
+  .m12-stat { text-align: center; padding: 0.5rem 0; }
+  .m12-stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+  .m12-stat-value.green { color: #22c55e; }
+  .m12-stat-value.amber { color: var(--amber); }
+  .m12-stat-label { font-size: 0.68rem; color: var(--text-dim); margin-top: 0.1rem; }
+
+  /* Channel List */
+  .m12-channel {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .m12-channel:last-child { border-bottom: none; }
+  .m12-channel-name { font-size: 0.78rem; color: var(--text); display: flex; align-items: center; gap: 0.35rem; }
+  .m12-channel-status { font-size: 0.68rem; font-weight: 500; }
+  .m12-channel-status.online { color: #22c55e; }
+  .m12-channel-status.offline { color: #ef4444; }
+  .m12-channel-status.paused { color: #f59e0b; }
+
+  /* Heartbeat Log */
+  .m12-hb-entry {
+    display: flex; align-items: flex-start; gap: 0.5rem;
+    padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.75rem;
+  }
+  .m12-hb-entry:last-child { border-bottom: none; }
+  .m12-hb-time { color: var(--text-dim); min-width: 45px; font-variant-numeric: tabular-nums; }
+  .m12-hb-msg { color: var(--text); line-height: 1.4; }
+
+  /* Memory Index */
+  .m12-mem-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.75rem;
+  }
+  .m12-mem-row:last-child { border-bottom: none; }
+  .m12-mem-file { color: var(--amber); font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 0.7rem; }
+  .m12-mem-size { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+  /* Meter */
+  .m12-meter { margin-top: 0.5rem; }
+  .m12-meter-label { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .m12-meter-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .m12-meter-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+
+  /* Model Info */
+  .m12-model-info { display: flex; flex-direction: column; gap: 0.35rem; }
+  .m12-model-row { display: flex; justify-content: space-between; font-size: 0.75rem; }
+  .m12-model-key { color: var(--text-dim); }
+  .m12-model-val { color: var(--text); font-weight: 500; }
+  .m12-model-val.mono { font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 0.7rem; }
+
+  /* Live badge */
+  .m12-badge {
+    font-size: 0.58rem; font-weight: 600; padding: 0.12rem 0.4rem;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .m12-badge-demo { color: var(--amber); background: rgba(245,158,11,0.12); }
+  .m12-badge-live { color: #22c55e; background: rgba(34,197,94,0.12); animation: m12-pulse 2s infinite; }
+
+  @keyframes m12-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .m12-grid { grid-template-columns: 1fr; }
+    .m12-widget.span2, .m12-widget.span3 { grid-column: span 1; }
+  }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .m12-grid { grid-template-columns: repeat(2, 1fr); }
+    .m12-widget.span3 { grid-column: span 2; }
+  }
+</style>
+
+<div class="m12">
+
+  <div class="m12-hero">
+    <div class="m12-hero-header">
+      <div class="m12-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <h2>System Status</h2>
+    </div>
+    <p class="m12-hero-desc">
+      <strong>Live-&Uuml;bersicht</strong> deiner OpenClaw-Instanz. Gateway-Status, Channels, Memory, Modell, Kosten und Heartbeat &mdash; alles auf einen Blick.
+    </p>
   </div>
-</body>
-</html>
+
+  <!-- Mode Toggle -->
+  <div class="m12-mode-bar">
+    <span class="m12-mode-label"><strong>Modus:</strong> <span id="m12-mode-text">Demo-Daten</span></span>
+    <div class="m12-mode-toggle">
+      <button class="m12-mode-btn active" data-mode="demo">Demo</button>
+      <button class="m12-mode-btn" data-mode="live">Live</button>
+    </div>
+  </div>
+
+  <!-- Widget Grid -->
+  <div class="m12-grid">
+
+    <!-- Gateway Status -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/></svg>
+          Gateway
+        </span>
+        <span class="m12-badge m12-badge-demo" id="m12-live-badge">DEMO</span>
+      </div>
+      <div class="m12-widget-body">
+        <div class="m12-stat">
+          <div class="m12-stat-value green" id="m12-gw-status">Online</div>
+          <div class="m12-stat-label" id="m12-gw-url">100.99.167.112:18789</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uptime -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Uptime
+        </span>
+      </div>
+      <div class="m12-widget-body">
+        <div class="m12-stat">
+          <div class="m12-stat-value" id="m12-uptime">14d 7h</div>
+          <div class="m12-stat-label" id="m12-uptime-since">seit 14.03.2026, 05:12</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Sessions
+        </span>
+      </div>
+      <div class="m12-widget-body">
+        <div class="m12-stat">
+          <div class="m12-stat-value amber" id="m12-sessions">3</div>
+          <div class="m12-stat-label">aktive Sessions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Channels -->
+    <div class="m12-widget span2">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          Channels
+        </span>
+      </div>
+      <div class="m12-widget-body" id="m12-channels"></div>
+    </div>
+
+    <!-- Active Model -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Modell
+        </span>
+      </div>
+      <div class="m12-widget-body">
+        <div class="m12-model-info" id="m12-model"></div>
+      </div>
+    </div>
+
+    <!-- Costs -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Kosten (Monat)
+        </span>
+      </div>
+      <div class="m12-widget-body">
+        <div class="m12-stat">
+          <div class="m12-stat-value amber" id="m12-cost">8,40 &euro;</div>
+          <div class="m12-stat-label" id="m12-cost-sub">~0,34 EUR/Tag</div>
+        </div>
+        <div class="m12-meter">
+          <div class="m12-meter-label"><span>Verbraucht</span><span id="m12-cost-pct">42%</span></div>
+          <div class="m12-meter-track"><div class="m12-meter-fill" id="m12-cost-bar" style="width:42%;background:var(--amber)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Index -->
+    <div class="m12-widget">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Memory Index
+        </span>
+      </div>
+      <div class="m12-widget-body" id="m12-memory"></div>
+    </div>
+
+    <!-- Heartbeat Log -->
+    <div class="m12-widget span3">
+      <div class="m12-widget-header">
+        <span class="m12-widget-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          Letzte Heartbeats
+        </span>
+      </div>
+      <div class="m12-widget-body" id="m12-heartbeats"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Demo Data ──
+  var DEMO = {
+    gateway: { status: 'online', url: '100.99.167.112:18789', version: 'v2026.3.13' },
+    uptime: { days: 14, hours: 7, since: '14.03.2026, 05:12' },
+    sessions: 3,
+    channels: [
+      { name: 'Telegram', status: 'online', detail: '@CowanBot' },
+      { name: 'WhatsApp', status: 'online', detail: '+49 170 ...' },
+      { name: 'Discord', status: 'offline', detail: 'nicht konfiguriert' },
+      { name: 'Dashboard', status: 'online', detail: 'Sync aktiv' }
+    ],
+    model: {
+      primary: 'anthropic/claude-sonnet-4-6',
+      fallback: 'claude-haiku-4-5',
+      heartbeat: 'claude-haiku-4-5',
+      thinking: 'medium',
+      context: '200K'
+    },
+    cost: { month: 8.40, daily: 0.34, budget: 20, pct: 42 },
+    memory: [
+      { file: 'SOUL.md', size: '2.4 KB' },
+      { file: 'AGENTS.md', size: '3.1 KB' },
+      { file: 'USER.md', size: '0.8 KB' },
+      { file: 'IDENTITY.md', size: '0.6 KB' },
+      { file: 'MEMORY.md', size: '1.2 KB' },
+      { file: 'TOOLS.md', size: '0.9 KB' },
+      { file: 'HEARTBEAT.md', size: '0.5 KB' },
+      { file: 'memory/2026-03-28.md', size: '1.8 KB' },
+      { file: 'memory/2026-03-27.md', size: '2.1 KB' }
+    ],
+    heartbeats: [
+      { time: '14:00', msg: 'Keine ungelesenen Nachrichten. Offene Tasks: 2 (B42, B32). Tagesprotokoll aktualisiert.' },
+      { time: '13:00', msg: 'Thomas hat 3 Nachrichten gesendet. Dashboard-Sync OK. Naechster Termin: keiner heute.' },
+      { time: '12:00', msg: '1 neue Nachricht von Thomas: "M07 deployen". Task erstellt. Memory aktualisiert.' },
+      { time: '11:00', msg: 'Alle Channels aktiv. Memory-Index: 11.4 KB (9 Dateien). Kosten heute: 0,28 EUR.' },
+      { time: '10:00', msg: 'Guten Morgen! SOUL.md geladen. 2 offene Tasks aus gestern. WhatsApp reconnected.' }
+    ]
+  };
+
+  var currentMode = 'demo';
+
+  // ── Render Functions ──
+  function renderChannels(data) {
+    var el = document.getElementById('m12-channels');
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var ch = data[i];
+      var statusClass = ch.status === 'online' ? 'online' : ch.status === 'paused' ? 'paused' : 'offline';
+      var dotClass = ch.status === 'online' ? 'green' : ch.status === 'paused' ? 'yellow' : 'red';
+      html += '<div class="m12-channel">';
+      html += '<span class="m12-channel-name"><span class="m12-dot ' + dotClass + '"></span>' + ch.name + '</span>';
+      html += '<span class="m12-channel-status ' + statusClass + '">' + ch.detail + '</span>';
+      html += '</div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderModel(data) {
+    var el = document.getElementById('m12-model');
+    var rows = [
+      ['Primaer', data.primary, true],
+      ['Fallback', data.fallback, true],
+      ['Heartbeat', data.heartbeat, true],
+      ['Thinking', data.thinking, false],
+      ['Context', data.context, false]
+    ];
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var mono = rows[i][2] ? ' mono' : '';
+      html += '<div class="m12-model-row"><span class="m12-model-key">' + rows[i][0] + '</span><span class="m12-model-val' + mono + '">' + rows[i][1] + '</span></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderMemory(data) {
+    var el = document.getElementById('m12-memory');
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      html += '<div class="m12-mem-row"><span class="m12-mem-file">' + data[i].file + '</span><span class="m12-mem-size">' + data[i].size + '</span></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderHeartbeats(data) {
+    var el = document.getElementById('m12-heartbeats');
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      html += '<div class="m12-hb-entry"><span class="m12-hb-time">' + data[i].time + '</span><span class="m12-hb-msg">' + data[i].msg + '</span></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function renderAll(data) {
+    // Gateway
+    var gwStatus = document.getElementById('m12-gw-status');
+    var gwUrl = document.getElementById('m12-gw-url');
+    gwStatus.textContent = data.gateway.status === 'online' ? 'Online' : 'Offline';
+    gwStatus.className = 'm12-stat-value ' + (data.gateway.status === 'online' ? 'green' : '');
+    gwUrl.textContent = data.gateway.url + ' (' + data.gateway.version + ')';
+
+    // Uptime
+    document.getElementById('m12-uptime').textContent = data.uptime.days + 'd ' + data.uptime.hours + 'h';
+    document.getElementById('m12-uptime-since').textContent = 'seit ' + data.uptime.since;
+
+    // Sessions
+    document.getElementById('m12-sessions').textContent = data.sessions;
+
+    // Channels
+    renderChannels(data.channels);
+
+    // Model
+    renderModel(data.model);
+
+    // Costs
+    document.getElementById('m12-cost').innerHTML = data.cost.month.toFixed(2).replace('.', ',') + ' &euro;';
+    document.getElementById('m12-cost-sub').textContent = '~' + data.cost.daily.toFixed(2).replace('.', ',') + ' EUR/Tag · Budget: ' + data.cost.budget + ' EUR';
+    document.getElementById('m12-cost-pct').textContent = data.cost.pct + '%';
+    var bar = document.getElementById('m12-cost-bar');
+    bar.style.width = data.cost.pct + '%';
+    bar.style.background = data.cost.pct > 80 ? '#ef4444' : data.cost.pct > 60 ? 'var(--amber)' : '#22c55e';
+
+    // Memory
+    renderMemory(data.memory);
+
+    // Heartbeats
+    renderHeartbeats(data.heartbeats);
+
+    // Badge
+    var badge = document.getElementById('m12-live-badge');
+    if (currentMode === 'demo') {
+      badge.textContent = 'DEMO';
+      badge.className = 'm12-badge m12-badge-demo';
+    } else {
+      badge.textContent = 'LIVE';
+      badge.className = 'm12-badge m12-badge-live';
+    }
+    document.getElementById('m12-mode-text').textContent = currentMode === 'demo' ? 'Demo-Daten' : 'Live-Verbindung';
+  }
+
+  // ── Mode Toggle ──
+  var modeBtns = document.querySelectorAll('.m12-mode-btn');
+  for (var m = 0; m < modeBtns.length; m++) {
+    modeBtns[m].addEventListener('click', function() {
+      for (var i = 0; i < modeBtns.length; i++) modeBtns[i].classList.remove('active');
+      this.classList.add('active');
+      currentMode = this.getAttribute('data-mode');
+      if (currentMode === 'demo') {
+        renderAll(DEMO);
+      } else {
+        tryLiveConnect();
+      }
+    });
+  }
+
+  // ── Live Mode ──
+  function tryLiveConnect() {
+    var syncUrl = null;
+    var syncToken = null;
+    try {
+      syncUrl = localStorage.getItem('shell:syncUrl');
+      syncToken = localStorage.getItem('shell:syncToken');
+    } catch(e) {}
+
+    if (!syncUrl) {
+      // Show offline state
+      var offlineData = JSON.parse(JSON.stringify(DEMO));
+      offlineData.gateway.status = 'offline';
+      offlineData.gateway.url = 'Keine Sync-URL konfiguriert';
+      offlineData.gateway.version = '';
+      offlineData.channels = [
+        { name: 'Telegram', status: 'offline', detail: 'nicht verbunden' },
+        { name: 'WhatsApp', status: 'offline', detail: 'nicht verbunden' },
+        { name: 'Discord', status: 'offline', detail: 'nicht verbunden' },
+        { name: 'Dashboard', status: 'offline', detail: 'nicht verbunden' }
+      ];
+      offlineData.heartbeats = [{ time: '--:--', msg: 'Keine Live-Daten. Bitte Sync-URL und Token in der Shell konfigurieren (Einstellungen).' }];
+      renderAll(offlineData);
+      return;
+    }
+
+    // Attempt fetch
+    var url = syncUrl.replace(/\/$/, '') + '/api/status';
+    var headers = {};
+    if (syncToken) headers['Authorization'] = 'Bearer ' + syncToken;
+
+    fetch(url, { headers: headers, mode: 'cors' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        // Map API response to our format
+        var mapped = {
+          gateway: {
+            status: data.status || 'online',
+            url: syncUrl.replace('https://','').replace('http://',''),
+            version: data.version || 'unbekannt'
+          },
+          uptime: {
+            days: Math.floor((data.uptime || 0) / 86400),
+            hours: Math.floor(((data.uptime || 0) % 86400) / 3600),
+            since: data.startedAt || 'unbekannt'
+          },
+          sessions: data.activeSessions || 0,
+          channels: (data.channels || []).map(function(ch) {
+            return { name: ch.name || ch.type, status: ch.connected ? 'online' : 'offline', detail: ch.detail || '' };
+          }),
+          model: {
+            primary: data.model || 'unbekannt',
+            fallback: data.fallback || '-',
+            heartbeat: data.heartbeatModel || '-',
+            thinking: data.thinking || '-',
+            context: data.contextWindow || '-'
+          },
+          cost: {
+            month: data.costMonth || 0,
+            daily: data.costDaily || 0,
+            budget: data.costBudget || 20,
+            pct: data.costBudget ? Math.round((data.costMonth / data.costBudget) * 100) : 0
+          },
+          memory: (data.memoryIndex || []).map(function(f) {
+            return { file: f.name, size: f.size };
+          }),
+          heartbeats: (data.recentHeartbeats || []).map(function(h) {
+            return { time: h.time || '--:--', msg: h.summary || '' };
+          })
+        };
+        if (mapped.channels.length === 0) mapped.channels = [{ name: 'Kein Channel', status: 'offline', detail: '-' }];
+        if (mapped.heartbeats.length === 0) mapped.heartbeats = [{ time: '--:--', msg: 'Keine Heartbeat-Daten.' }];
+        if (mapped.memory.length === 0) mapped.memory = [{ file: '(leer)', size: '-' }];
+        renderAll(mapped);
+      })
+      .catch(function() {
+        var errData = JSON.parse(JSON.stringify(DEMO));
+        errData.gateway.status = 'offline';
+        errData.gateway.url = 'Verbindung fehlgeschlagen';
+        errData.gateway.version = '';
+        errData.heartbeats = [{ time: '--:--', msg: 'Verbindung zu ' + syncUrl + ' fehlgeschlagen. Pruefen: VPN aktiv? URL korrekt? Token gueltig?' }];
+        renderAll(errData);
+      });
+  }
+
+  // ── Init ──
+  renderAll(DEMO);
+  try { localStorage.setItem('shell:lastModule', 'm12'); } catch(e) {}
+
+})();
+</script>
