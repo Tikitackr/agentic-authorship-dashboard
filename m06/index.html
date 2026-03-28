@@ -1,41 +1,822 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wundertüte — Generatoren — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M06</div>
-    <h1>Wundertüte — Generatoren</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M06: Wundertüte — Generatoren — Agentic Authorship Dashboard -->
+<style>
+  /* ── M06 Scoped Styles ── */
+  .m06 { max-width: 100%; }
+
+  .m06-hero {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(244,114,182,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m06-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--amber-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .m06-hero-icon svg { width: 20px; height: 20px; }
+
+  .m06-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m06-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m06-hero-desc strong { color: var(--text); }
+
+  /* Tabs */
+  .m06-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .m06-tab {
+    flex: 1;
+    padding: 0.85rem 0.5rem;
+    text-align: center;
+    background: var(--bg-card);
+    border: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-right: 1px solid rgba(245,158,11,0.1);
+  }
+
+  .m06-tab:last-child { border-right: none; }
+
+  .m06-tab:hover { background: var(--bg-card-hover); color: var(--text); }
+
+  .m06-tab.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    font-weight: 600;
+    box-shadow: inset 0 -3px 0 var(--amber);
+  }
+
+  .m06-tab-icon { display: block; font-size: 1.1rem; margin-bottom: 0.2rem; }
+
+  /* Section */
+  .m06-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .m06-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m06-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
+
+  /* Form */
+  .m06-panel { display: none; }
+  .m06-panel.active { display: block; }
+
+  .m06-field {
+    margin-bottom: 1rem;
+  }
+
+  .m06-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .m06-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+  }
+
+  .m06-input, .m06-textarea, .m06-select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .m06-input:focus, .m06-textarea:focus, .m06-select:focus {
+    border-color: var(--amber);
+  }
+
+  .m06-textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .m06-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  .m06-select option { background: #12121a; color: #e0e0e0; }
+
+  /* Tone Picker */
+  .m06-tones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .m06-tone {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .m06-tone:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+
+  .m06-tone.selected {
+    border-color: var(--amber);
+    background: var(--amber-dim);
+  }
+
+  .m06-tone-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }
+
+  .m06-tone.selected .m06-tone-name { color: var(--amber); }
+
+  .m06-tone-desc {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  /* Generate Button */
+  .m06-generate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--amber), #d97706);
+    border: none;
+    border-radius: 10px;
+    color: #0a0a0f;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 1rem;
+  }
+
+  .m06-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+  .m06-generate svg { width: 18px; height: 18px; }
+
+  /* Output */
+  .m06-output-wrap {
+    position: relative;
+    display: none;
+  }
+
+  .m06-output-wrap.visible { display: block; }
+
+  .m06-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .m06-output-filename {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--amber);
+    letter-spacing: 0.5px;
+  }
+
+  .m06-copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m06-copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .m06-copy-btn.copied { border-color: var(--green); color: var(--green); }
+  .m06-copy-btn svg { width: 14px; height: 14px; }
+
+  .m06-output {
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  /* Agent Role Cards */
+  .m06-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .m06-role {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .m06-role:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+
+  .m06-role.selected {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.06);
+  }
+
+  .m06-role-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: transparent;
+    transition: all 0.15s;
+  }
+
+  .m06-role.selected .m06-role-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .m06-role-info { flex: 1; }
+
+  .m06-role-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .m06-role-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+  }
+
+  /* Info Box */
+  .m06-info-box {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .m06-info-box svg { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; margin-top: 0.1rem; }
+
+  .m06-info-text {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .m06-info-text strong { color: var(--text); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m06-tones { grid-template-columns: 1fr; }
+    .m06-hero { padding: 1.25rem; }
+    .m06-tabs { flex-wrap: wrap; }
+    .m06-tab { min-width: 50%; }
+  }
+</style>
+
+<div class="m06">
+
+  <!-- Hero -->
+  <div class="m06-hero">
+    <div class="m06-hero-header">
+      <div class="m06-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+      </div>
+      <h2>Wundert&uuml;te &mdash; Generatoren</h2>
+    </div>
+    <p class="m06-hero-desc">
+      Generiere deine <strong>SOUL.md</strong> (Agent-Pers&ouml;nlichkeit) und <strong>AGENTS.md</strong> (Team-Rollen) direkt im Browser. Ausf&uuml;llen, generieren, kopieren, in deinen Workspace einf&uuml;gen.
+    </p>
   </div>
-</body>
-</html>
+
+  <!-- Tabs -->
+  <div class="m06-tabs">
+    <button class="m06-tab active" data-tab="soul">
+      <span class="m06-tab-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
+      SOUL.md
+    </button>
+    <button class="m06-tab" data-tab="agents">
+      <span class="m06-tab-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+      AGENTS.md
+    </button>
+  </div>
+
+  <!-- SOUL.md Panel -->
+  <div class="m06-panel active" id="m06-panel-soul">
+
+    <div class="m06-info-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <div class="m06-info-text">
+        Die <strong>SOUL.md</strong> definiert die Pers&ouml;nlichkeit deines Agents. Sie bestimmt wie er denkt, schreibt und reagiert. OpenClaw l&auml;dt sie automatisch beim Start.
+      </div>
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Agent-Name</label>
+      <div class="m06-hint">Wie soll dein Agent heissen?</div>
+      <input class="m06-input" id="m06-soul-name" type="text" placeholder="z.B. Atlas, Luna, Spark..." value="">
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Aufgabe / Zweck</label>
+      <div class="m06-hint">Was ist die Hauptaufgabe des Agents?</div>
+      <input class="m06-input" id="m06-soul-purpose" type="text" placeholder="z.B. Sachb&uuml;cher schreiben, Kunden beraten, Code reviewen...">
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Zielgruppe</label>
+      <div class="m06-hint">Mit wem spricht dein Agent?</div>
+      <input class="m06-input" id="m06-soul-audience" type="text" placeholder="z.B. Einsteiger ohne Vorkenntnisse, Entwickler, Sch&uuml;ler...">
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Pers&ouml;nlichkeits-Stil</label>
+      <div class="m06-hint">W&auml;hle den Grundton deines Agents</div>
+      <div class="m06-tones" id="m06-tones">
+        <div class="m06-tone selected" data-tone="lesch">
+          <div class="m06-tone-name">Harald Lesch</div>
+          <div class="m06-tone-desc">Begeistert, bildreich, mit Tiefgang</div>
+        </div>
+        <div class="m06-tone" data-tone="sachlich">
+          <div class="m06-tone-name">Sachlich</div>
+          <div class="m06-tone-desc">Neutral, pr&auml;zise, faktenbasiert</div>
+        </div>
+        <div class="m06-tone" data-tone="coach">
+          <div class="m06-tone-name">Coach</div>
+          <div class="m06-tone-desc">Motivierend, Schritt f&uuml;r Schritt</div>
+        </div>
+        <div class="m06-tone" data-tone="kumpel">
+          <div class="m06-tone-name">Kumpel</div>
+          <div class="m06-tone-desc">Locker, nahbar, mit Humor</div>
+        </div>
+        <div class="m06-tone" data-tone="mentor">
+          <div class="m06-tone-name">Mentor</div>
+          <div class="m06-tone-desc">Weise, geduldig, Erfahrung</div>
+        </div>
+        <div class="m06-tone" data-tone="custom">
+          <div class="m06-tone-name">Eigener Stil</div>
+          <div class="m06-tone-desc">Freitext unten eingeben</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m06-field" id="m06-custom-tone-field" style="display:none;">
+      <label class="m06-label">Eigener Stil (Freitext)</label>
+      <textarea class="m06-textarea" id="m06-custom-tone" placeholder="Beschreibe den Ton deines Agents..."></textarea>
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">3-T&ouml;ne-Persona</label>
+      <div class="m06-hint">Drei Facetten, die deinen Agent ausmachen (kommagetrennt)</div>
+      <input class="m06-input" id="m06-soul-tones" type="text" placeholder="z.B. Erkl&auml;rer, Mahner, Praktiker">
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Tabus / Verbote</label>
+      <div class="m06-hint">Was soll der Agent NICHT tun?</div>
+      <textarea class="m06-textarea" id="m06-soul-taboos" placeholder="z.B. Keine Fachbegriffe ohne Erkl&auml;rung, niemals &uuml;berheblich..."></textarea>
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Sprache</label>
+      <select class="m06-select" id="m06-soul-lang">
+        <option value="de">Deutsch (Du-Form)</option>
+        <option value="de-sie">Deutsch (Sie-Form)</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <button class="m06-generate" id="m06-gen-soul">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+      SOUL.md generieren
+    </button>
+
+    <div class="m06-output-wrap" id="m06-output-soul">
+      <div class="m06-output-header">
+        <span class="m06-output-filename">SOUL.md</span>
+        <button class="m06-copy-btn" data-target="m06-soul-code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Kopieren
+        </button>
+      </div>
+      <div class="m06-output" id="m06-soul-code"></div>
+    </div>
+  </div>
+
+  <!-- AGENTS.md Panel -->
+  <div class="m06-panel" id="m06-panel-agents">
+
+    <div class="m06-info-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <div class="m06-info-text">
+        Die <strong>AGENTS.md</strong> definiert Sub-Agenten, die dein Haupt-Agent spawnen kann. Jede Rolle bekommt eigene Anweisungen und Einschr&auml;nkungen.
+      </div>
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Haupt-Agent Name</label>
+      <input class="m06-input" id="m06-agents-main" type="text" placeholder="Name des Haupt-Agents (z.B. Chefredakteur)">
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Sub-Agenten w&auml;hlen</label>
+      <div class="m06-hint">W&auml;hle die Rollen, die dein Team braucht</div>
+      <div class="m06-roles" id="m06-roles">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <div class="m06-field">
+      <label class="m06-label">Eigene Rolle hinzuf&uuml;gen (optional)</label>
+      <div class="m06-hint">Name und Beschreibung, kommagetrennt</div>
+      <input class="m06-input" id="m06-custom-role" type="text" placeholder="z.B. Faktenpr&uuml;fer, Pr&uuml;ft alle Zahlen und URLs">
+    </div>
+
+    <button class="m06-generate" id="m06-gen-agents">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      AGENTS.md generieren
+    </button>
+
+    <div class="m06-output-wrap" id="m06-output-agents">
+      <div class="m06-output-header">
+        <span class="m06-output-filename">AGENTS.md</span>
+        <button class="m06-copy-btn" data-target="m06-agents-code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Kopieren
+        </button>
+      </div>
+      <div class="m06-output" id="m06-agents-code"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Tab Switching ──
+  var tabs = document.querySelectorAll('.m06-tab');
+  var panels = document.querySelectorAll('.m06-panel');
+
+  for (var t = 0; t < tabs.length; t++) {
+    tabs[t].addEventListener('click', function() {
+      var target = this.getAttribute('data-tab');
+      for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+      for (var j = 0; j < panels.length; j++) { panels[j].classList.remove('active'); }
+      this.classList.add('active');
+      var panel = document.getElementById('m06-panel-' + target);
+      if (panel) panel.classList.add('active');
+    });
+  }
+
+  // ── URL param: ?tab=agents ──
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'agents') {
+      for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+      for (var j = 0; j < panels.length; j++) { panels[j].classList.remove('active'); }
+      tabs[1].classList.add('active');
+      document.getElementById('m06-panel-agents').classList.add('active');
+    }
+  } catch(e) {}
+
+  // ── Tone Selection ──
+  var selectedTone = 'lesch';
+  var toneContainer = document.getElementById('m06-tones');
+  var customField = document.getElementById('m06-custom-tone-field');
+
+  if (toneContainer) {
+    toneContainer.addEventListener('click', function(e) {
+      var tone = e.target.closest('.m06-tone');
+      if (!tone) return;
+      selectedTone = tone.getAttribute('data-tone');
+      var all = toneContainer.querySelectorAll('.m06-tone');
+      for (var i = 0; i < all.length; i++) { all[i].classList.remove('selected'); }
+      tone.classList.add('selected');
+      if (customField) customField.style.display = selectedTone === 'custom' ? 'block' : 'none';
+    });
+  }
+
+  // ── Tone Descriptions ──
+  var TONE_MAP = {
+    lesch: 'Begeistert und bildreich wie Harald Lesch. Erklaert komplexe Themen mit Analogien aus dem Alltag. Bringt Tiefgang, ohne trocken zu werden. Nutzt rhetorische Fragen um zum Nachdenken anzuregen.',
+    sachlich: 'Neutral und praezise. Fakten stehen im Vordergrund, keine Wertungen. Klare Struktur, kurze Saetze, technisch korrekt. Fachbegriffe werden eingefuehrt und erklaert.',
+    coach: 'Motivierend und strukturiert. Fuehrt Schritt fuer Schritt durch Aufgaben. Feiert kleine Erfolge, gibt konstruktives Feedback. "Du schaffst das" statt "Man sollte".',
+    kumpel: 'Locker und nahbar. Duzt, nutzt Umgangssprache, macht gelegentlich Witze. Erklaert ohne erhobenen Zeigefinger. Fehler sind normal und kein Drama.',
+    mentor: 'Weise und geduldig. Teilt Erfahrung statt Regeln. Stellt Fragen statt Antworten zu geben. Ermutigt zum eigenen Denken. Langjaehrige Expertise spuerbar.'
+  };
+
+  // ── SOUL.md Generator ──
+  document.getElementById('m06-gen-soul').addEventListener('click', function() {
+    var name = document.getElementById('m06-soul-name').value.trim() || 'MeinAgent';
+    var purpose = document.getElementById('m06-soul-purpose').value.trim() || 'Allround-Assistent';
+    var audience = document.getElementById('m06-soul-audience').value.trim() || 'Allgemeines Publikum';
+    var tones = document.getElementById('m06-soul-tones').value.trim() || 'Erklaerer, Praktiker, Motivator';
+    var taboos = document.getElementById('m06-soul-taboos').value.trim() || 'Keine Fachbegriffe ohne Erklaerung';
+    var lang = document.getElementById('m06-soul-lang').value;
+
+    var toneDesc = TONE_MAP[selectedTone] || '';
+    if (selectedTone === 'custom') {
+      toneDesc = document.getElementById('m06-custom-tone').value.trim() || 'Eigener Stil nach Wahl.';
+    }
+
+    var langLabel = lang === 'de' ? 'Deutsch, Du-Form' : lang === 'de-sie' ? 'Deutsch, Sie-Form' : 'English';
+    var tonesList = tones.split(',');
+    var tonesSection = '';
+    for (var i = 0; i < tonesList.length; i++) {
+      var t = tonesList[i].trim();
+      if (t) tonesSection += '- **' + t + '**\n';
+    }
+
+    var md = '# SOUL.md \u2014 ' + name + '\n\n';
+    md += '> Generiert mit dem Agentic Authorship Dashboard\n\n';
+    md += '---\n\n';
+    md += '## Wer bin ich?\n\n';
+    md += 'Ich bin **' + name + '**. ' + purpose + '.\n\n';
+    md += '## Meine Zielgruppe\n\n';
+    md += audience + '\n\n';
+    md += '## Mein Stil\n\n';
+    md += toneDesc + '\n\n';
+    md += '## Meine 3 Toene\n\n';
+    md += tonesSection + '\n';
+    md += 'Ich wechsle zwischen diesen Toenen je nach Kontext. Nie nur belehren, nie nur unterhalten.\n\n';
+    md += '## Sprache\n\n';
+    md += langLabel + '\n\n';
+    md += '## Tabus\n\n';
+
+    var tabooList = taboos.split('\n');
+    for (var j = 0; j < tabooList.length; j++) {
+      var tb = tabooList[j].trim();
+      if (tb) md += '- ' + tb + '\n';
+    }
+
+    md += '\n## Leitprinzip\n\n';
+    md += 'Ich bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
+
+    var outputEl = document.getElementById('m06-output-soul');
+    var codeEl = document.getElementById('m06-soul-code');
+    if (outputEl && codeEl) {
+      codeEl.textContent = md;
+      outputEl.classList.add('visible');
+    }
+
+    // Save to localStorage
+    try {
+      localStorage.setItem('wundertuete:lastGenerated', new Date().toISOString());
+      localStorage.setItem('wundertuete:lastSoul', md);
+    } catch(e) {}
+  });
+
+  // ── Agent Roles ──
+  var ROLES = [
+    { id: 'autor',     name: 'Autor',        desc: 'Schreibt Texte nach Outline und Stilregeln' },
+    { id: 'lektor',    name: 'Lektor',        desc: 'Prueft Grammatik, Stil und Konsistenz' },
+    { id: 'pruefer',   name: 'Pruefer / QA',  desc: 'Faktenpruefung, Wortzahl, Formatierung' },
+    { id: 'forscher',  name: 'Forscher',       desc: 'Recherchiert Themen und sammelt Quellen' },
+    { id: 'uebersetzer',name: 'Uebersetzer',   desc: 'Uebersetzt zwischen Sprachen' },
+    { id: 'designer',  name: 'Designer',       desc: 'Erstellt Diagramme und Visualisierungen' },
+    { id: 'coder',     name: 'Coder',          desc: 'Schreibt und reviewt Code-Beispiele' }
+  ];
+
+  var selectedRoles = { autor: true, lektor: true, pruefer: true };
+
+  function renderRoles() {
+    var rolesEl = document.getElementById('m06-roles');
+    if (!rolesEl) return;
+    var html = '';
+    for (var i = 0; i < ROLES.length; i++) {
+      var r = ROLES[i];
+      var sel = selectedRoles[r.id] ? ' selected' : '';
+      html += '<div class="m06-role' + sel + '" data-role="' + r.id + '">' +
+        '<div class="m06-role-check">' + (selectedRoles[r.id] ? '\u2713' : '') + '</div>' +
+        '<div class="m06-role-info">' +
+          '<div class="m06-role-name">' + r.name + '</div>' +
+          '<div class="m06-role-desc">' + r.desc + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+    rolesEl.innerHTML = html;
+
+    var items = rolesEl.querySelectorAll('.m06-role');
+    for (var j = 0; j < items.length; j++) {
+      items[j].addEventListener('click', function() {
+        var roleId = this.getAttribute('data-role');
+        selectedRoles[roleId] = !selectedRoles[roleId];
+        this.classList.toggle('selected');
+        var check = this.querySelector('.m06-role-check');
+        check.textContent = selectedRoles[roleId] ? '\u2713' : '';
+        if (selectedRoles[roleId]) {
+          check.style.background = 'var(--green)';
+          check.style.borderColor = 'var(--green)';
+          check.style.color = '#fff';
+        } else {
+          check.style.background = 'transparent';
+          check.style.borderColor = 'var(--border)';
+          check.style.color = 'transparent';
+        }
+      });
+    }
+  }
+
+  renderRoles();
+
+  // ── AGENTS.md Generator ──
+  document.getElementById('m06-gen-agents').addEventListener('click', function() {
+    var mainName = document.getElementById('m06-agents-main').value.trim() || 'Chefredakteur';
+    var customRole = document.getElementById('m06-custom-role').value.trim();
+
+    var activeRoles = [];
+    for (var i = 0; i < ROLES.length; i++) {
+      if (selectedRoles[ROLES[i].id]) activeRoles.push(ROLES[i]);
+    }
+
+    if (customRole) {
+      var parts = customRole.split(',');
+      activeRoles.push({ id: 'custom', name: parts[0].trim(), desc: (parts[1] || 'Eigene Rolle').trim() });
+    }
+
+    var md = '# AGENTS.md \u2014 Team-Konfiguration\n\n';
+    md += '> Generiert mit dem Agentic Authorship Dashboard\n';
+    md += '> Haupt-Agent: **' + mainName + '**\n\n';
+    md += '---\n\n';
+    md += '## allowAgents\n\n';
+    md += 'In `openclaw.json` eintragen:\n\n';
+    md += '```json\n';
+    md += '"subagents": {\n';
+    md += '  "allowAgents": [';
+    var names = [];
+    for (var j = 0; j < activeRoles.length; j++) {
+      names.push('"' + activeRoles[j].id + '"');
+    }
+    md += names.join(', ');
+    md += ']\n}\n```\n\n';
+    md += '---\n\n';
+
+    for (var k = 0; k < activeRoles.length; k++) {
+      var r = activeRoles[k];
+      md += '## Agent: ' + r.name + '\n\n';
+      md += '**ID:** `' + r.id + '`\n';
+      md += '**Rolle:** ' + r.desc + '\n\n';
+      md += '### Anweisungen\n\n';
+      md += '- Folge den Vorgaben des ' + mainName + 's\n';
+      md += '- Arbeite nur innerhalb deiner Rolle\n';
+      md += '- Melde Probleme oder Unsicherheiten zurueck\n';
+      md += '- Lies die SOUL.md fuer Stil und Tonalitaet\n\n';
+      md += '### Einschraenkungen\n\n';
+      md += '- Keine eigenstaendigen Aenderungen am Gesamtprojekt\n';
+      md += '- Keine Kommunikation mit anderen Agents (nur ueber ' + mainName + ')\n\n';
+      md += '---\n\n';
+    }
+
+    var outputEl = document.getElementById('m06-output-agents');
+    var codeEl = document.getElementById('m06-agents-code');
+    if (outputEl && codeEl) {
+      codeEl.textContent = md;
+      outputEl.classList.add('visible');
+    }
+
+    try {
+      localStorage.setItem('wundertuete:lastGenerated', new Date().toISOString());
+      localStorage.setItem('wundertuete:lastAgents', md);
+    } catch(e) {}
+  });
+
+  // ── Copy Buttons ──
+  var copyBtns = document.querySelectorAll('.m06-copy-btn');
+  for (var c = 0; c < copyBtns.length; c++) {
+    copyBtns[c].addEventListener('click', function(e) {
+      e.stopPropagation();
+      var targetId = this.getAttribute('data-target');
+      var targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+
+      var btn = this;
+      try {
+        navigator.clipboard.writeText(targetEl.textContent).then(function() {
+          btn.classList.add('copied');
+          btn.querySelector('svg').style.display = 'none';
+          var origText = btn.childNodes[btn.childNodes.length - 1];
+          var savedText = origText.textContent;
+          origText.textContent = ' Kopiert!';
+          setTimeout(function() {
+            btn.classList.remove('copied');
+            btn.querySelector('svg').style.display = '';
+            origText.textContent = savedText;
+          }, 2000);
+        });
+      } catch(err) {
+        // Fallback
+        var range = document.createRange();
+        range.selectNodeContents(targetEl);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+  }
+
+  // ── localStorage bookmark ──
+  try {
+    localStorage.setItem('shell:lastModule', 'm06');
+  } catch(e) {}
+
+})();
+</script>
