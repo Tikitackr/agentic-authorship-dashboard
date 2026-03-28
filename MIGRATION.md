@@ -292,7 +292,86 @@ Jeder QR-Code im Buch zeigt auf ein spezifisches Dashboard-Modul mit Kontext:
 
 ---
 
-## 8. Regeln waehrend der Migration
+## 8. Design-Regeln (PFLICHT bei jedem Modul)
+
+### Icons: Lucide Inline-SVGs — KEINE Emojis
+
+**ABSOLUTES VERBOT:** Keine Emoji-Zeichen (📚🔍🦞 etc.) im gesamten Dashboard verwenden.
+Stattdessen: **Lucide inline SVGs** im iOS-18-Stil mit farbigen Hintergrund-Pills.
+
+**So sieht ein Icon aus:**
+```html
+<div class="mXX-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 16v-4"/>
+    <path d="M12 8h.01"/>
+  </svg>
+</div>
+```
+
+**Icon-Mapping (verbindlich):**
+
+| Modul | Icon (Lucide) | Farbe |
+|-------|--------------|-------|
+| M01 | target | #f59e0b (Amber) |
+| M02 | check-circle | #22c55e (Gruen) |
+| M03 | zap | #f59e0b (Amber) |
+| M04 | book | #3b82f6 (Blau) |
+| M05 | package | #a855f7 (Lila) |
+| M06 | sparkles | #f59e0b (Amber) |
+| M07 | wand | #f59e0b (Amber) |
+| M08 | settings | #6b7280 (Grau) |
+| M09 | dollar-sign | #22c55e (Gruen) |
+| M10 | brain | #ec4899 (Pink) |
+| M11 | terminal | #22c55e (Gruen) |
+| M12 | bar-chart | #3b82f6 (Blau) |
+
+**Innerhalb von Modulen** (z.B. Kategorie-Icons, Template-Avatare, Tab-Icons):
+Gleiche Regel — immer Lucide SVGs, nie Emojis. Den passenden Lucide-Icon-Namen
+aus https://lucide.dev waehlen. SVG inline einbetten (kein CDN, kein Icon-Font).
+
+### Kein CDN, keine externen Abhaengigkeiten
+
+Thomas oeffnet das Dashboard lokal via `file:///`. Alles muss inline oder lokal sein:
+- **Kein** `<link>` oder `<script>` zu CDNs (kein Tailwind, kein Font Awesome, kein Google Fonts)
+- **Kein** `fetch()` zu externen APIs (ausser Cowan → Claude API mit User-eigenem Key)
+- Schriftart: System-Font-Stack (`-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`)
+
+### CSS-Variablen aus der Shell verwenden
+
+Module werden per `fetch()` + `innerHTML` in die Shell geladen. Dadurch erben sie
+automatisch die CSS-Variablen der Shell. **Immer Shell-Variablen verwenden:**
+
+```css
+color: var(--amber);          /* NICHT: color: #f59e0b; */
+background: var(--bg-card);   /* NICHT: background: #12121a; */
+border-color: var(--border);  /* NICHT: border-color: rgba(245,158,11,0.2); */
+```
+
+### Module sind HTML-Fragmente, KEINE vollstaendigen Seiten
+
+```html
+<!-- RICHTIG: Fragment -->
+<style>.mXX-wrapper { ... }</style>
+<div class="mXX-wrapper">...</div>
+<script>...</script>
+
+<!-- FALSCH: Vollstaendige Seite -->
+<!DOCTYPE html>
+<html><head>...</head><body>...</body></html>
+```
+
+### CSS-Scoping mit Modul-Prefix
+
+Alle CSS-Klassen mit `.mXX-` prefixen (z.B. `.m10-card`, `.m11-tab`).
+Verhindert Kollisionen wenn die Shell mehrere Module nacheinander laedt.
+
+---
+
+## 9. Regeln waehrend der Migration
 
 1. **Altes Dashboard NIEMALS aendern.** Es bleibt als Referenz und Fallback.
 2. **Altes GitHub-Repo NICHT loeschen.** Optional spaeter archivieren.
