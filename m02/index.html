@@ -1,41 +1,842 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Task-Tracking — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
-    }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M02</div>
-    <h1>Task-Tracking</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+<!-- M02: Task-Tracking — Agentic Authorship Dashboard -->
+<style>
+  /* ── M02 Scoped Styles ── */
+  .m02 { max-width: 100%; }
+
+  .m02-hero {
+    background: linear-gradient(135deg, rgba(34,197,94,0.12) 0%, rgba(34,211,238,0.08) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m02-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m02-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(34, 197, 94, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .m02-hero-icon svg { width: 20px; height: 20px; }
+
+  .m02-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m02-hero h2 .pct {
+    color: var(--green);
+    margin-left: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .m02-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  /* Progress Bar */
+  .m02-progress-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+    margin: 0.75rem 0 0.4rem;
+  }
+
+  .m02-progress-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--green), var(--cyan, #22d3ee));
+    transition: width 0.6s ease;
+  }
+
+  .m02-progress-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* Stats Row */
+  .m02-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m02-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m02-stat:hover, .m02-stat.active {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+  }
+
+  .m02-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .m02-stat-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.2rem;
+  }
+
+  /* Filter Tabs */
+  .m02-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .m02-filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .m02-filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .m02-filter-btn.active {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* Sprint Sections */
+  .m02-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .m02-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .m02-section-header:hover { opacity: 0.85; }
+
+  .m02-section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .m02-section-icon svg { width: 15px; height: 15px; }
+
+  .m02-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .m02-section-count {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .m02-section-chevron {
+    color: var(--text-dim);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .m02-section-chevron.collapsed { transform: rotate(-90deg); }
+
+  /* Task List */
+  .m02-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .m02-tasks.hidden { display: none; }
+
+  .m02-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.55rem 0.4rem;
+    border-bottom: 1px solid rgba(245,158,11,0.06);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  .m02-task:hover { background: rgba(255,255,255,0.02); }
+  .m02-task:last-child { border-bottom: none; }
+
+  .m02-task.task-done { opacity: 0.45; }
+
+  .m02-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--text-dim);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .m02-task:hover .m02-checkbox { border-color: var(--amber); }
+
+  .m02-task.task-done .m02-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .m02-checkbox svg { width: 12px; height: 12px; color: #fff; display: none; }
+  .m02-task.task-done .m02-checkbox svg { display: block; }
+
+  .m02-task-info { flex: 1; min-width: 0; }
+
+  .m02-task-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .m02-task.task-done .m02-task-title {
+    text-decoration: line-through;
+    color: var(--text-dim);
+  }
+
+  .m02-task-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+    line-height: 1.35;
+  }
+
+  /* Chapter Pipeline */
+  .m02-pipeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .m02-chapter-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .m02-chapter-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+
+  .m02-chapter-id {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--amber);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .m02-chapter-pct {
+    font-size: 0.6rem;
+    font-weight: 600;
+  }
+
+  .m02-chapter-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 0.35rem;
+  }
+
+  .m02-steps {
+    display: flex;
+    gap: 3px;
+  }
+
+  .m02-step {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .m02-step.step-done { background: var(--green); }
+  .m02-step:hover { transform: scaleY(1.8); }
+
+  .m02-step-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a28;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.6rem;
+    color: var(--text);
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .m02-step:hover .m02-step-tooltip { display: block; }
+
+  /* Reset All Button */
+  .m02-reset {
+    background: none;
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.72rem;
+    color: var(--red);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    margin-top: 1rem;
+  }
+
+  .m02-reset:hover { background: rgba(239,68,68,0.1); border-color: var(--red); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m02-stats { grid-template-columns: repeat(2, 1fr); }
+    .m02-pipeline { grid-template-columns: repeat(2, 1fr); }
+    .m02-hero { padding: 1.25rem; }
+    .m02-filters { gap: 0.35rem; }
+    .m02-filter-btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
+  }
+</style>
+
+<div class="m02">
+
+  <!-- Hero -->
+  <div class="m02-hero">
+    <div class="m02-hero-header">
+      <div class="m02-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <h2>Task-Tracking <span class="pct" id="m02-total-pct">0%</span></h2>
+    </div>
+    <p class="m02-hero-desc">
+      Alle Aufgaben auf einen Blick: Server-Setup, Agent-Konfiguration, Pipeline und Publishing. Klick zum Abhaken.
+    </p>
+    <div class="m02-progress-wrap">
+      <div class="m02-progress-bar" id="m02-progress" style="width: 0%"></div>
+    </div>
+    <p class="m02-progress-label" id="m02-progress-label">0 von 0 Aufgaben erledigt</p>
   </div>
-</body>
-</html>
+
+  <!-- Stats (clickable = filter) -->
+  <div class="m02-stats" id="m02-stats">
+    <div class="m02-stat active" data-filter="all">
+      <div class="m02-stat-value" id="m02-count-all">0</div>
+      <div class="m02-stat-label">Gesamt</div>
+    </div>
+    <div class="m02-stat" data-filter="open">
+      <div class="m02-stat-value" id="m02-count-open">0</div>
+      <div class="m02-stat-label">Offen</div>
+    </div>
+    <div class="m02-stat" data-filter="done">
+      <div class="m02-stat-value" id="m02-count-done">0</div>
+      <div class="m02-stat-label">Erledigt</div>
+    </div>
+    <div class="m02-stat" data-filter="sprint">
+      <div class="m02-stat-value" id="m02-count-sprints">4</div>
+      <div class="m02-stat-label">Sprints</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="m02-filters" id="m02-filter-bar">
+    <button class="m02-filter-btn active" data-filter="all">Alle</button>
+    <button class="m02-filter-btn" data-filter="open">Offen</button>
+    <button class="m02-filter-btn" data-filter="done">Erledigt</button>
+    <button class="m02-filter-btn" data-filter="sprint1">Sprint 1</button>
+    <button class="m02-filter-btn" data-filter="sprint2">Sprint 2</button>
+    <button class="m02-filter-btn" data-filter="sprint3">Sprint 3</button>
+    <button class="m02-filter-btn" data-filter="sprint4">Sprint 4</button>
+    <button class="m02-filter-btn" data-filter="buch">Buch</button>
+  </div>
+
+  <!-- Sprint + Buch Sections (filled by JS) -->
+  <div id="m02-sections"></div>
+
+  <!-- Reset -->
+  <div style="text-align: right;">
+    <button class="m02-reset" id="m02-reset-btn">Fortschritt zuruecksetzen</button>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── SVGs ──
+  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var chevronSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+  // ── Task-Daten ──
+  var SPRINTS = [
+    {
+      id: 'sprint1',
+      title: 'Sprint 1: Server-Setup',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>',
+      color: 'var(--blue)',
+      colorBg: 'rgba(59,130,246,0.15)',
+      tasks: [
+        { id: 's1-kvm', title: 'VPS-Panel oeffnen', desc: 'hPanel \u2192 VPS \u2192 Server' },
+        { id: 's1-docker', title: 'Docker Manager installieren', desc: 'Sidebar \u2192 Docker Manager \u2192 Install' },
+        { id: 's1-openclaw', title: 'OpenClaw im Catalog finden', desc: 'Catalog \u2192 OpenClaw suchen' },
+        { id: 's1-openclaw-deploy', title: 'Deploy-Formular ausfuellen', desc: 'ANTHROPIC_API_KEY + GATEWAY_TOKEN' },
+        { id: 's1-openclaw-start', title: 'Deploy starten', desc: 'Warten bis Status: Running' },
+        { id: 's1-tailscale-account', title: 'Tailscale Account erstellen', desc: 'login.tailscale.com \u2192 Sign Up (gratis)' },
+        { id: 's1-tailscale-mac', title: 'Tailscale auf Mac/PC', desc: 'App Store \u2192 Tailscale installieren' },
+        { id: 's1-tailscale-vps', title: 'Tailscale auf VPS', desc: 'SSH \u2192 tailscale up' },
+        { id: 's1-tailscale-verify', title: 'Verbindung testen', desc: 'ping TAILSCALE-IP' },
+        { id: 's1-tailscale-serve', title: 'Tailscale Serve aktivieren', desc: 'HTTPS-Zugang per tailscale serve' },
+        { id: 's1-firewall', title: 'Port NICHT oeffentlich oeffnen!', desc: 'Kein Port offen \u2013 nur Tailscale' },
+        { id: 's1-dashboard-test', title: 'Dashboard testen', desc: 'https://TAILSCALE-HOSTNAME aufrufen' },
+        { id: 's1-sync-setup', title: 'Sync-Server installieren', desc: 'setup-sync.sh ausfuehren' },
+        { id: 's1-sync-test', title: 'Health-Check testen', desc: 'curl SYNC_URL/health' },
+        { id: 's1-sync-dashboard', title: 'Sync-Daten eintragen', desc: 'SYNC_URL + SYNC_TOKEN in Meine Daten' },
+        { id: 's1-sync-companion', title: 'Companion testen', desc: 'QR-Code scannen \u2192 Kachel gruen' },
+        { id: 's1-api', title: 'Claude API testen', desc: 'Dashboard \u2192 Test-Nachricht senden' },
+        { id: 's1-telegram', title: 'Telegram Bot einrichten', desc: 'BotFather \u2192 /newbot \u2192 Token speichern' },
+        { id: 's1-security', title: 'allowFrom setzen!', desc: 'Nur DEINE Telegram-ID eintragen' },
+        { id: 's1-test', title: 'System-Test durchfuehren', desc: 'Telegram \u2192 OpenClaw \u2192 Claude antwortet' },
+        { id: 's1-backup', title: 'Backup erstellen', desc: 'VPS Snapshots aktivieren' },
+        { id: 's1-docs', title: 'Dokumentieren', desc: 'Tokens, IPs, Passwoerter sicher ablegen' }
+      ]
+    },
+    {
+      id: 'sprint2',
+      title: 'Sprint 2: Agent-Setup',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>',
+      color: 'var(--purple)',
+      colorBg: 'rgba(167,139,250,0.15)',
+      tasks: [
+        { id: 's2-architect', title: 'Outline-Regeln definieren', desc: 'AGENTS.md \u2192 Outlines + Struktur' },
+        { id: 's2-writer', title: 'WRITER-Modus konfigurieren', desc: 'Rohtext-Erzeugung einrichten' },
+        { id: 's2-meta', title: 'Case-Study-Variante', desc: 'WRITER fuer Teil B konfigurieren' },
+        { id: 's2-tutorial', title: 'Tutorial-Variante', desc: 'WRITER fuer Teil C konfigurieren' },
+        { id: 's2-checker', title: 'QA-Modus einrichten', desc: 'Code + Claims automatisch pruefen' },
+        { id: 's2-consistency', title: 'Konsistenz-Regeln festlegen', desc: 'Terminologie + Querverweise' },
+        { id: 's2-editor', title: 'EDITOR-Modus konfigurieren', desc: 'Markdown, Stil, Du-Form' },
+        { id: 's2-coordinator', title: 'Pipeline-Orchestrierung', desc: 'Chefredakteur orchestriert Modi-Wechsel' },
+        { id: 's2-test-chapter', title: 'PoC: Kapitel 1 testen', desc: 'Komplette Pipeline einmal durchlaufen' },
+        { id: 's2-review', title: 'Texterin-Review einholen', desc: 'Human Check \u2013 Qualitaet pruefen' }
+      ]
+    },
+    {
+      id: 'sprint3',
+      title: 'Sprint 3: Multi-Agent & Pipeline',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+      color: 'var(--amber)',
+      colorBg: 'var(--amber-dim)',
+      tasks: [
+        { id: 's3-agent-roles', title: 'Agenten-Rollen definieren', desc: 'Chefredakteur, Writer, Editor, QA' },
+        { id: 's3-bindings', title: 'Bindings konfigurieren', desc: 'Telegram \u2192 Chefredakteur, Routing' },
+        { id: 's3-workspaces', title: 'Workspaces einrichten', desc: '4 isolierte Workspaces: Chef, Writer, Editor, QA' },
+        { id: 's3-pipeline-pilot', title: 'Pipeline-Pilot testen', desc: 'Ein Kapitel durch komplette Pipeline' },
+        { id: 's3-batch', title: 'Batch-Produktion starten', desc: 'Alle 15 Kapitel durchlaufen lassen' },
+        { id: 's3-monitoring', title: 'Monitoring einrichten', desc: 'Pipeline-Status, Fehler-Tracking, Logs' },
+        { id: 's3-x-api', title: 'X/Twitter API einrichten', desc: 'Developer Account + API Keys' },
+        { id: 's3-x-workflow', title: 'X Post-Workflow bauen', desc: 'Chefredakteur generiert, postet via API' },
+        { id: 's3-x-approval', title: 'Telegram Approval-Flow', desc: 'Vorschau \u2192 Ja/Nein \u2192 Genehmigung' },
+        { id: 's3-x-ondemand', title: 'On-Demand Tweets', desc: 'Per Telegram-Befehl Tweet senden' }
+      ]
+    },
+    {
+      id: 'sprint4',
+      title: 'Sprint 4: Publishing',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
+      color: 'var(--pink)',
+      colorBg: 'rgba(244,114,182,0.15)',
+      tasks: [
+        { id: 's4-texterin', title: 'Texterin ueberarbeitet', desc: 'Stil + Flow professionell pruefen' },
+        { id: 's4-format-epub', title: 'EPUB generieren', desc: 'Pandoc \u2192 EPUB' },
+        { id: 's4-format-pdf', title: 'PDF generieren', desc: '6\u00d79 fuer KDP Print' },
+        { id: 's4-cover', title: 'Cover-Design erstellen', desc: '2560\u00d71600px' },
+        { id: 's4-metadata', title: 'KDP Metadata eintragen', desc: 'Keywords + Kategorien' },
+        { id: 's4-preview', title: 'Kindle Previewer checken', desc: 'Finale QA im Previewer' },
+        { id: 's4-upload', title: 'KDP Upload + Veroeffentlichen', desc: 'EUR 39,95 \u2192 Live' }
+      ]
+    }
+  ];
+
+  var CHAPTERS = [
+    { num: 1, title: 'Was ist OpenClaw?' },
+    { num: 2, title: 'Installation & Setup' },
+    { num: 3, title: 'Docker' },
+    { num: 4, title: 'Agent-Konzepte' },
+    { num: 5, title: 'Multi-Channel' },
+    { num: 6, title: 'Security' },
+    { num: 7, title: 'FAQ & Troubleshooting' },
+    { num: 8, title: 'Die Vision' },
+    { num: 9, title: 'Architektur' },
+    { num: 10, title: 'Multi-Agent Pipeline' },
+    { num: 11, title: 'Kosten & Learnings' },
+    { num: 12, title: 'Idee zum fertigen Buch' },
+    { num: 13, title: 'Dein Setup' },
+    { num: 14, title: '30-Tage-Plan' },
+    { num: 15, title: 'Marketing & Verkauf' }
+  ];
+
+  var STEPS = ['Outline', 'Entwurf', 'QA-Check', 'Review', 'Final'];
+
+  // ── State ──
+  var state = loadState();
+  var currentFilter = 'all';
+
+  function loadState() {
+    try {
+      var saved = localStorage.getItem('tasks:items');
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return {};
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('tasks:items', JSON.stringify(state));
+      // Update shell status bar
+      updateShellStatus();
+    } catch(e) {}
+  }
+
+  function updateShellStatus() {
+    try {
+      var counts = getCounts();
+      var el = document.getElementById('taskCount');
+      if (el) el.textContent = counts.open + ' offen';
+    } catch(e) {}
+  }
+
+  function isTaskDone(id) { return state[id] === true; }
+
+  function toggleTask(id) {
+    state[id] = !isTaskDone(id);
+    saveState();
+    render();
+  }
+
+  // ── Counts ──
+  function getAllTaskIds() {
+    var ids = [];
+    for (var i = 0; i < SPRINTS.length; i++) {
+      for (var j = 0; j < SPRINTS[i].tasks.length; j++) {
+        ids.push(SPRINTS[i].tasks[j].id);
+      }
+    }
+    for (var c = 0; c < CHAPTERS.length; c++) {
+      for (var s = 0; s < STEPS.length; s++) {
+        ids.push('kap' + CHAPTERS[c].num + '-' + s);
+      }
+    }
+    return ids;
+  }
+
+  function getCounts() {
+    var all = getAllTaskIds();
+    var done = 0;
+    for (var i = 0; i < all.length; i++) {
+      if (isTaskDone(all[i])) done++;
+    }
+    return { total: all.length, done: done, open: all.length - done };
+  }
+
+  // ── Collapse State ──
+  var collapsed = {};
+
+  function toggleCollapse(sectionId) {
+    collapsed[sectionId] = !collapsed[sectionId];
+    render();
+  }
+
+  // ── Filter Logic ──
+  function matchesFilter(taskId, sprintId) {
+    if (currentFilter === 'all') return true;
+    if (currentFilter === 'open') return !isTaskDone(taskId);
+    if (currentFilter === 'done') return isTaskDone(taskId);
+    return sprintId === currentFilter;
+  }
+
+  // ── Render ──
+  function render() {
+    var counts = getCounts();
+    var pct = counts.total > 0 ? Math.round(counts.done / counts.total * 100) : 0;
+
+    // Hero
+    document.getElementById('m02-total-pct').textContent = pct + '%';
+    document.getElementById('m02-progress').style.width = pct + '%';
+    document.getElementById('m02-progress-label').textContent = counts.done + ' von ' + counts.total + ' Aufgaben erledigt';
+
+    // Stats
+    document.getElementById('m02-count-all').textContent = counts.total;
+    document.getElementById('m02-count-open').textContent = counts.open;
+    document.getElementById('m02-count-done').textContent = counts.done;
+
+    // Active stat
+    var statCards = document.querySelectorAll('.m02-stat');
+    for (var s = 0; s < statCards.length; s++) {
+      statCards[s].classList.toggle('active', statCards[s].getAttribute('data-filter') === currentFilter ||
+        (currentFilter !== 'all' && currentFilter !== 'open' && currentFilter !== 'done' && statCards[s].getAttribute('data-filter') === 'sprint'));
+    }
+
+    // Active filter
+    var filterBtns = document.querySelectorAll('.m02-filter-btn');
+    for (var f = 0; f < filterBtns.length; f++) {
+      filterBtns[f].classList.toggle('active', filterBtns[f].getAttribute('data-filter') === currentFilter);
+    }
+
+    // Sections
+    var container = document.getElementById('m02-sections');
+    var html = '';
+
+    // Sprint sections
+    for (var i = 0; i < SPRINTS.length; i++) {
+      var sp = SPRINTS[i];
+
+      // Filter: wenn Sprint-Filter aktiv und nicht dieser Sprint, uebergehen
+      if (currentFilter.indexOf('sprint') === 0 && currentFilter !== sp.id && currentFilter !== 'all') continue;
+      if (currentFilter === 'buch') continue; // Buch-Filter: Sprints ausblenden
+
+      // Zaehle sichtbare Tasks in diesem Sprint
+      var visibleTasks = [];
+      var sprintDone = 0;
+      for (var j = 0; j < sp.tasks.length; j++) {
+        var t = sp.tasks[j];
+        if (matchesFilter(t.id, sp.id)) visibleTasks.push(t);
+        if (isTaskDone(t.id)) sprintDone++;
+      }
+
+      if (visibleTasks.length === 0 && (currentFilter === 'open' || currentFilter === 'done')) continue;
+
+      var isCollapsed = collapsed[sp.id];
+      var countBg = sprintDone === sp.tasks.length ? 'rgba(34,197,94,0.15)' : sp.colorBg;
+      var countColor = sprintDone === sp.tasks.length ? 'var(--green)' : sp.color;
+
+      html += '<div class="m02-section">';
+      html += '<div class="m02-section-header" data-section="' + sp.id + '">';
+      html += '<div class="m02-section-icon" style="background:' + sp.colorBg + ';color:' + sp.color + '">' + sp.icon + '</div>';
+      html += '<span class="m02-section-title">' + sp.title + '</span>';
+      html += '<span class="m02-section-count" style="background:' + countBg + ';color:' + countColor + '">' + sprintDone + '/' + sp.tasks.length + '</span>';
+      html += '<span class="m02-section-chevron' + (isCollapsed ? ' collapsed' : '') + '">' + chevronSvg + '</span>';
+      html += '</div>';
+
+      html += '<div class="m02-tasks' + (isCollapsed ? ' hidden' : '') + '">';
+      for (var k = 0; k < visibleTasks.length; k++) {
+        var task = visibleTasks[k];
+        var done = isTaskDone(task.id);
+        html += '<div class="m02-task' + (done ? ' task-done' : '') + '" data-task="' + task.id + '">';
+        html += '<div class="m02-checkbox">' + checkSvg + '</div>';
+        html += '<div class="m02-task-info">';
+        html += '<div class="m02-task-title">' + task.title + '</div>';
+        html += '<div class="m02-task-desc">' + task.desc + '</div>';
+        html += '</div></div>';
+      }
+      html += '</div></div>';
+    }
+
+    // Buch-Pipeline
+    if (currentFilter === 'all' || currentFilter === 'buch' || currentFilter === 'open' || currentFilter === 'done') {
+      var buchVisible = false;
+
+      // Pruefen ob mind. 1 Kapitel sichtbar
+      if (currentFilter === 'all' || currentFilter === 'buch') {
+        buchVisible = true;
+      } else {
+        for (var ci = 0; ci < CHAPTERS.length && !buchVisible; ci++) {
+          for (var si = 0; si < STEPS.length; si++) {
+            var tid = 'kap' + CHAPTERS[ci].num + '-' + si;
+            if (matchesFilter(tid, 'buch')) { buchVisible = true; break; }
+          }
+        }
+      }
+
+      if (buchVisible) {
+        var buchDone = 0;
+        var buchTotal = CHAPTERS.length * STEPS.length;
+        for (var cx = 0; cx < CHAPTERS.length; cx++) {
+          for (var sx = 0; sx < STEPS.length; sx++) {
+            if (isTaskDone('kap' + CHAPTERS[cx].num + '-' + sx)) buchDone++;
+          }
+        }
+
+        var buchCollapsed = collapsed['buch'];
+        var buchCountBg = buchDone === buchTotal ? 'rgba(34,197,94,0.15)' : 'rgba(167,139,250,0.15)';
+        var buchCountColor = buchDone === buchTotal ? 'var(--green)' : 'var(--purple)';
+
+        html += '<div class="m02-section">';
+        html += '<div class="m02-section-header" data-section="buch">';
+        html += '<div class="m02-section-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>';
+        html += '<span class="m02-section-title">Buch-Pipeline (15 Kapitel)</span>';
+        html += '<span class="m02-section-count" style="background:' + buchCountBg + ';color:' + buchCountColor + '">' + buchDone + '/' + buchTotal + '</span>';
+        html += '<span class="m02-section-chevron' + (buchCollapsed ? ' collapsed' : '') + '">' + chevronSvg + '</span>';
+        html += '</div>';
+
+        html += '<div class="m02-pipeline' + (buchCollapsed ? ' hidden' : '') + '">';
+        for (var ch = 0; ch < CHAPTERS.length; ch++) {
+          var chap = CHAPTERS[ch];
+          var chapDone = 0;
+          for (var st = 0; st < STEPS.length; st++) {
+            if (isTaskDone('kap' + chap.num + '-' + st)) chapDone++;
+          }
+          var chapPct = Math.round(chapDone / STEPS.length * 100);
+          var chapPctColor = chapPct === 100 ? 'color:var(--green)' : chapPct > 0 ? 'color:var(--amber)' : 'color:var(--text-dim)';
+
+          html += '<div class="m02-chapter-card">';
+          html += '<div class="m02-chapter-top">';
+          html += '<span class="m02-chapter-id">Kap ' + chap.num + '</span>';
+          html += '<span class="m02-chapter-pct" style="' + chapPctColor + '">' + chapPct + '%</span>';
+          html += '</div>';
+          html += '<div class="m02-chapter-title">' + chap.title + '</div>';
+          html += '<div class="m02-steps">';
+          for (var step = 0; step < STEPS.length; step++) {
+            var stepId = 'kap' + chap.num + '-' + step;
+            var stepDone = isTaskDone(stepId);
+            html += '<div class="m02-step' + (stepDone ? ' step-done' : '') + '" data-task="' + stepId + '">';
+            html += '<div class="m02-step-tooltip">' + STEPS[step] + (stepDone ? ' \u2713' : '') + '</div>';
+            html += '</div>';
+          }
+          html += '</div></div>';
+        }
+        html += '</div></div>';
+      }
+    }
+
+    container.innerHTML = html;
+
+    // ── Event Handlers ──
+    // Task clicks
+    var taskEls = container.querySelectorAll('.m02-task');
+    for (var te = 0; te < taskEls.length; te++) {
+      taskEls[te].addEventListener('click', function() {
+        toggleTask(this.getAttribute('data-task'));
+      });
+    }
+
+    // Step clicks (Buch-Pipeline)
+    var stepEls = container.querySelectorAll('.m02-step');
+    for (var se = 0; se < stepEls.length; se++) {
+      stepEls[se].addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleTask(this.getAttribute('data-task'));
+      });
+    }
+
+    // Collapse handlers
+    var headers = container.querySelectorAll('.m02-section-header');
+    for (var h = 0; h < headers.length; h++) {
+      headers[h].addEventListener('click', function() {
+        toggleCollapse(this.getAttribute('data-section'));
+      });
+    }
+  }
+
+  // ── Filter Event Handlers ──
+  var filterBtns = document.querySelectorAll('.m02-filter-btn');
+  for (var fb = 0; fb < filterBtns.length; fb++) {
+    filterBtns[fb].addEventListener('click', function() {
+      currentFilter = this.getAttribute('data-filter');
+      try { localStorage.setItem('tasks:filter', currentFilter); } catch(e) {}
+      render();
+    });
+  }
+
+  // Stat card clicks (shortcut filters)
+  var statCards = document.querySelectorAll('.m02-stat');
+  for (var sc = 0; sc < statCards.length; sc++) {
+    statCards[sc].addEventListener('click', function() {
+      var filter = this.getAttribute('data-filter');
+      if (filter === 'sprint') {
+        currentFilter = 'sprint1';
+      } else {
+        currentFilter = filter;
+      }
+      try { localStorage.setItem('tasks:filter', currentFilter); } catch(e) {}
+      render();
+    });
+  }
+
+  // Reset button
+  document.getElementById('m02-reset-btn').addEventListener('click', function() {
+    if (confirm('Wirklich den gesamten Fortschritt zuruecksetzen?')) {
+      state = {};
+      saveState();
+      render();
+    }
+  });
+
+  // ── Load saved filter ──
+  try {
+    var savedFilter = localStorage.getItem('tasks:filter');
+    if (savedFilter) currentFilter = savedFilter;
+  } catch(e) {}
+
+  // ── Bookmark ──
+  try { localStorage.setItem('shell:lastModule', 'm02'); } catch(e) {}
+
+  // ── Initial Render ──
+  render();
+
+})();
+</script>
