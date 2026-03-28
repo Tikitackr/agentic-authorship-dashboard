@@ -19,6 +19,9 @@
       --green: #22c55e;
       --blue: #3b82f6;
       --red: #ef4444;
+      --purple: #a78bfa;
+      --cyan: #22d3ee;
+      --pink: #f472b6;
       --radius: 14px;
     }
 
@@ -55,7 +58,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      color: var(--amber);
     }
 
     .header h1 {
@@ -138,6 +141,7 @@
       gap: 0.5rem;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .card:hover {
@@ -174,6 +178,27 @@
     .badge-dev { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
     .badge-new { background: var(--amber-dim); color: var(--amber); }
 
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-icon svg { width: 20px; height: 20px; }
+
+    /* Icon-Farben passend zum alten Dashboard */
+    .icon-blue    { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
+    .icon-green   { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+    .icon-cyan    { background: rgba(34, 211, 238, 0.15); color: var(--cyan); }
+    .icon-amber   { background: var(--amber-dim); color: var(--amber); }
+    .icon-pink    { background: rgba(244, 114, 182, 0.15); color: var(--pink); }
+    .icon-purple  { background: rgba(167, 139, 250, 0.15); color: var(--purple); }
+    .icon-red     { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+
     .card h2 {
       font-size: 1.05rem;
       font-weight: 600;
@@ -187,10 +212,37 @@
       flex-grow: 1;
     }
 
-    .card-icon {
-      font-size: 1.6rem;
-      margin-bottom: 0.2rem;
+    /* ── Content Container ── */
+    #content-area {
+      display: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2rem;
+      min-height: 50vh;
     }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--amber);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .back-btn:hover {
+      background: var(--amber-dim);
+      border-color: var(--border-hover);
+    }
+
+    .back-btn svg { width: 14px; height: 14px; }
 
     /* ── Footer ── */
     .footer {
@@ -215,6 +267,7 @@
       .section-label { padding: 0 1rem; }
       .grid { padding: 0 1rem; grid-template-columns: 1fr; }
       .header-top { flex-wrap: wrap; }
+      #content-area { padding: 0 1rem 2rem; }
     }
   </style>
 </head>
@@ -223,10 +276,12 @@
   <!-- Header -->
   <header class="header">
     <div class="header-top">
-      <div class="logo">&#129438;</div>
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+      </div>
       <h1>Agentic <span>Authorship</span> Dashboard</h1>
     </div>
-    <p class="subtitle">Dein Cockpit für OpenClaw — nicht der Autopilot</p>
+    <p class="subtitle">Dein Cockpit f&uuml;r OpenClaw &mdash; nicht der Autopilot</p>
   </header>
 
   <!-- Status Bar -->
@@ -236,7 +291,7 @@
       Buch: <strong id="bookProgress">100%</strong>
     </div>
     <div class="status-pill">
-      Tasks: <strong id="taskCount">–</strong>
+      Tasks: <strong id="taskCount">&ndash;</strong>
     </div>
     <div class="status-pill">
       Module: <strong>4 / 12</strong> aktiv
@@ -252,7 +307,9 @@
         <span class="card-id">M01</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#128202;</div>
+      <div class="card-icon icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+      </div>
       <h2>Projekt&uuml;bersicht</h2>
       <p>Status auf einen Blick: Kapitel-Fortschritt, offene Punkte, n&auml;chste Schritte.</p>
     </a>
@@ -262,7 +319,9 @@
         <span class="card-id">M02</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#9745;</div>
+      <div class="card-icon icon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
       <h2>Task-Tracking</h2>
       <p>Alle Aufgaben verwalten. Filtern, priorisieren, abhaken. Kompakt und schnell.</p>
     </a>
@@ -272,7 +331,9 @@
         <span class="card-id">M03</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#127939;</div>
+      <div class="card-icon icon-amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      </div>
       <h2>Sprint-Verwaltung</h2>
       <p>Sprints planen, Ziele setzen, Velocity tracken. Was steht diese Woche an?</p>
     </a>
@@ -282,7 +343,9 @@
         <span class="card-id">M04</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#128196;</div>
+      <div class="card-icon icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      </div>
       <h2>Content-Pipeline</h2>
       <p>Kapitel durch die Pipeline verfolgen: Entwurf &rarr; Review &rarr; Fix &rarr; Final.</p>
     </a>
@@ -292,7 +355,9 @@
         <span class="card-id">M05</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#128218;</div>
+      <div class="card-icon icon-pink">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
       <h2>Publishing / KDP</h2>
       <p>Amazon KDP Workflow: ISBN, Preis, Metadaten, Upload-Status, Checkliste.</p>
     </a>
@@ -302,7 +367,9 @@
         <span class="card-id">M06</span>
         <span class="card-badge badge-dev">In Entwicklung</span>
       </div>
-      <div class="card-icon">&#127873;</div>
+      <div class="card-icon icon-amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg>
+      </div>
       <h2>Wundert&uuml;te</h2>
       <p>SOUL.md &amp; AGENTS.md generieren. 3-T&ouml;ne-Persona, Harald-Lesch-Stil als Vorlage.</p>
     </a>
@@ -318,7 +385,9 @@
         <span class="card-id">M07</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#10024;</div>
+      <div class="card-icon icon-cyan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path><path d="m14 7 3 3"></path><path d="M5 6v4"></path><path d="M19 14v4"></path><path d="M10 2v2"></path><path d="M7 8H3"></path><path d="M21 16h-4"></path><path d="M11 3H9"></path></svg>
+      </div>
       <h2>Workspace Wizard</h2>
       <p>8 Fragen beantworten &rarr; alle Workspace-Dateien generiert. SOUL.md, AGENTS.md, TOOLS.md &mdash; fertig.</p>
     </a>
@@ -328,7 +397,9 @@
         <span class="card-id">M08</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#9881;</div>
+      <div class="card-icon icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </div>
       <h2>Config Builder</h2>
       <p>openclaw.json visuell zusammenklicken. Modelle, Channels, Heartbeat &mdash; kein JSON tippen.</p>
     </a>
@@ -338,7 +409,9 @@
         <span class="card-id">M09</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#128176;</div>
+      <div class="card-icon icon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
       <h2>Cost Calculator</h2>
       <p>Provider vergleichen, monatliche Kosten kalkulieren, Spar-Tipps entdecken.</p>
     </a>
@@ -348,7 +421,9 @@
         <span class="card-id">M10</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#129504;</div>
+      <div class="card-icon icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>
+      </div>
       <h2>SOUL.md Gallery</h2>
       <p>36+ Templates durchst&ouml;bern und anpassen. Vom Lobster-Coach bis zum Code-Reviewer.</p>
     </a>
@@ -358,7 +433,9 @@
         <span class="card-id">M11</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#9000;</div>
+      <div class="card-icon icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+      </div>
       <h2>CLI Referenz</h2>
       <p>150+ Befehle durchsuchbar. Kopieren, einf&uuml;gen, fertig. Mit Favoriten-Funktion.</p>
     </a>
@@ -368,12 +445,17 @@
         <span class="card-id">M12</span>
         <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon">&#128225;</div>
+      <div class="card-icon icon-red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      </div>
       <h2>Status Dashboard</h2>
       <p>Gateway live &uuml;berwachen: CPU, RAM, Channel-Status, Kosten. Demo-Modus inklusive.</p>
     </a>
 
   </div>
+
+  <!-- Content Area -->
+  <div id="content-area"></div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -384,6 +466,9 @@
       Der Mensch bleibt Dirigent.
     </p>
   </footer>
+
+  <!-- Cowan Widget -->
+  <script src="shared/cowan.js"></script>
 
   <script>
     // ── Shared Storage Helper ──
@@ -412,7 +497,6 @@
       if (progress !== null) {
         document.getElementById('bookProgress').textContent = progress + '%';
       }
-
       const tasks = storage.get('tasks:items');
       if (tasks && Array.isArray(tasks)) {
         const open = tasks.filter(t => t.status !== 'done').length;
@@ -420,10 +504,90 @@
       }
     }
 
-    // ── Track Last Module ──
-    storage.set('shell:lastModule', 'shell');
+    // ── SVG fuer Zurueck-Button ──
+    const chevronLeftSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
 
-    // ── Init ──
+    // ── Shell-in-Shell: Modul-Navigation per fetch() ──
+    const contentArea = document.getElementById('content-area');
+    const homeElements = [
+      ...document.querySelectorAll('.section-label'),
+      ...document.querySelectorAll('.grid'),
+    ];
+
+    function showHome() {
+      homeElements.forEach(el => el.style.display = '');
+      contentArea.style.display = 'none';
+      contentArea.innerHTML = '';
+      document.querySelector('.footer').style.display = '';
+      storage.set('shell:lastModule', 'shell');
+      history.pushState({ module: null }, '', window.location.pathname);
+    }
+
+    function loadModule(moduleId) {
+      const url = moduleId + '/index.html';
+      fetch(url).then(r => {
+        if (!r.ok) throw new Error('Modul nicht gefunden');
+        return r.text();
+      }).then(html => {
+        homeElements.forEach(el => el.style.display = 'none');
+        document.querySelector('.footer').style.display = 'none';
+
+        contentArea.style.display = 'block';
+        contentArea.innerHTML = '';
+
+        const backBtn = document.createElement('button');
+        backBtn.className = 'back-btn';
+        backBtn.innerHTML = chevronLeftSvg + ' Zurueck zur Uebersicht';
+        backBtn.onclick = showHome;
+        contentArea.appendChild(backBtn);
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+
+        const scripts = wrapper.querySelectorAll('script');
+        const fragment = document.createDocumentFragment();
+        Array.from(wrapper.children).forEach(child => {
+          if (child.tagName !== 'SCRIPT') fragment.appendChild(child.cloneNode(true));
+        });
+        contentArea.appendChild(fragment);
+
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) { newScript.src = oldScript.src; }
+          else { newScript.textContent = oldScript.textContent; }
+          contentArea.appendChild(newScript);
+        });
+
+        storage.set('shell:lastModule', moduleId);
+        history.pushState({ module: moduleId }, '', '#' + moduleId);
+        window.scrollTo(0, 0);
+      }).catch(err => {
+        contentArea.style.display = 'block';
+        contentArea.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)"><p style="font-size:1.2rem;margin-bottom:0.5rem">Modul <strong style="color:var(--amber)">' + moduleId.toUpperCase() + '</strong> ist noch in Entwicklung.</p><button class="back-btn" onclick="showHome()">' + chevronLeftSvg + ' Zurueck</button></div>';
+        homeElements.forEach(el => el.style.display = 'none');
+        document.querySelector('.footer').style.display = 'none';
+      });
+    }
+
+    document.querySelectorAll('.card[href]').forEach(card => {
+      card.addEventListener('click', function(e) {
+        e.preventDefault();
+        const href = this.getAttribute('href').replace(/\/$/, '');
+        loadModule(href);
+      });
+    });
+
+    window.addEventListener('popstate', function(e) {
+      if (e.state && e.state.module) { loadModule(e.state.module); }
+      else { showHome(); }
+    });
+
+    if (window.location.hash) {
+      const mod = window.location.hash.slice(1);
+      if (mod) loadModule(mod);
+    }
+
+    storage.set('shell:lastModule', 'shell');
     updateStatus();
   </script>
 

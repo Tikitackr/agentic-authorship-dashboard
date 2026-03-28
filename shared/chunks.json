@@ -1,0 +1,826 @@
+[
+  {
+    "id": "chunk-openclaw-setup",
+    "title": "OpenClaw Setup & Installation",
+    "category": "setup",
+    "difficulty": "beginner",
+    "summary": "Anleitung zur Installation und Ersteinrichtung von OpenClaw mit npm, Docker oder Shell-Installer.",
+    "dependencies": [],
+    "tags": [
+      "installation",
+      "docker",
+      "npm",
+      "node",
+      "vps",
+      "ersteinrichtung",
+      "openclaw",
+      "konfiguration"
+    ],
+    "content": "OpenClaw ist eine Open-Source, selbst-gehostete Gateway-Plattform (MIT-Lizenz), die LLMs in persistente, multikanalfaehige KI-Agenten verwandelt. Ein Gateway-Prozess verwaltet Routing, Authentifizierung und Verbindungen zu ueber 20 Messaging-Plattformen ueber einen einzigen Port (Standard: 18789).\n\n**Voraussetzungen:** Node.js 22+, eigener API-Key (z.B. Anthropic). Unterstuetzte OS: Linux, macOS (Apple Silicon + Intel), Windows (WSL2 empfohlen).\n\n**Installation:**\n\n1. Per npm: npm install -g openclaw@latest\n2. Alternativ (Linux/macOS): curl -fsSL https://docs.openclaw.ai/install.sh | bash\n3. Setup-Wizard starten: openclaw onboard --install-daemon\n4. Kanaele verbinden: openclaw channels login\n5. Gateway starten: openclaw gateway --port 18789\n6. Web-Dashboard aufrufen: http://127.0.0.1:18789/\n\n**Konfiguration:** Zentrale Config-Datei: ~/.openclaw/openclaw.json. Wichtige Env-Variablen: OPENCLAW_HOME (Hauptverzeichnis), STATE_DIR (Zustandsdaten), CONFIG_PATH (Config-Pfad). API-Keys in ~/.openclaw/.env eintragen.\n\n**Agent-Konfigurationsdateien:** SOUL.md (Persoenlichkeit), AGENTS.md (Bedienungsanleitung), TOOLS.md (Werkzeuge), IDENTITY.md (Name/Emoji), USER.md (Benutzerprofil), HEARTBEAT.md, BOOTSTRAP.md, MEMORY.md.\n\n**Tipp:** Nutze openclaw doctor fuer Diagnose und openclaw status fuer den aktuellen Zustand.",
+    "source": "Wissensbasis 1 - FAQ & Installation",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-openclaw-overview",
+    "title": "Was ist OpenClaw? Features & Showcase",
+    "category": "overview",
+    "difficulty": "beginner",
+    "summary": "Ueberblick ueber OpenClaw: Was es ist, Kernfeatures, unterstuetzte Kanaele und Community-Projekte.",
+    "dependencies": [],
+    "tags": [
+      "openclaw",
+      "features",
+      "uebersicht",
+      "kanaele",
+      "showcase",
+      "community",
+      "open-source"
+    ],
+    "content": "OpenClaw ist ein selbstgehostetes Gateway, das Messaging-Apps wie WhatsApp, Telegram, Discord, iMessage und weitere Kanaele mit KI-Agenten verbindet. Du kannst von ueberall mit einem persoenlichen Assistenten auf der eigenen Infrastruktur arbeiten.\n\n**Kern-Eigenschaften:**\n\n- Selbstgehostet: Node 22+, eigener API-Key, MIT-Lizenz, volle Datenkontrolle\n- Mehrkanalig: Ein Gateway fuer WhatsApp, Telegram, Discord, Slack, Signal, iMessage, Google Chat u.v.m.\n- Agenten-nativ: Sessions, Werkzeugnutzung, Speicherverwaltung und Multi-Agent-Routing integriert\n- Medien-Support: Senden/Empfangen von Bildern, Audio und Dokumenten\n- Multi-Agent: Mehrere Agenten unter einem Gateway mit isolierten Workspaces\n- Apps/UI: Web Control UI, macOS-App, mobile Knoten (iOS/Android via Canvas)\n\n**Showcase-Beispiele aus der Community:** Automation (Luftreiniger-Steuerung, visuelles Morgen-Briefing, automatisierte Buchhaltung, Job-Such-Agent, TradingView-Analysen), Knowledge (WhatsApp-Vault mit Transkription, semantische Bookmarks), Voice (Telefonbruecke, mehrsprachige Skills, TTS), Infrastruktur (CalDAV-Sync, Grafana-Dashboard, Hausautomation).\n\n**Feature-Highlights:** Plugins, Hooks, Slash-Commands (/compact, /deep), Streaming, OAuth, Budgetverwaltung, Cron-Jobs, Browser-Tool.\n\n**Community:** Projekte einreichen ueber Discord oder X (#showcase).",
+    "source": "Wissensbasis 1 - FAQ & Installation",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-troubleshooting",
+    "title": "Haeufige Fehler und Loesungen",
+    "category": "troubleshooting",
+    "difficulty": "beginner",
+    "summary": "Diagnose-Checkliste und die haeufigsten Probleme bei der Arbeit mit OpenClaw – inklusive Loesungen.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "fehler",
+      "probleme",
+      "loesungen",
+      "hilfe",
+      "troubleshooting",
+      "debug",
+      "diagnose",
+      "doctor"
+    ],
+    "content": "Hier findest du die haeufigsten Probleme und ihre Loesungen.\n\n**Diagnose-Checkliste (erste 60 Sekunden):**\n1. openclaw status – Kanaele und Auth pruefen\n2. openclaw doctor – Konfigurations-/Dienstfehler erkennen\n3. openclaw channels status --probe – Kanalstatus testen\n4. openclaw logs --follow – Laufende Logs auf Fehler pruefen\n\n**Haeufige Fehler:**\n\n1. API-Key funktioniert nicht (401): Key muss von console.anthropic.com stammen (nicht claude.ai). Billing und Guthaben pruefen.\n2. CORS-Fehler im Browser: Header anthropic-dangerous-direct-browser-access: true setzen.\n3. Rate Limit (429): 1-2 Min warten. Bei Batch: Pausen einbauen, exponentielles Backoff.\n4. EACCES bei npm install -g: npm-Prefix aendern mit npm config set prefix \"$HOME/.npm-global\" und PATH ergaenzen.\n5. sharp/libvips-Fehler: SHARP_IGNORE_GLOBAL_LIBVIPS=1 setzen.\n6. error spawn ENOENT: Abhaengigkeiten pruefen (git, curl, jq, ca-certificates).\n7. JSON-Parse-Fehler: Konfigurationsdatei auf Syntax pruefen.\n8. Gateway startet nicht: openclaw doctor ausfuehren, Port-Konflikte pruefen.\n9. Token-Limit ueberschritten: Kapitel kuerzen oder /compact nutzen.\n10. Inkonsistente Ergebnisse: SOUL.md pruefen, mehr Stilbeispiele ergaenzen.\n\n**Tipp:** openclaw status --all liefert einen vollstaendigen Diagnosebericht zum Teilen mit Support.",
+    "source": "Wissensbasis 1 + 9 - FAQ & Hilfen",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-soul-md",
+    "title": "SOUL.md verstehen",
+    "category": "project",
+    "difficulty": "beginner",
+    "summary": "SOUL.md definiert die Persoenlichkeit, den Schreibstil und die Regeln deines OpenClaw-Agenten.",
+    "dependencies": [],
+    "tags": [
+      "soul",
+      "agent",
+      "persoenlichkeit",
+      "konfiguration",
+      "schreibstil"
+    ],
+    "content": "Die SOUL.md ist das Herzstueck deines OpenClaw-Projekts. Sie definiert, wer dein Agent ist, wie er denkt und wie er schreibt. Die SOUL.md wird immer zuerst geladen und praegt die gesamte Kommunikation des Agenten.\n\n**Aufbau der SOUL.md:**\n\nDie Datei besteht aus mehreren Abschnitten:\n\n- **Identitaet:** Name, Rolle und Kernaufgabe des Agenten\n- **Schreibstil:** Tonalitaet, Zielgruppe, sprachliche Praeferenzen (z.B. Du-Form, kurze Saetze)\n- **Wissensdomaene:** Themengebiete, in denen der Agent kompetent ist\n- **Verhaltensregeln:** Was der Agent tun und lassen soll\n- **Qualitaets-Checkliste:** Kriterien, die erfuellt sein muessen bevor ein Ergebnis als fertig gilt\n- **Toolchain:** Welche Werkzeuge der Agent kennt (Docker, Pandoc, sessions_spawn etc.)\n- **Grenzen:** Keine externen Aktionen ohne Rueckfrage, keine erfundenen Befehle\n\n**Best Practices:**\n\n1. Halte die SOUL.md unter 500 Woerter - knapp und praezise\n2. Definiere klare Grenzen: Was soll der Agent NICHT tun?\n3. Verwende konkrete Beispiele fuer den gewuenschten Schreibstil\n4. Aktualisiere die SOUL.md iterativ basierend auf den Ergebnissen\n\n**Wichtig:** SOUL.md ist fuer Persoenlichkeit und Stil zustaendig. Die Workflow-Logik (Modi, Routing) gehoert in die AGENTS.md.",
+    "source": "Projektdokumentation",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-agents-md",
+    "title": "AGENTS.md – Bedienungsanleitung & Modi",
+    "category": "project",
+    "difficulty": "intermediate",
+    "summary": "AGENTS.md ist die Bedienungsanleitung deines Agenten mit Modi (WRITER, EDITOR, QA, VALIDATOR) und technischem Hintergrund zur Agent-Runtime.",
+    "dependencies": [
+      "chunk-soul-md"
+    ],
+    "tags": [
+      "agenten",
+      "modi",
+      "agents-md",
+      "writer",
+      "editor",
+      "qa",
+      "validator",
+      "runtime",
+      "workspace",
+      "bootstrap"
+    ],
+    "content": "Die AGENTS.md in OpenClaw ist die Bedienungsanleitung und der Speicher deines Agenten – mit Regeln, Prioritaeten und Verhaltens-Modi. Sie ist KEINE Sub-Agenten-Definition.\n\n**Die vier Modi (orchestriert durch den Chefredakteur):**\n\n1. WRITER-Modus: Erzeugt Rohtext aus Outline und Constraints. Output: JSON mit chapter_markdown und code_blocks.\n2. EDITOR-Modus: Bereinigt zu sauberem Kapitel-Markdown. Output: JSON mit revised_markdown und changes_log.\n3. QA-Modus: Prueft Logik und Konsistenz. Output: JSON mit status, issues und suggestions.\n4. VALIDATOR-Modus: Laeuft automatisch als letzter Schritt jeder Pipeline. Prueft ausschliesslich das JSON-Schema der Ausgabe. Output: JSON mit valid (true/false) und errors Array. Bei Schema-Verletzung stoppt die Pipeline.\n\n**Technischer Hintergrund (Agent-Runtime):**\n\nOpenClaw nutzt eine eingebettete Agentenlaufzeit. Pro Agent gibt es ein Workspace-Verzeichnis mit Bootstrap-Dateien: AGENTS.md (Bedienungsanleitung), SOUL.md (Persoenlichkeit), TOOLS.md (Tool-Hinweise), IDENTITY.md (Name/Emoji), USER.md (Benutzerprofil), BOOTSTRAP.md (Erstdurchlauf). Beim Sitzungsstart werden diese automatisch in den Kontext injiziert.\n\n**System-Prompt-Aufbau:** Der Prompt besteht aus OpenClaw-Basis-Prompt, Skill-Prompts, Bootstrap-Kontext und pro-Run-Overrides. Prompt-Modi: full (Standard), minimal (Subagenten), none (nur Basis).\n\n**Wichtig:** Der Chefredakteur ist der Orchestrator (Trigger, Routing, Speicherung via sessions_spawn). Der Agent ist der Ausfuehrer innerhalb seines Modus. VALIDATOR ist kein manuell getriggerter Modus – er laeuft automatisch nach jedem Pipeline-Schritt. Halte die AGENTS.md unter 150 Zeilen.",
+    "source": "Projektdoku + Wissensbasis 3",
+    "lastUpdated": "2026-03-03"
+  },
+  {
+    "id": "chunk-masterprompt",
+    "title": "Modi-Pattern & Multi-Agent-Orchestrierung",
+    "category": "project",
+    "difficulty": "advanced",
+    "summary": "Das Modi-Pattern mit Multi-Agent-Orchestrierung ist der Schluessel zur konsistenten KI-gestuetzten Bucherstellung.",
+    "dependencies": [
+      "chunk-soul-md",
+      "chunk-agents-md"
+    ],
+    "tags": [
+      "modi",
+      "multi-agent",
+      "orchestrierung",
+      "pipeline",
+      "chefredakteur",
+      "sessions_spawn",
+      "json"
+    ],
+    "content": "Statt einfacher Prompts nutzt du ein strukturiertes Modi-Pattern: Der Chefredakteur orchestriert spezialisierte Agenten durch verschiedene Modi fuer jedes Kapitel.\n\n**Die drei Ebenen:**\n\n1. **Chefredakteur (Command-Layer):** Routing via sessions_spawn, Job-Typ festlegen, Ergebnis speichern, versionieren, exportieren.\n2. **Spezialisierte Agenten (Ausfuehrer):** Empfangen Job-Typ, arbeiten im entsprechenden Modus (WRITER, EDITOR, QA), liefern strukturiertes JSON zurueck. VALIDATOR laeuft automatisch als letzter Schritt.\n3. **SOUL.md (Persoenlichkeit):** Schreibstil, Tonfall, Zielgruppe – bleibt ueber alle Modi hinweg gleich.\n\n**Pipeline pro Kapitel:**\n\n1. Chefredakteur spawnt WRITER-Agent mit Outline und Constraints\n2. WRITER arbeitet im isolierten Workspace, liefert JSON mit Rohtext\n3. Chefredakteur spawnt EDITOR-Agent mit dem Rohtext\n4. EDITOR bereinigt zu sauberem Kapitel-Markdown\n5. Chefredakteur spawnt QA-Agent\n6. QA prueft Logik und Konsistenz, liefert Status-Report\n7. VALIDATOR prueft JSON-Schema → valid/invalid + errors Array\n8. Thomas/Texterin reviewed (menschlicher Schritt)\n\n**Warum JSON-Output?**\n\nStriktes JSON ermoeglicht dem Chefredakteur, die Ergebnisse automatisch zu parsen, in Dateien zu speichern und den naechsten Agenten zu spawnen. Kein manuelles Copy-Paste noetig. Der VALIDATOR stellt sicher, dass jede Ausgabe dem erwarteten Schema entspricht – bei Fehlern stoppt die Pipeline und der Chefredakteur kann mit Feedback einen Retry triggern.\n\n**Praxis-Tipp:** Teste die Pipeline zuerst mit einem einzelnen Kapitel (z.B. Kapitel 2 Installation), bevor du alle 15 Kapitel im Batch generierst.",
+    "source": "Projektdokumentation",
+    "lastUpdated": "2026-03-03"
+  },
+  {
+    "id": "chunk-dashboard-modules",
+    "title": "Dashboard Module: Home + M1-M6",
+    "category": "project",
+    "difficulty": "intermediate",
+    "summary": "Das OpenClaw-Dashboard besteht aus 7 Modulen (Home + M1-M6) mit 120 Tasks fuer den gesamten Buchproduktionsprozess.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "dashboard",
+      "module",
+      "uebersicht",
+      "home",
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6"
+    ],
+    "content": "Das OpenClaw-Dashboard ist die zentrale Steuerungseinheit fuer dein Buchprojekt. Es besteht aus 7 Modulen mit insgesamt 120 Tasks:\n\n**Home - Projektuebersicht:** Zeigt den aktuellen Status deines Buchprojekts: Stat-Boxen, Kapitel-Chart, Buchteile-Uebersicht und Zeitplan.\n\n**M1 - Server Setup (Sprint 1, 18 Tasks):** VPS einrichten, Docker installieren, OpenClaw deployen, Tailscale VPN, Firewall konfigurieren.\n\n**M2 - Agent Setup (Sprint 2, 10 Tasks):** SOUL.md und AGENTS.md konfigurieren – Modi (WRITER, EDITOR, QA) einrichten, Testkapitel generieren, Review-Prozess testen.\n\n**M3 - Multi-Agent (Sprint 3, 10 Tasks):** Chefredakteur-Pipeline fuer die Kapitel-Produktion, Batch-Modus, X/Twitter-Automatisierung mit Telegram-Approval-Flow.\n\n**M4 - Publishing (Sprint 4, 7 Tasks):** Amazon KDP Upload, Cover-Erstellung, EPUB-Formatierung, Metadaten und Preisgestaltung. Inkl. Kosten- und ROI-Rechnung.\n\n**M5 - Buch & Code (75 Tasks):** 15 Kapitel mit je 5 Schritten (Outline, Draft, Check, Review, Final). Personalisierte Code-Snippets und Settings-Panel fuer deine Variablen.\n\n**M6 - Dein Projekt:** Die Wundertuete! Agent-Team Generator (generiert SOUL.md + AGENTS.md fuer dein Projekt per Claude API) und Dashboard-Konfigurator (Prompt-Generator fuer ein eigenes Dashboard).\n\n**Tipp:** Starte mit M1 (Server), dann M2 (Agent), dann M3 (Automation). M6 ist fuer dein eigenes Buchprojekt.",
+    "source": "Projektdokumentation",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-pipeline-batch",
+    "title": "Batch-Produktion mit Chefredakteur-Pipeline",
+    "category": "project",
+    "difficulty": "advanced",
+    "summary": "Mit der Chefredakteur-Pipeline auf einem VPS laesst sich die Buchproduktion automatisieren und im Batch-Modus betreiben.",
+    "dependencies": [
+      "chunk-agents-md",
+      "chunk-masterprompt"
+    ],
+    "tags": [
+      "pipeline",
+      "chefredakteur",
+      "batch",
+      "automation",
+      "vps",
+      "sessions_spawn"
+    ],
+    "content": "Die Chefredakteur-Pipeline ist das Multi-Agent-System fuer automatisierte Buchproduktion. Der Chefredakteur-Agent koordiniert spezialisierte Agenten (WRITER, EDITOR, QA) ueber sessions_spawn auf deinem VPS.\n\n**Typischer Batch-Ablauf:**\n\n1. Trigger: Manuell per Chat-Befehl oder zeitgesteuert (Cron-Job)\n2. Kapitel-Liste laden: Aus einer JSON- oder CSV-Datei\n3. Loop ueber Kapitel: Chefredakteur spawnt fuer jedes Kapitel die Agent-Pipeline\n4. WRITER-Agent: Kapitel generieren im isolierten Workspace\n5. EDITOR-Agent: Qualitaetspruefung und Bereinigung\n6. QA-Agent: Logik-Check und Konsistenz-Report\n7. Speichern: Ergebnis als Markdown-Datei ablegen\n8. Benachrichtigung: Telegram oder E-Mail wenn fertig\n\n**Rate Limits beachten:** Bei Batch-Produktion ist das Rate Limit der Anthropic API wichtig. Baue Pausen zwischen den Calls ein (mindestens 2 Sekunden) und implementiere exponentielles Backoff bei 429-Fehlern.\n\n**Vorteil gegenueber externen Tools:** Alles laeuft nativ in OpenClaw – kein zusaetzliches Tool noetig. Der Chefredakteur hat direkten Zugriff auf Dateisystem, Sessions und Agent-Kontext.\n\n**Tipp:** Teste die Pipeline zuerst mit 2-3 Kapiteln, bevor du alle auf einmal generierst.",
+    "source": "Projektdokumentation",
+    "lastUpdated": "2026-03-03"
+  },
+  {
+    "id": "chunk-kdp-publishing",
+    "title": "KDP-Publishing Workflow",
+    "category": "project",
+    "difficulty": "intermediate",
+    "summary": "Der Weg vom fertigen Manuskript zur Veroeffentlichung auf Amazon KDP.",
+    "dependencies": [
+      "chunk-dashboard-modules"
+    ],
+    "tags": [
+      "kdp",
+      "amazon",
+      "publishing",
+      "veroeffentlichung",
+      "epub",
+      "formatierung"
+    ],
+    "content": "Amazon KDP (Kindle Direct Publishing) ist die Plattform, auf der du dein Buch veroeffentlichst.\n\n**Vom Manuskript zu KDP:**\n\n1. Export aus M5: Das Dashboard exportiert dein Manuskript als formatiertes Dokument\n2. Formatierung pruefen: Ueberschriften, Absaetze, Code-Bloecke und Bilder kontrollieren\n3. Cover erstellen: KDP benoetigt ein Cover im PNG-Format (2560x1600 px fuer E-Book)\n4. KDP-Account einrichten: Unter kdp.amazon.com registrieren\n5. Buch anlegen: Titel, Beschreibung, Kategorien und Keywords eingeben\n6. Manuskript hochladen: EPUB- oder DOCX-Format\n7. Vorschau pruefen: KDPs Previewer zeigt, wie das Buch auf Kindle aussieht\n8. Preis festlegen und veroeffentlichen\n\n**Haeufige Fallstricke:**\n\n- Encoding-Probleme: Umlaute muessen korrekt kodiert sein\n- Code-Bloecke: In E-Books schwer darstellbar - nutze kurze Beispiele\n- Bilder: Maximal 5 MB pro Bild\n\n**Tipp:** Erstelle zuerst das E-Book (guenstiger zum Testen), dann das Taschenbuch.",
+    "source": "Projektdokumentation",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-debugging",
+    "title": "Debugging, Logs & CI-Pipeline",
+    "category": "help",
+    "difficulty": "intermediate",
+    "summary": "Debugging-Strategien, Umgebungsvariablen, Dev-Profil, Logging und Testing in OpenClaw.",
+    "dependencies": [
+      "chunk-troubleshooting"
+    ],
+    "tags": [
+      "debugging",
+      "logs",
+      "dev",
+      "testing",
+      "ci",
+      "umgebungsvariablen",
+      "vitest",
+      "gateway-watch"
+    ],
+    "content": "Debugging in OpenClaw umfasst mehrere Ebenen: Runtime-Debug, Log-Analyse, Dev-Profil und systematische Diagnose.\n\n**Runtime-Debug mit /debug:**\n- /debug show – Aktuelle Override-Werte anzeigen\n- /debug set key=value – Wert zur Laufzeit setzen\n- /debug unset key – Override entfernen\n- /debug reset – Config von Festplatte wiederherstellen\nAktivierung: commands.debug: true in openclaw.json (standardmaessig deaktiviert).\n\n**Dev-Profil und Gateway-Watch:**\n- pnpm gateway:watch startet den Gateway mit Hot Reload bei Code-Aenderungen\n- Globales Dev-Profil: OPENCLAW_PROFILE=dev, State unter ~/.openclaw-dev, Port 19001\n- gateway --dev erstellt automatisch eine Minimal-Konfiguration mit Skip-Bootstrap\n\n**Umgebungsvariablen – Ladereihenfolge (Prioritaet hoch nach niedrig):**\n1. Prozessumgebung (Shell)\n2. .env im Arbeitsverzeichnis\n3. ~/.openclaw/.env (globales .env)\n4. env-Block in openclaw.json\n5. Shell-Import (optional)\nWerte werden nie ueberschrieben – neue Quellen fuellen nur fehlende Variablen.\n\n**Raw-Stream-Logging:** --raw-stream aktiviert vollstaendiges Logging nach ~/.openclaw/logs/raw-stream.jsonl. Achtung: Enthaelt Prompts und Nutzerdaten, nach Debugging loeschen.\n\n**Testing:** Vitest mit Unit/Integration (pnpm test), E2E (pnpm test:e2e) und Live-Tests (pnpm test:live, kostet API-Credits). CI-Pipeline laeuft bei jedem Push auf main.",
+    "source": "Wissensbasis 9 - Hilfen & Debugging",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-whatsapp",
+    "title": "WhatsApp-Kanal einrichten",
+    "category": "channels",
+    "difficulty": "beginner",
+    "summary": "WhatsApp-Integration ueber Baileys mit QR-Kopplung, Zugriffskontrolle und Gruppenverhalten.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "whatsapp",
+      "baileys",
+      "qr",
+      "pairing",
+      "kanal",
+      "zugriffskontrolle",
+      "gruppen"
+    ],
+    "content": "OpenClaw verbindet sich ueber Baileys per QR-Kopplung mit WhatsApp. Empfohlen wird eine eigene WhatsApp-Nummer statt der privaten.\n\n**Schnellstart:**\n1. WhatsApp-Zugriffsrichtlinie setzen: channels.whatsapp.dmPolicy = \"pairing\" und allowFrom mit E.164-Nummern befuellen\n2. Login: openclaw channels login --channel whatsapp\n3. Gateway starten: openclaw gateway\n4. Pairing freigeben: openclaw pairing approve whatsapp <CODE> (Code laeuft nach 1 Stunde ab)\n\n**Zugriffskontrolle:**\n- dmPolicy: pairing (Standard), allowlist, open, disabled\n- allowFrom: E.164-Allowlist fuer DMs\n- groupPolicy: open, disabled, allowlist (Standard)\n- groupAllowFrom: Gruppen-Allowlist\n\n**Laufzeitmodell:** Gateway haelt WhatsApp-Socket und Reconnect-Loop. Status-/Broadcast-Chats werden ignoriert. DMs laufen in gemeinsamer Session, Gruppen in isolierten Sessions (agent::whatsapp:group:<id>).\n\n**Gruppen:** Aktivierungsmodi mention (Standard, erfordert @-Erwaehnung) und always. Kontext-Injection mit den letzten 50 Nachrichten. Konfiguration ueber agents.list[].groupChat.\n\n**Tipp:** Nutze Ack-Reactions (channels.whatsapp.ackReaction) als Emoji-Bestaetigung fuer eingegangene Nachrichten.",
+    "source": "Wissensbasis 2 - Chatkanaele",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-telegram",
+    "title": "Telegram-Kanal einrichten",
+    "category": "channels",
+    "difficulty": "beginner",
+    "summary": "Telegram-Integration ueber grammY mit Bot-Token, Long Polling oder Webhook.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "telegram",
+      "bot",
+      "grammy",
+      "polling",
+      "webhook",
+      "kanal",
+      "gruppen"
+    ],
+    "content": "Telegram-Integration ist produktionsreif fuer DMs und Gruppen ueber grammY. Standard ist Long Polling, Webhook optional.\n\n**Schnellstart:**\n1. Bot ueber @BotFather anlegen → /newbot → Bot-Token speichern\n2. Token setzen: channels.telegram.enabled, botToken, dmPolicy: \"pairing\". Alternativ: TELEGRAM_BOT_TOKEN als Env-Variable\n3. Gateway starten, Pairing: openclaw pairing approve telegram <CODE>\n4. Bot zu Gruppen hinzufuegen, groupPolicy anpassen\n\n**Zugriffskontrolle:**\n- dmPolicy: pairing (Standard), allowlist, open, disabled\n- allowFrom: Numerische Telegram-IDs\n- groupPolicy und groupAllowFrom fuer Gruppen\n- openclaw doctor --fix wandelt alte @username-Eintraege in numerische IDs um\n\n**Laufzeitverhalten:** DMs und Gruppen werden normalisiert. Gruppensitzungen pro Gruppen-ID getrennt, Forum-Themen mit :topic: unterschieden. Long Polling nutzt grammY-Runner mit Sequenzierung pro Chat/Thread.\n\n**Streaming:** channels.telegram.streamMode: partial (Vorschaunachricht editiert), block oder off. Telegram unterstuetzt keine Lesebestaetigungen.\n\n**Tipp:** Telegram bietet die schnellste Einrichtung aller Kanaele.",
+    "source": "Wissensbasis 2 - Chatkanaele",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-discord",
+    "title": "Discord-Kanal einrichten",
+    "category": "channels",
+    "difficulty": "beginner",
+    "summary": "Discord-Integration mit Bot-Token, Slash-Commands, Components v2 und rollenbasiertem Routing.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "discord",
+      "bot",
+      "slash-commands",
+      "gilden",
+      "voice",
+      "kanal",
+      "components"
+    ],
+    "content": "OpenClaw unterstuetzt das offizielle Discord-Gateway fuer DMs und Gilden-Kanaele, inklusive nativer Slash-Commands und Pairing-Modus.\n\n**Schnellstart:**\n1. Discord-App und Bot im Developer Portal anlegen, Message Content Intent und Server Members Intent aktivieren\n2. Token setzen: channels.discord.enabled=true, token=\"YOUR_BOT_TOKEN\" oder DISCORD_BOT_TOKEN\n3. Bot mit passenden Rechten auf Server einladen, openclaw gateway starten\n4. DM-Kopplung: openclaw pairing approve discord <CODE>\n\n**Routing und Sessions:** DMs teilen standardmaessig die Haupt-Agent-Session. Gilden-Kanaele bekommen eigene Sitzungsschluessel. Rollenbasiertes Routing ueber bindings[].match.roles fuer bestimmte Guild-Rollen.\n\n**Interaktive Komponenten:** Discord Components v2 mit text, section, actions, media-gallery, file. Buttons, Selects, Modal-Forms und allowedUsers-Beschraenkungen. Sprachnachrichten erfordern OGG/Opus via ffmpeg.\n\n**Zugriffskontrolle:** dmPolicy (pairing/allowlist/open/disabled). Granulare Action-Gates fuer Messaging, Reactions, Moderation, Presence.\n\n**Tipp:** Gruppen-DMs sind standardmaessig deaktiviert. Wichtige Felder: intents, replyToMode, mediaMaxMb.",
+    "source": "Wissensbasis 2 - Chatkanaele",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-messaging-weitere",
+    "title": "Weitere Messaging-Kanaele",
+    "category": "channels",
+    "difficulty": "intermediate",
+    "summary": "Kurzanleitung fuer Slack, Signal, IRC, MS Teams, Mattermost, Feishu/Lark, LINE, Matrix, Zalo und iMessage.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "slack",
+      "signal",
+      "irc",
+      "teams",
+      "mattermost",
+      "feishu",
+      "line",
+      "matrix",
+      "zalo",
+      "imessage"
+    ],
+    "content": "OpenClaw unterstuetzt viele weitere Messaging-Kanaele neben WhatsApp, Telegram und Discord:\n\n**Slack:** Socket-Modus oder HTTP Events API. App-Token (xapp-...) + Bot-Token (xoxb-...). Native Slash-Commands, Threading, Ack-Reactions. dmPolicy: pairing (Standard).\n\n**Signal:** Externe signal-cli-Integration per HTTP JSON-RPC + SSE. Eigene Bot-Nummer empfohlen. QR-Link oder SMS-Registrierung. Schluessel lokal gesichert.\n\n**IRC:** Optionales Plugin. TLS, NickServ, toolsBySender fuer unterschiedliche Toolsets pro Absender. requireMention konfigurierbar.\n\n**MS Teams:** Plugin (@openclaw/msteams). Azure Bot, Adaptive Cards, SharePoint-Integration. RSC-Berechtigungen fuer Echtzeit-Webhooks.\n\n**Mattermost:** Plugin (@openclaw/mattermost). Bot-Token, WebSocket-Events. Chat-Modi: oncall, onmessage, onchar.\n\n**Feishu/Lark:** Plugin per WebSocket-Event-Abo (kein oeffentlicher Webhook noetig). App-ID/Secret, Event-Abo auf im.message.receive_v1.\n\n**LINE:** Plugin per LINE Messaging API. Flex-/Vorlagennachrichten. Keine Threads/Reaktionen.\n\n**Matrix:** Plugin mit E2EE, Threads, Umfragen, Standort. Homeserver-Auth per Access-Token oder userId+password.\n\n**Zalo:** Experimentell, nur DMs. Bot-API oder persoenliches Konto (zalouser, Sperr-Risiko).\n\n**iMessage:** BlueBubbles (empfohlen) oder imsg-CLI (Legacy).",
+    "source": "Wissensbasis 2 - Chatkanaele",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-channel-routing",
+    "title": "Pairing, Gruppen & Kanal-Routing",
+    "category": "channels",
+    "difficulty": "intermediate",
+    "summary": "Pairing-System, Gruppenverhalten, Kanal-Routing, Broadcast-Gruppen und Kanal-Troubleshooting.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "pairing",
+      "routing",
+      "gruppen",
+      "sessions",
+      "broadcast",
+      "standort",
+      "troubleshooting"
+    ],
+    "content": "OpenClaw verwendet ein Pairing-System fuer explizite Genehmigung und deterministisches Routing.\n\n**DM-Pairing:** Kanaele mit Policy pairing: Unbekannte Absender bekommen 8-stelligen Kurzcode, Ablauf nach 1 Stunde, max. 3 offene Anfragen. Genehmigung: openclaw pairing approve <channel> <CODE>. Dateien: ~/.openclaw/credentials/*-pairing.json und *-allowFrom.json.\n\n**Kanal-Routing (Prioritaet):**\n1. Exakte Peer-Uebereinstimmung\n2. Vererbung ueber uebergeordnete Peers\n3. Discord Gilde + Rollen\n4. Konto-Match (accountId)\n5. Kanal-Fallback\n6. Default-Agent\nAntworten gehen immer an denselben Kanal zurueck.\n\n**Gruppenverhalten:** Standard: groupPolicy allowlist + requireMention: true. Evaluierung: Group Policy → Allowlists → Mention-Gating. Sandbox, Tools und toolsBySender pro Gruppe konfigurierbar.\n\n**Broadcast-Gruppen (experimentell):** Mehrere Agenten verarbeiten dieselbe Nachricht parallel oder sequentiell. Strategie: parallel (Standard) oder sequential. Jeder Agent hat eigene Session und Workspace.\n\n**Troubleshooting-Befehlsleiter:** openclaw status → openclaw gateway status → openclaw logs --follow → openclaw doctor → openclaw channels status --probe.",
+    "source": "Wissensbasis 2 - Chatkanaele",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-core-tools",
+    "title": "Kern-Werkzeuge: Exec, Patch, Web",
+    "category": "tools",
+    "difficulty": "intermediate",
+    "summary": "Tool-Policy, Exec-Tool, apply_patch, Web-Tools, Elevated Mode und Denkebenen.",
+    "dependencies": [
+      "chunk-agents-md"
+    ],
+    "tags": [
+      "exec",
+      "tools",
+      "apply-patch",
+      "web-search",
+      "web-fetch",
+      "elevated",
+      "think",
+      "policy"
+    ],
+    "content": "OpenClaw stellt typisierte Agenten-Tools bereit. Tools werden ueber Allow/Deny-Listen gesteuert (deny hat Vorrang).\n\n**Tool-Policy:** Profile (minimal, coding, messaging, full) als Basis. Filterlogik: Profil → Provider → Global allow/deny → Agent allow/deny → Sandbox → Subagent. Tool-Gruppen: group:runtime (exec, bash), group:fs (read, write, edit), group:web, group:ui, group:automation.\n\n**Exec-Tool:** Shell-Ausfuehrung (Foreground/Background). Standard-Host: sandbox. Host-Ausfuehrung verwirft PATH und Loader-Variablen. Approval-Flow fuer gateway/node. Session-Overrides mit /exec.\n\n**apply_patch:** Strukturierte Datei-Aenderungen (Add/Update/Delete) in einem Aufruf. Experimentell, Standard deaktiviert. Format: *** Begin Patch ... *** End Patch.\n\n**Web-Tools:** web_search (Brave oder Perplexity, 15 Min Cache) und web_fetch (HTTP-GET, HTML→Markdown, kein JS). Konfiguration: tools.web.search.* und tools.web.fetch.*.\n\n**Elevated Mode:** /elevated on|ask|full|off fuer Gateway-Host-Ausfuehrung. Absender-Allowlists ueber tools.elevated.allowFrom.\n\n**Denkebenen (/think):** off, minimal, low, medium, high, xhigh. Pro Nachricht oder Session setzbar.",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-lobster-workflow",
+    "title": "Lobster Workflow-Runtime & llm-task",
+    "category": "tools",
+    "difficulty": "advanced",
+    "summary": "Lobster Workflow-Runtime fuer mehrstufige Tool-Pipelines und llm-task Plugin fuer strukturierte LLM-Schritte.",
+    "dependencies": [
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "lobster",
+      "workflow",
+      "pipeline",
+      "llm-task",
+      "approval",
+      "automation",
+      "dsl"
+    ],
+    "content": "Lobster ist eine Workflow-Laufzeit fuer mehrstufige Tool-Pipelines mit Genehmigungs-Checkpoints und Resume-Tokens.\n\n**Zweck:** Deterministische, nachvollziehbare Pipelines. Kleine, KI-freundliche DSL statt Programmiersprache. Zentrale Sicherheitsrichtlinien (Timeouts, Output-Limits, Sandbox).\n\n**Funktionsweise:** OpenClaw startet lobster-CLI im Tool-Modus. JSON-Envelope mit status (ok, needs_approval, cancelled) und resumeToken. .lobster-Dateien in YAML/JSON definieren: name, args, steps, env, condition, approval.\n\n**Aktionen:** run (Pipeline/Workflow starten), resume (mit Token fortsetzen). Schritte verbinden sich ueber stdin: $step.stdout/json. Aktivierung: tools.alsoAllow: [\"lobster\"].\n\n**llm-task Plugin:** Strukturierte LLM-Aufgaben mit JSON-Schema-Validierung. Parameter: prompt (Pflicht), input, schema, provider, model, temperature, maxTokens. Aktivierung in plugins.entries und pro Agent whitelisten.\n\n**Sicherheit:** Ausgabe immer als nicht vertrauenswuerdig behandeln wenn nicht schema-validiert. Vor Nebenwirkungen Genehmigungen einholen. Lobster laeuft als lokaler Subprozess, sandbox-faehig.\n\n**Tipp:** Pattern: Kleine CLI-Commands → JSON → Pipes in Lobster-Pipeline → approve-Schritte.",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-browser-tools",
+    "title": "Browser-Tool & Chrome Extension",
+    "category": "tools",
+    "difficulty": "intermediate",
+    "summary": "Browser-Automatisierung mit isoliertem Chromium-Profil und Chrome-Extension-Relay.",
+    "dependencies": [
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "browser",
+      "chromium",
+      "chrome-extension",
+      "cdp",
+      "screenshot",
+      "playwright",
+      "relay"
+    ],
+    "content": "OpenClaw startet ein isoliertes Chromium-Profil (openclaw) getrennt vom persoenlichen Browser. Der Agent kann Tabs oeffnen, Seiten lesen, klicken, tippen und Screenshots/PDFs erzeugen.\n\n**Profile:** openclaw (verwalteter Browser, orangefarbene Oberflaeche), chrome (Extension-Relay zum Systembrowser), weitere benutzerdefinierte Profile. Konfiguration: browser.enabled, browser.defaultProfile, browser.headless, browser.executablePath.\n\n**Steuerungsmodi:** Lokal (Gateway + lokaler Browser), Remote Node-Host, Remote CDP-URL (z.B. Browserless). Steuerung nur ueber Loopback, Gateway-Auth-gesichert.\n\n**CLI:** openclaw browser status|start|open|tabs|snapshot|screenshot. HTTP-Control-API fuer erweiterte Automatisierung.\n\n**Chrome-Extension-Relay:** Steuert bestehende Chrome-Tabs via Extension statt separatem Profil. Drei Teile: Browser-Steuerungsdienst, lokaler Relay-Server (Port 18792), Chrome-MV3-Erweiterung. Installation: openclaw browser extension install, dann in chrome://extensions laden.\n\n**Sicherheit:** Logins immer manuell im Host-Browser durchfuehren. Zugangsdaten NIEMALS an das Modell geben. Separates Chrome-Profil empfohlen, Relay-Ports nicht exponieren.\n\n**Linux-Tipp:** Bei Ubuntu-Snap-Chromium Google Chrome installieren und browser.executablePath setzen.",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-skills-plugins",
+    "title": "Skills, Plugins & Slash Commands",
+    "category": "tools",
+    "difficulty": "intermediate",
+    "summary": "Skill-System, Plugin-Architektur, ClawHub, Slash Commands und Subagenten.",
+    "dependencies": [
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "skills",
+      "plugins",
+      "clawhub",
+      "slash-commands",
+      "subagenten",
+      "erweiterungen"
+    ],
+    "content": "OpenClaw ist ueber Skills, Plugins und Slash Commands erweiterbar.\n\n**Skills:** Lade-Prioritaet: 1) Workspace /skills, 2) Lokal ~/.openclaw/skills, 3) Gebuendelt. SKILL.md mit YAML-Frontmatter definiert Name, Beschreibung und Optionen. Hot-Reload standardmaessig aktiv (skills.load.watch: true). Sandbox-Skills erben nicht das Host-process.env.\n\n**ClawHub:** Oeffentliches Skill-Verzeichnis. clawhub search/install/update/publish. Installiert in ./skills (Workspace). Lockfile: .clawhub/lock.json.\n\n**Plugins:** TypeScript-Module im Gateway-Prozess fuer Tools, RPC, HTTP-Handler, CLI-Befehle, Services und Skills. Installation: openclaw plugins install <paket>. Verwaltung: enable/disable/list/info/update.\n\n**Slash Commands:** Eigenstaendige Nachrichten mit /-Prefix. Befehle (z.B. /help, /status) vs. Direktiven (z.B. /think, /model). Bash-Alias: ! = /bash. Wichtige Befehle: /reset, /compact, /model, /elevated, /debug, /config.\n\n**Subagenten:** Hintergrundprozesse in eigener Session (agent::subagent:). Start per sessions_spawn Tool. Limits: maxChildrenPerAgent (5), maxConcurrent (8), maxSpawnDepth (1). Orchestrator-Pattern mit Tiefe 2 moeglich.\n\n**Tipp:** openclaw plugins list und /commands zeigen alle verfuegbaren Erweiterungen.",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-voice-media",
+    "title": "Voice, Talk Mode & Media",
+    "category": "tools",
+    "difficulty": "intermediate",
+    "summary": "Sprachanrufe, Talk Mode, Audio-Transkription, Medienverarbeitung und Voice Wake.",
+    "dependencies": [
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "voice",
+      "talk-mode",
+      "tts",
+      "audio",
+      "media",
+      "sprachanruf",
+      "elevenlabs",
+      "transkription"
+    ],
+    "content": "OpenClaw bietet umfangreiche Voice- und Media-Funktionen.\n\n**Sprachanruf-Plugin:** openclaw plugins install @openclaw/voice-call. Provider: Twilio, Telnyx, Plivo, Mock. CLI: openclaw voicecall call/continue/speak/end/status. Agent-Tool: voice_call mit Aktionen initiate_call, continue_call, speak_to_user, end_call. Eingehende Anrufe: inboundPolicy + allowFrom konfigurieren.\n\n**Talk Mode:** Sprache zuhoeren → Transkript an Modell → Antwort per ElevenLabs TTS. Konfiguration: talk.voiceId, talk.modelId (eleven_v3), talk.interruptOnSpeech. Sprachanweisungen per JSON am Anfang der Antwort moeglich.\n\n**Audio-Transkription:** Automatische Erkennung: lokale CLIs (sherpa-onnx, whisper), Gemini-CLI, Provider-APIs (OpenAI, Groq, Deepgram, Google). Max 20 MB. In Gruppen mit requireMention wird Audio vorab transkribiert.\n\n**Medienverarbeitung:** Senden: Bilder ~6 MB, Audio/Video 16 MB, Dokumente 100 MB. Empfangen: Bilder 10 MB, Audio 20 MB, Video 50 MB. GIF ueber MP4 mit gifPlayback: true.\n\n**Voice Wake:** Globale Aktivierungswoerter in ~/.openclaw/settings/voicewake.json. Protokoll: voicewake.get/set, Event voicewake.changed.\n\n**Tipp:** Logins fuer Medien-Dienste immer manuell durchfuehren.",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-automation",
+    "title": "Hooks, Cron, Heartbeat & Webhooks",
+    "category": "tools",
+    "difficulty": "advanced",
+    "summary": "Hooks-System, Cron-Jobs, Heartbeat, Webhooks, Gmail-Integration, Nodes und Umfragen.",
+    "dependencies": [
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "hooks",
+      "cron",
+      "heartbeat",
+      "webhooks",
+      "automation",
+      "gmail",
+      "nodes",
+      "polls"
+    ],
+    "content": "OpenClaw bietet mehrere Automatisierungsebenen: Hooks, Cron, Heartbeat und Webhooks.\n\n**Hooks:** TypeScript-Skripte auf Events (/new, /reset, /stop, agent:bootstrap). Eingebaute: session-memory, bootstrap-extra-files, command-logger, boot-md. Eigene Hooks: /hooks/my-hook mit HOOK.md + handler.ts.\n\n**Cron-Jobs:** Schedule + Payload, gespeichert in ~/.openclaw/cron/jobs.json. Typen: at (einmalig), every (Intervall), cron (5-Feld). Modi: main (Hauptsession) oder isolated (separate cron:-Session). Delivery: announce (Chat), webhook (HTTP), none.\n\n**Heartbeat:** Laeuft in Hauptsitzung (Standard 30 Min). Buendelt Checks (Inbox, Kalender, Projektstatus). HEARTBEAT_OK = nichts zustellen. Logik in HEARTBEAT.md. Entscheidung: Exakte Zeit → Cron. Buendelbar → Heartbeat.\n\n**Webhooks:** hooks.enabled + hooks.token in Config. Endpunkte: /hooks/wake (Systemevent), /hooks/agent (isolierter Run), /hooks/<name> (gemappt). Auth per Bearer-Token. Query-String-Tokens verboten.\n\n**Gmail:** Pub/Sub Push → OpenClaw-Webhook → Agent verarbeitet E-Mails. Setup: openclaw webhooks gmail setup.\n\n**Nodes:** Peripheriegeraete (macOS, iOS, Android) per WebSocket. Funktionen: Canvas, Kamera, Screen Recording, Standort, SMS (Android).\n\n**Polls:** WhatsApp (2-12 Optionen), Discord (2-10, mit Dauer), MS Teams (Adaptive Cards).",
+    "source": "Wissensbasis 4 - Werkzeuge",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-model-management",
+    "title": "Modellauswahl, Fallback & Switching",
+    "category": "models",
+    "difficulty": "intermediate",
+    "summary": "Modell-Management, Auswahl-Logik, Fallback-Ketten, Auth-Profile und Live-Switching.",
+    "dependencies": [
+      "chunk-agents-md"
+    ],
+    "tags": [
+      "modelle",
+      "fallback",
+      "provider",
+      "auth-profile",
+      "switching",
+      "allowlist",
+      "openrouter"
+    ],
+    "content": "OpenClaw kann viele LLM-Anbieter nutzen. Modelle werden im Format provider/model referenziert (z.B. anthropic/claude-opus-4-6).\n\n**Schnellstart:** openclaw onboard (Auth einrichten) → openclaw models set <provider/model> (Standard setzen).\n\n**Fallback-Logik:**\n1. Primaermodell (agents.defaults.model.primary)\n2. Fallback-Modelle (agents.defaults.model.fallbacks)\n3. Provider-Failover (Auth-Profil-Rotation)\n4. Modellwechsel zum naechsten Fallback\n\n**Modellwechsel:** /model (Picker), /model list (alle auflisten), /model 3 (per Nummer), /model openai/gpt-5.2 (direkt setzen). CLI: openclaw models list|status|set|aliases|fallbacks|scan.\n\n**Auth-Profile:** Gespeichert in auth-profiles.json. Round-Robin-Rotation: OAuth zuerst, dann API-Keys, aeltestes zuerst. Profil bleibt pro Sitzung sticky. Cooldowns: exponentiell bei Auth-/Rate-Limit-Fehlern (max 1h), laenger bei Billing-Fehlern (max 24h).\n\n**Modell-Allowlist:** agents.defaults.models als Whitelist fuer /model-Overrides. Nicht erlaubte Modelle werden abgewiesen.\n\n**Custom Provider:** In models.json unter models.providers konfigurieren. Standard: Merge-Modus. Mit models.mode: replace komplett ersetzen.\n\n**Tipp:** openclaw models status --check fuer CI-taugliche Auth-Pruefung.",
+    "source": "Wissensbasis 5 - Modelle",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-gateway-architektur",
+    "title": "Gateway & Agent-Runtime",
+    "category": "architecture",
+    "difficulty": "intermediate",
+    "summary": "Gateway-Konzept, Agent-Runtime, Bootstrapping, OAuth, Workspace und Request-Flow.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "gateway",
+      "runtime",
+      "websocket",
+      "bootstrap",
+      "oauth",
+      "workspace",
+      "agent-runtime",
+      "handshake"
+    ],
+    "content": "OpenClaw nutzt ein zentrales Gateway pro Host als Knotenpunkt fuer alle Messaging-Provider und Clients.\n\n**Gateway-Grundprinzip:** Ein Gateway steuert alle Provider (WhatsApp/Baileys, Telegram/grammY, Slack, Discord, Signal, iMessage, WebChat). Clients (macOS-App, CLI, Web-UI) und Nodes (macOS/iOS/Android/headless) verbinden sich per WebSocket auf Standard-Port 18789. Das Gateway hostet zusaetzlich Canvas und A2UI auf demselben Port.\n\n**Komponenten:** Gateway-Daemon (Provider-Verbindungen, WS-API, Events: agent, chat, presence, health, heartbeat, cron), Clients (je eine WS-Verbindung), Nodes (canvas.*, camera.*, screen.record, location.get), WebChat (nutzt Gateway-WS-API direkt).\n\n**Protokoll:** WebSocket mit JSON-Textframes. Erster Frame muss connect sein. Request/Response: {type:\"req\"...} und {type:\"res\"...}. Events: {type:\"event\"...}. Optionales Token: OPENCLAW_GATEWAY_TOKEN. Neue Geraete brauchen Pairing.\n\n**Agent-Runtime:** Einzelne eingebettete Laufzeit (abgeleitet von pi-mono). Genau ein Workspace-Verzeichnis (agents.defaults.workspace). Setup: openclaw setup. Bootstrap-Dateien: AGENTS.md, SOUL.md, TOOLS.md, BOOTSTRAP.md, IDENTITY.md, USER.md - werden beim Sitzungsstart in den Kontext injiziert.\n\n**Werkzeuge und Skills:** Kernwerkzeuge (Lesen/Ausfuehren/Bearbeiten/Schreiben) stehen immer bereit. Skills aus drei Orten: Paket-eigene, lokale (~/.openclaw/skills), Workspace (/skills). Workspace gewinnt bei Namenskonflikten.\n\n**OAuth:** Unterstuetzte Flows: Anthropic (Setup-Token via claude setup-token), OpenAI Codex (PKCE-Flow), Anbieter-Plugins. Token-Speicherung in auth-profiles.json pro Agent. Auto-Refresh bei Ablauf.\n\n**Remote-Zugriff:** Bevorzugt Tailscale/VPN, alternativ SSH-Tunnel (ssh -N -L 18789:127.0.0.1:18789 user@host).",
+    "source": "Wissensbasis 3 - Agenten-Architektur",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-session-management",
+    "title": "Sessions, Pruning & Memory",
+    "category": "architecture",
+    "difficulty": "intermediate",
+    "summary": "Session-Lifecycle, Pruning, Memory-Modell, Compaction und Session-Tools.",
+    "dependencies": [
+      "chunk-gateway-architektur"
+    ],
+    "tags": [
+      "sessions",
+      "pruning",
+      "memory",
+      "compaction",
+      "dm-scope",
+      "reset",
+      "session-tools",
+      "markdown"
+    ],
+    "content": "OpenClaw verwaltet Sitzungen isoliert mit flexiblem Scoping und automatischer Bereinigung.\n\n**DM-Sitzungen:** Standard: Eine Haupt-DM-Sitzung (agent::main). session.dmScope steuert Isolation: main (alle teilen Kontext), per-peer (pro Peer isoliert), per-channel-peer (pro Kanal+Peer), per-account-channel-peer (staerkste Isolation). Fuer Mehrbenutzer: Secure DM Mode empfohlen.\n\n**Session Keys:** DM: agent::main oder agent::dm:<peer>. Gruppen: agent::<channel>:group:<id>. Cron: cron:. Hooks: hook:. Nodes: node-.\n\n**Reset-Mechanismen:** Daily-Reset (Standard 4:00 Uhr), Idle-Reset (optional per idleMinutes), manuell per /new oder /reset, Cron-Jobs immer frische sessionId.\n\n**Session Pruning:** Entfernt alte Tool-Ergebnisse vor LLM-Call aus dem Kontext, ohne JSONL-History zu aendern. Nur im Modus cache-ttl, nur fuer Anthropic-Modelle. Greift wenn letzter Aufruf aelter als TTL (Standard 5 Min). Soft-Trimming kuerzt uebergrosse Ergebnisse, Hard-Clear ersetzt komplett durch Platzhalter.\n\n**Memory-Modell:** Alle Erinnerungen als Markdown-Dateien im Workspace: memory/YYYY-MM-DD.md (Tages-Logs), MEMORY.md (kuratiertes Langzeitgedaechtnis). Vor Komprimierung: automatischer Memory Flush. Vektor-/Hybrid-Suche: Remote-Embeddings oder lokal via node-llama-cpp.\n\n**Compaction:** Bei fast vollem Kontext: aeltere Nachrichten → kompakte Zusammenfassung. /compact manuell moeglich. Unterschied: Compaction fasst zusammen und speichert, Pruning loescht nur im Arbeitsspeicher.\n\n**Session-Tools:** sessions_list (Metadaten), sessions_history (Rohprotokoll), sessions_send (Nachricht in andere Sitzung), sessions_spawn (Sub-Agent in isolierter Session).",
+    "source": "Wissensbasis 3 - Agenten-Architektur",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-agent-loop",
+    "title": "Agent Loop, Context & Streaming",
+    "category": "architecture",
+    "difficulty": "advanced",
+    "summary": "Agent Loop im Detail, System Prompt, Context-Window, Streaming und Message Queue.",
+    "dependencies": [
+      "chunk-gateway-architektur"
+    ],
+    "tags": [
+      "agent-loop",
+      "context",
+      "streaming",
+      "system-prompt",
+      "chunking",
+      "queue",
+      "timeout",
+      "kompaktierung"
+    ],
+    "content": "Der Agent Loop umfasst den gesamten Ablauf von Eingabe bis Zustandsspeicherung - pro Sitzung immer nur ein serialisierter Lauf.\n\n**Ablauf:** 1) agent RPC: Parameter pruefen, Sitzung loesen/erzeugen, sofort runId zurueckgeben. 2) agentCommand: Modell/Defaults loesen, Faehigkeiten-Snapshot, runEmbeddedPiAgent aufrufen. 3) runEmbeddedPiAgent: Serialisierung ueber Session-/Global-Queues, Pi-Sitzung erstellen, Events streamen, Timeout erzwingen. 4) subscribeEmbeddedPiSession: Events auf OpenClaw-Streams mappen (tool, assistant, lifecycle).\n\n**System-Prompt:** Besteht aus: OpenClaw-Basis-Prompt, Skill-Prompts, Bootstrap-Kontext, pro-Run-Overrides. Modi: full (Standard), minimal (Subagenten), none (nur Basisidentitaet). Workspace-Dateien (AGENTS.md, SOUL.md etc.) werden automatisch angehaengt.\n\n**Context-Window:** Beinhaltet: Systemaufforderung, Gespraechsverlauf, Toolaufrufe/-ergebnisse, Anhaenge, Komprimierungszusammenfassungen. Befehle: /status (Fuellstand), /context list (Injektionen), /context detail (feine Aufschluesselung), /compact (zusammenfassen).\n\n**Streaming:** Zwei Ebenen: Block-Streaming (Nachrichten in Bloecken) und Token-Streaming (nur Telegram, editMessageText). Konfiguration: blockStreamingDefault, blockStreamingBreak (text_end/message_end), blockStreamingChunk. Code-Fences werden nicht gesplittet. Coalescing: minChars, maxChars, idleMs gegen Spam.\n\n**Warteschlange:** FIFO mit pro-Spur-Parallelitaet. Modi: steer (aktuellen Lauf steuern), followup (naechster Zug), collect (Standard, zusammenfassen), steer-backlog (jetzt+spaeter). Pro Sitzung eigene Lane, globale main-Lane begrenzt durch maxConcurrent. Weitere Lanes: cron, subagent.\n\n**Timeouts:** agent.wait Standard 30s, Agentenlaufzeit-Default 600s. Vorzeitiges Ende durch: Timeout, AbortSignal, Verbindungsabbruch.",
+    "source": "Wissensbasis 3 - Agenten-Architektur",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-multi-agent",
+    "title": "Multi-Agent & Presence",
+    "category": "architecture",
+    "difficulty": "advanced",
+    "summary": "Multi-Agent-Setup, Presence-System, Agent-Koordination und Routing-Logik.",
+    "dependencies": [
+      "chunk-agent-loop"
+    ],
+    "tags": [
+      "multi-agent",
+      "presence",
+      "routing",
+      "bindings",
+      "sandbox",
+      "agentid",
+      "accountid",
+      "isolation"
+    ],
+    "content": "OpenClaw ermoeglicht mehrere isolierte Agenten parallel auf einem Gateway mit deterministischem Routing.\n\n**Grundkonzepte:** agentId = eigenes Gehirn (separater Workspace, Auth-Profile, Sitzungsstore). accountId = Konto-Instanz pro Kanal (z.B. WhatsApp personal/biz). binding = Routingregel nach Kanal, Account, Peer, Guild/Team.\n\n**Single- vs. Multi-Agent:** Standard: Single-Agent (agentId: main). Neuen Agent: openclaw agents add <id>. Pruefen: openclaw agents list --bindings. Jeder Agent: eigene Konten, Persoenlichkeit, Auth, Sessions.\n\n**Routing-Prioritaet:** 1) Exakte Peer-Uebereinstimmung. 2) Vererbung ueber uebergeordnete Peers. 3) Discord Gilde+Rollen. 4) Discord Gilde allein. 5) Slack Team. 6) Account-Match. 7) Kanal-Fallback. 8) Default-Agent. Konfiguration in bindings, most-specific wins.\n\n**Routing-Beispiele:** Ein WhatsApp-Account, DMs nach Absender verschiedenen Agenten zuordnen. Zwei Accounts → zwei Agenten. WhatsApp → Everyday-Agent, Telegram → Deep-Work-Agent. Einzelner Kontakt → Opus-Agent per Peer-Binding.\n\n**Pro-Agent Sandbox:** Seit 2026.1.6 eigene Sandbox-Einstellungen pro Agent. Persoenlicher Agent ohne Sandbox, Family-Agent mit sandbox.mode: all, scope: agent. tools.allow/deny pro Agent, tools.elevated bleibt global.\n\n**Presence:** Leichtgewichtiges Modell aller verbundenen Clients. Eintraege mit instanceId, host, ip, version, deviceFamily, mode, lastInputSeconds. Quellen: Gateway (self-Eintrag), WS-Clients (nach connect), system-event-Beacons, Nodes. TTL 5 Minuten, max 200 Eintraege.\n\n**Nachrichtenverarbeitung:** Deduplizierung per Cache. Debounce: schnelle Textnachrichten werden zusammengefasst, Medien und Befehle ausgenommen.",
+    "source": "Wissensbasis 3 - Agenten-Architektur",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-model-providers",
+    "title": "Provider-Uebersicht & Lokale Modelle",
+    "category": "models",
+    "difficulty": "intermediate",
+    "summary": "Eingebaute Provider, Custom-Provider, lokale Modelle und Proxy-Setups.",
+    "dependencies": [
+      "chunk-model-management"
+    ],
+    "tags": [
+      "provider",
+      "anthropic",
+      "openai",
+      "openrouter",
+      "bedrock",
+      "ollama",
+      "litellm",
+      "venice",
+      "lokale-modelle"
+    ],
+    "content": "OpenClaw unterstuetzt zahlreiche LLM-Anbieter ueber eingebaute und konfigurierbare Provider.\n\n**Eingebaute Provider:** openai (OPENAI_API_KEY), anthropic (API-Key oder Setup-Token), openai-codex (ChatGPT-OAuth), opencode (OPENCODE_API_KEY), google (Gemini), zai (GLM-Modelle), vercel-ai-gateway, openrouter, amazon-bedrock (AWS-Credentials), venice (kein Key noetig). Weitere: xAI, Groq, Cerebras, Mistral, GitHub Copilot, Hugging Face.\n\n**Anthropic-Details:** Option A: API-Key (ANTHROPIC_API_KEY). Option B: Setup-Token via claude setup-token (nutzt Claude-Abo). Prompt-Caching: cacheRetention none/short (5 Min)/long (1 Std). Typische Fehler: 401 = Token abgelaufen → erneut setup-token.\n\n**OpenRouter:** Einheitliche API fuer viele Modelle. Format: openrouter/<anbieter>/<modell>. Einrichtung per OPENROUTER_API_KEY.\n\n**Amazon Bedrock:** Provider amazon-bedrock, Auth per AWS-Credentials (SDK). Auto-Discovery via ListFoundationModels. Benoetigte Rechte: InvokeModel, InvokeModelWithResponseStream, ListFoundationModels.\n\n**LiteLLM:** Zentrale Kostenverfolgung, Modellrouting, virtuelle API-Schluessel mit Budget. Endpunkt: localhost:4000/v1 (OpenAI-kompatibel).\n\n**Lokale Modelle:** Ollama (auto-erkannt, 127.0.0.1:11434/v1), vLLM (127.0.0.1:8000/v1), LM Studio. Mindest-Hardware: zwei Mac Studios oder vergleichbares GPU-System (~30.000 EUR). Empfehlung: LM Studio + MiniMax M2.1.\n\n**Hybrid-Setup:** Primaer gehostet → Fallback lokal → Fallback weiteres gehostetes Modell. models.mode: merge haelt alle parallel.\n\n**Weitere:** Moonshot/Kimi (kimi-k2.5), MiniMax M2.1 (OAuth oder API-Key), Synthetic (kostenlose Modelle), Qwen (OAuth), Qianfan/Baidu.",
+    "source": "Wissensbasis 5 - Modelle",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-plattformen",
+    "title": "Plattformen: macOS, Linux, Windows, Mobile & Web",
+    "category": "platforms",
+    "difficulty": "intermediate",
+    "summary": "macOS-App, Voice Wake, Canvas, Linux-Gateway, Windows WSL2, Android/iOS und WebChat.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "macos",
+      "linux",
+      "windows",
+      "wsl2",
+      "android",
+      "ios",
+      "webchat",
+      "voice-wake",
+      "canvas",
+      "plattformen"
+    ],
+    "content": "OpenClaw ist in TypeScript geschrieben und laeuft auf Node.js. Unterstuetzte Plattformen: macOS (voll), Linux (Gateway voll), Windows (via WSL2), iOS (interne Vorschau), Android (Node-App).\n\n**macOS-App:** Menüleisten-App zeigt Status und Benachrichtigungen. Stellt macOS-Tools bereit: Canvas, Kamera, Bildschirmaufnahme, system.run. Gateway als LaunchAgent (bot.molt.gateway). Beenden der App stoppt Gateway nicht. Lokal oder Remote (SSH/Tailscale).\n\n**Voice Wake (macOS):** Aktivierungswort-Modus (lauscht staendig, startet bei Trigger) oder Push-to-Talk (rechte Wahltaste). Reagiert nach ~0.55s Pause, beendet nach 2-5s Stille oder max 120s. Berechtigungen: Mikrofon, Sprache, Barrierefreiheit.\n\n**Canvas (macOS):** Visueller Arbeitsbereich (WKWebView). URL-Schema openclaw-canvas:///. Auto-Reload bei Aenderungen. A2UI-Integration unter /__openclaw__/a2ui/.\n\n**Linux:** npm i -g openclaw@latest → openclaw onboard --install-daemon. systemd-User-Service (openclaw-gateway.service). SSH-Tunnel fuer Remote-Zugriff.\n\n**Windows WSL2:** wsl --install -d Ubuntu-24.04. systemd aktivieren in /etc/wsl.conf. Portproxy fuer LAN-Zugriff: netsh interface portproxy add v4tov4. WSL-IP aendert sich nach Neustart!\n\n**Android:** Node (Begleit-Knoten), kein eigenes Gateway. Verbindung per mDNS, Tailscale oder manuell. Pairing: openclaw nodes approve. Chat teilt WebChat-Session (main).\n\n**iOS:** Interne Vorschau, nicht im App Store. WebSocket zum Gateway, Node-Funktionen: Canvas, Screenshot, Kamera, Standort, Sprachmodus.\n\n**WebChat:** Native SwiftUI (macOS/iOS) oder Browser (Control UI). Spricht direkt mit Gateway-WebSocket. TUI: openclaw tui (Terminal-UI mit Slash-Befehlen).",
+    "source": "Wissensbasis 6 - Plattformen",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-gateway-config",
+    "title": "Gateway-Konfiguration & Hot Reload",
+    "category": "gateway-ops",
+    "difficulty": "intermediate",
+    "summary": "Quick Start, Port/Bind, Config-Datei, Config-Referenz, Hot Reload und Auth.",
+    "dependencies": [
+      "chunk-gateway-architektur"
+    ],
+    "tags": [
+      "gateway",
+      "config",
+      "hot-reload",
+      "port",
+      "bind",
+      "openclaw-json",
+      "onboard",
+      "doctor"
+    ],
+    "content": "Das Gateway ist der zentrale, dauerhaft laufende Prozess - Routing, Control-Plane und Kanalverbindungen ueber einen Multiplex-Port.\n\n**Schnellstart:** openclaw gateway --port 18789 (optional --verbose, --force). Health: openclaw gateway status, openclaw status, openclaw logs --follow. Kanalpruefung: openclaw channels status --probe.\n\n**Port-Prioritaet:** 1) CLI --port, 2) OPENCLAW_GATEWAY_PORT, 3) gateway.port in Config, 4) Standard 18789. Bind-Werte: loopback (Standard), lan, tailnet, auto, Custom-IP. Abgeleitete Ports: Browser-Control = Basis+2, Canvas auf Gateway-Port.\n\n**Config-Datei:** ~/.openclaw/openclaw.json (JSON5, optional). Fehlt sie → sichere Defaults. Bearbeitung: openclaw onboard (Wizard), openclaw configure, Browser-UI, oder direkt editieren. Strenge Validierung: unbekannte Keys/falsche Typen verhindern Start. Reparatur: openclaw doctor --fix.\n\n**Hot Reload:** Modi: hybrid (Standard, sichere Aenderungen sofort, kritische mit Auto-Restart), hot (nur sichere), restart (immer Neustart), off (kein Monitoring). Ohne Neustart: Kanaele, Agenten/Models, Automatisierung, Sessions, Tools, UI. Mit Neustart: gateway.*-Einstellungen, Infrastruktur.\n\n**Config-Hauptbereiche:** channels.* (Kanaele + DM-Policy), agents.defaults (Workspace, Model, Heartbeat, Sandbox), agents.list (Multi-Agent), session.* (dmScope, Resets), messages.* (Prefix, Queue, TTS), tools.* (Profile, allow/deny, elevated), browser.*, ui.*.\n\n**Authentifizierung:** API-Key (empfohlen fuer Anthropic), OAuth (Modellanbieter), Setup-Token (Claude Max/Pro). Status: openclaw models status, openclaw doctor.\n\n**Env-Variablen:** Gelesen aus Prozess-Env, .env im CWD, ~/.openclaw/.env. Vorhandene werden nicht ueberschrieben.",
+    "source": "Wissensbasis 7 - Gateway Ops",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-gateway-security",
+    "title": "Gateway Security, Sandbox & Health",
+    "category": "gateway-ops",
+    "difficulty": "advanced",
+    "summary": "Security-Konzept, Sandbox, Gateway Lock, Health Checks, Logging und Troubleshooting.",
+    "dependencies": [
+      "chunk-gateway-config"
+    ],
+    "tags": [
+      "security",
+      "sandbox",
+      "docker",
+      "health",
+      "logging",
+      "doctor",
+      "audit",
+      "gateway-lock",
+      "troubleshooting"
+    ],
+    "content": "OpenClaw bietet mehrschichtige Sicherheit: Identitaet, Scope und Modell als Kontrollschichten.\n\n**Security Audit:** openclaw security audit (--deep fuer Tiefenpruefung, --fix fuer sichere Defaults). Prueft: DM/Group-Policies, Tool-Explosionsradius, Netzwerkexposition, Browser-Kontrolle, Plugins, Modellhygiene.\n\n**Hardening:** Dateiberechtigungen (~/.openclaw → 700, openclaw.json → 600), Gateway-Bind auf loopback, Reverse-Proxy mit trustedProxies, DM-Isolation (per-channel-peer), starke Modelle fuer Tool-Bots.\n\n**Sandbox (Docker):** Tools laufen optional in Containern, Gateway bleibt auf Host. Modi: off, non-main (Default, nur Nicht-Main sandboxed), all. Scope: session (ein Container/Session), agent (ein/Agent), shared. Workspace-Zugriff: none (Default), ro, rw. Default-Image: openclaw-sandbox:bookworm-slim, Standard kein Netzwerk.\n\n**Tool-Richtlinien:** deny gewinnt immer. allow nicht leer → alles andere blockiert. Tool-Gruppen: group:runtime, group:fs, group:sessions, group:memory etc. Elevated-Tools umgehen Sandbox.\n\n**Gateway Lock:** Exklusiver WS-Listener verhindert Doppelstart. Bei EADDRINUSE: anderer Port oder Port freigeben.\n\n**Health Checks:** openclaw status (--all, --deep), openclaw health --json (Credentials, Kanaele, Sessions), /status im Chat. Logs: /tmp/openclaw/openclaw-*.log, openclaw logs --follow. Log-Levels: logging.level (Datei), --verbose (Konsole), logging.consoleLevel.\n\n**Logging:** Redaction sensibler Daten (Keys, Tokens, Bearer) aktiviert per Default. WS-Logs: Normal nur Fehler, --verbose vollstaendig.\n\n**Doctor:** openclaw doctor (--yes, --fix, --deep). Migriert Config-Keys, prueft Integritaet, Modell-Auth, Sandbox-Images, Port-Konflikte. Erstellt Backup als .bak.\n\n**Incident Response:** 1) Gateway/Tools stoppen, DMs sperren. 2) Secrets rotieren. 3) Logs, Sessions, Plugins pruefen. 4) Audit erneut laufen lassen.",
+    "source": "Wissensbasis 7 - Gateway Ops",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-gateway-network",
+    "title": "Netzwerk, Remote Access & Discovery",
+    "category": "gateway-ops",
+    "difficulty": "advanced",
+    "summary": "Netzwerk-Architektur, WS-Protokoll, HTTP-Endpoints, Tailscale, Pairing und Discovery.",
+    "dependencies": [
+      "chunk-gateway-config"
+    ],
+    "tags": [
+      "netzwerk",
+      "remote",
+      "tailscale",
+      "ssh",
+      "discovery",
+      "pairing",
+      "websocket",
+      "http-api",
+      "trusted-proxy"
+    ],
+    "content": "OpenClaw bietet flexible Netzwerkoptionen fuer lokalen und Remote-Betrieb.\n\n**WS-Protokoll:** JSON-Textframes ueber WebSocket. Handshake: Gateway sendet connect.challenge → Client sendet connect (Version, Rolle, Scopes) → Gateway antwortet hello-ok. Rollen: operator (Steuerung) und node (Capability-Host). Operator-Scopes: read, write, admin, approvals, pairing.\n\n**HTTP-Endpoints:** POST /v1/chat/completions (OpenAI-kompatibel, Standard deaktiviert). POST /tools/invoke (immer aktiv, Tool-Policy-geschuetzt). Auth per Bearer-Token. Rate-Limiting mit Retry-After.\n\n**Remote-Zugriff:** SSH-Tunnel (ssh -N -L 18789:127.0.0.1:18789 user@host), Tailscale, oder Direct WS/WSS. Config-Keys: gateway.mode (remote), gateway.remote.url/token/password. Auto-Start SSH per macOS LaunchAgent.\n\n**Tailscale:** Modi: serve (Gateway auf Loopback, Tailscale als HTTPS-Proxy), funnel (oeffentliches HTTPS, Passwort-Auth Pflicht!), off (Standard). CLI: openclaw gateway --tailscale serve|funnel. Voraussetzungen Funnel: Tailscale >= v1.38.3, MagicDNS, HTTPS, nur Ports 443/8443/10000.\n\n**Discovery:** Bonjour/mDNS (nur LAN, _openclaw-gw._tcp), Tailnet (MagicDNS/Unicast DNS-SD), manuell/SSH. Wide-Area Bonjour: openclaw dns setup --apply (CoreDNS auf Tailscale-Interface).\n\n**Geraete-Pairing:** Node verbindet per WS → Gateway legt Anfrage an → Admin genehmigt per CLI/UI → Token erstellt → Node verbindet erneut. Verfallszeit: 5 Minuten. CLI: openclaw nodes pending/approve/reject/status. Token in ~/.openclaw/nodes/paired.json.\n\n**Trusted-Proxy:** Fuer Setups hinter Reverse-Proxy (Pomerium, Caddy, nginx, Traefik). Pflichtfelder: gateway.trustedProxies, gateway.auth.mode: trusted-proxy, userHeader. Checkliste: Gateway nur via Proxy erreichbar, x-forwarded-Header ueberschreiben, TLS am Proxy.\n\n**Mehrere Gateways:** Pro Instanz: eigene Config, State-Dir, Workspace, Port. Mindestabstand 20 Ports. Profile: openclaw --profile main/rescue gateway.",
+    "source": "Wissensbasis 7 - Gateway Ops",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-cli-basics",
+    "title": "CLI-Grundlagen: Setup, Status, Doctor",
+    "category": "cli",
+    "difficulty": "beginner",
+    "summary": "CLI-Ueberblick, Setup/Onboard, Configure, Status, Doctor, Health, Update und Logs.",
+    "dependencies": [
+      "chunk-openclaw-setup"
+    ],
+    "tags": [
+      "cli",
+      "setup",
+      "onboard",
+      "configure",
+      "status",
+      "doctor",
+      "health",
+      "update",
+      "logs",
+      "gateway"
+    ],
+    "content": "Die OpenClaw-CLI ist das zentrale Werkzeug zur Installation, Konfiguration und Steuerung.\n\n**Globale Flags:** --dev (Dev-Profil), --profile <name> (isoliertes Profil), --no-color, --json, --plain, --version, --update.\n\n**Setup & Onboard:** openclaw setup initialisiert Config und Workspace. openclaw onboard ist der interaktive Assistent (--flow quickstart|manual, --mode remote). Non-interaktiv: openclaw onboard --non-interactive --auth-choice <provider> --custom-api-key <key>. Unterstuetzte Auth: Anthropic, OpenAI, xAI, OpenCode, Vercel, MiniMax, Synthetic, Moonshot, Z.AI.\n\n**Configure:** openclaw configure (interaktiv, --section models|channels). Nicht-interaktiv: openclaw config get/set/unset <json5-pfad>.\n\n**Gateway:** openclaw gateway run (--port, --bind, --verbose, --force). Status: openclaw gateway status|health|probe. Dienst: gateway install|start|stop|restart|uninstall. Discovery: gateway discover.\n\n**Status & Diagnose:** openclaw status (--all, --deep mit Live-Tests, --usage). openclaw health --json (Credentials, Kanaele, Sessions). openclaw doctor (--yes, --fix, --deep fuer Reparatur/Migration).\n\n**Logs:** openclaw logs --follow (Live, wie tail -f), --json, --limit, --local-time.\n\n**Update:** openclaw update (--channel stable|beta|dev, --tag <version>, --no-restart). openclaw update status prueft Verfuegbarkeit.\n\n**Dashboard:** openclaw dashboard oeffnet Control-UI im Browser. Token aus gateway.auth.token einfuegen.\n\n**Weitere Grundbefehle:** openclaw channels list|status|login|logout. openclaw models list|status|set. openclaw sessions (--active, --json). openclaw reset (--scope, --dry-run).",
+    "source": "Wissensbasis 8 - CLI-Referenz",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-cli-advanced",
+    "title": "CLI-Fortgeschritten: Sessions, Memory, Hooks & mehr",
+    "category": "cli",
+    "difficulty": "advanced",
+    "summary": "Agent-Befehle, Sessions, Memory, Hooks, Plugins, Skills, Nodes, Browser, Sandbox und mehr.",
+    "dependencies": [
+      "chunk-cli-basics"
+    ],
+    "tags": [
+      "cli",
+      "agent",
+      "sessions",
+      "memory",
+      "hooks",
+      "plugins",
+      "skills",
+      "nodes",
+      "browser",
+      "sandbox",
+      "cron",
+      "voicecall",
+      "tui"
+    ],
+    "content": "Fortgeschrittene CLI-Befehle fuer Agenten, Automatisierung und Erweiterungen.\n\n**Agent-Lauf:** openclaw agent --message \"...\" (--agent <name>, --to <ziel>, --deliver, --reply-channel, --thinking <level>, --local fuer Embedded-Modus).\n\n**Agents-Verwaltung:** openclaw agents list|add|delete. Identitaet: agents set-identity --agent main --avatar <pfad> (oder --from-identity fuer IDENTITY.md).\n\n**Channels:** openclaw channels add --channel telegram --token <bot-token>. channels remove, login, logout. channels resolve (Namen in IDs aufloesen). channels capabilities (Scopes pruefen).\n\n**Browser:** openclaw browser tabs|open|focus|close|snapshot|screenshot|navigate|click|type. Profile: openclaw (isoliert) oder chrome (Relay-Extension). Remote via gateway.nodes.browser.\n\n**Cron:** openclaw cron edit <id> (--announce, --channel, --to, --no-deliver). Einmal-Jobs mit --at (auto-Loeschung). Exponentielles Backoff bei Fehlern.\n\n**Memory:** openclaw memory search \"...\" (semantische Suche). memory status (--deep fuer Vektorspeicher, --index fuer Neuindizierung). Deaktivieren: plugins.slots.memory = none.\n\n**Hooks:** openclaw hooks list (--eligible), hooks info/check/enable/disable. Installation: hooks install <pfad-oder-spec> (lokal, Archiv, npm). Eingebaute: session-memory, bootstrap-extra-files, command-logger, boot-md.\n\n**Plugins:** openclaw plugins list|info|enable|disable|doctor|uninstall|update. Installation: plugins install <spec>. Jedes Plugin braucht openclaw.plugin.json.\n\n**Skills:** openclaw skills list (--eligible), skills info/check.\n\n**Nodes:** openclaw nodes list|pending|approve|reject|status|rename. Befehle ausfuehren: nodes invoke --node <id> --command <cmd>, nodes run --node <id> --raw \"...\".\n\n**Sandbox:** openclaw sandbox explain|list|recreate. Auto-Bereinigung: prune.idleHours (24h), prune.maxAgeDays (7 Tage).\n\n**Weitere:** openclaw message send (--channel, --target, Broadcast), approvals (Exec-Genehmigungen), security audit, system event/heartbeat/presence, tui, voicecall, uninstall.",
+    "source": "Wissensbasis 8 - CLI-Referenz",
+    "lastUpdated": "2026-02-26"
+  },
+  {
+    "id": "chunk-cost-optimization",
+    "title": "Kostenstrategien: Caching, Routing & Lean Init",
+    "category": "cost",
+    "difficulty": "intermediate",
+    "summary": "Praktische Strategien um API-Kosten bei der Buchproduktion zu senken: Prompt-Caching, Smart Model Routing und Lean Init.",
+    "dependencies": [
+      "chunk-model-management"
+    ],
+    "tags": [
+      "kosten",
+      "caching",
+      "routing",
+      "haiku",
+      "sonnet",
+      "token",
+      "budget",
+      "lean-init"
+    ],
+    "content": "API-Kosten sind der groesste laufende Posten bei KI-gestuetzter Buchproduktion. Mit drei Strategien senkst du die Kosten um 60-80%.\n\n**1. Prompt-Caching (Anthropic):**\nBei wiederholten Aufrufen mit gleichem System-Prompt (z.B. SOUL.md + AGENTS.md) cached Anthropic den Prompt-Prefix. Ab dem zweiten Aufruf zahlst du nur 10% der Input-Tokens fuer den gecachten Teil. Bei 15 Kapiteln mit je ~2000 Token System-Prompt sparst du ~27.000 Tokens. Aktivierung: Passiert automatisch bei identischem Prefix.\n\n**2. Smart Model Routing:**\nNicht jeder Schritt braucht das teuerste Modell. Faustregel: Haiku fuer Entwuerfe und Strukturierung (WRITER-Modus, Outlines), Sonnet fuer Feinschliff und Qualitaet (EDITOR-Modus, QA). Haiku kostet ca. 1/10 von Sonnet. Konfiguration in OpenClaw: model_overrides pro Modus in der AGENTS.md oder per Fallback-Kette.\n\n**3. Lean Init (minimaler System-Prompt):**\nJeder Token im System-Prompt kostet bei jedem Aufruf. Halte SOUL.md unter 500 Woerter, AGENTS.md unter 150 Zeilen. Nutze Prompt-Modi: full nur beim Sitzungsstart, minimal fuer Sub-Agenten (spart bis zu 50% Context-Tokens).\n\n**Rechenbeispiel:** 15 Kapitel, je 3 Pipeline-Schritte = 45 API-Calls. Ohne Optimierung: ~$4.50. Mit Caching + Routing: ~$1.20. Pro Buch sparst du ~$3.30.\n\n**Tipp:** Starte mit Model Routing (groesster Hebel), dann Lean Init, dann Caching. Ueberwache Kosten im Anthropic Dashboard.",
+    "source": "Wissensbasis 3, 5, Projektdoku",
+    "lastUpdated": "2026-03-03"
+  },
+  {
+    "id": "chunk-agentic-coding",
+    "title": "Agentic Coding: Agent aendert eigene Config",
+    "category": "advanced-practice",
+    "difficulty": "advanced",
+    "summary": "Wie ein Agent seine eigene Konfiguration (SOUL.md, AGENTS.md) modifiziert und was dabei zu beachten ist.",
+    "dependencies": [
+      "chunk-core-tools",
+      "chunk-agents-md"
+    ],
+    "tags": [
+      "agentic-coding",
+      "self-modification",
+      "soul-md",
+      "agents-md",
+      "guardrails",
+      "sandbox",
+      "claude-code"
+    ],
+    "content": "Agentic Coding bedeutet: Der Agent schreibt oder aendert seinen eigenen Code und seine Konfiguration. In OpenClaw heisst das konkret: Der Agent kann SOUL.md, AGENTS.md oder andere Bootstrap-Dateien selbst modifizieren.\n\n**Typische Anwendungsfaelle:**\n\n1. **Stil-Verfeinerung:** Nach 3 Kapiteln erkennt der Agent Muster und passt seine SOUL.md an ('Leser bevorzugen kuerzere Absaetze → Regel ergaenzt')\n2. **Fehler-Korrektur:** QA-Agent findet wiederkehrende Probleme und ergaenzt AGENTS.md um neue Pruefregeln\n3. **Workflow-Optimierung:** Agent erkennt unnoetige Schritte und schlaegt Pipeline-Aenderungen vor\n\n**Werkzeuge:**\n\nOpenClaw stellt apply_patch und exec-Tools bereit. Der Agent kann Dateien im Workspace direkt aendern. Fuer komplexere Aenderungen: Claude Code oder Codex als Orchestrator, der den OpenClaw-Agenten als Sub-Prozess steuert.\n\n**Guardrails (WICHTIG!):**\n\n- **Sandbox:** Aenderungen laufen in der Sandbox – kein Zugriff auf Host-System\n- **Approval-Flow:** Konfiguriere exec.requireApproval = true fuer kritische Befehle\n- **Diff-Review:** Agent muss Aenderungen als Diff zeigen bevor sie angewendet werden\n- **Rollback:** Git-Versionierung im Workspace ermoeglicht jederzeit Rueckkehr zum vorherigen Stand\n- **Grenzen setzen:** In AGENTS.md definieren: 'Aendere NIE die Sicherheitsregeln oder API-Keys'\n\n**Praxis-Beispiel:** Der EDITOR-Agent stellt fest, dass Kapitel 5-8 zu viele Fachbegriffe ohne Erklaerung verwenden. Er ergaenzt in SOUL.md: 'Regel: Jeden Fachbegriff bei erster Verwendung in Klammern erklaeren.' Ab Kapitel 9 greift die neue Regel automatisch.\n\n**Risiko-Bewertung:** Agentic Coding ist maechtig aber riskant. Starte mit read-only Analyse, dann schreib-Zugriff nur auf SOUL.md, dann schrittweise erweitern.",
+    "source": "Wissensbasis 4, Projektdoku",
+    "lastUpdated": "2026-03-03"
+  },
+  {
+    "id": "chunk-deep-research",
+    "title": "Deep Research: Agent recherchiert systematisch",
+    "category": "advanced-practice",
+    "difficulty": "advanced",
+    "summary": "Wie du den Agenten fuer systematische Web-Recherche einsetzt: Brave Search, Perplexity, Browser-Automatisierung und Faktencheck.",
+    "dependencies": [
+      "chunk-browser-tools",
+      "chunk-core-tools"
+    ],
+    "tags": [
+      "deep-research",
+      "brave-search",
+      "perplexity",
+      "web-fetching",
+      "browser",
+      "faktencheck",
+      "quellen"
+    ],
+    "content": "Deep Research nutzt den OpenClaw-Agenten als systematischen Rechercheur. Statt manuell zu googeln, definierst du einen Research-Auftrag und der Agent liefert strukturierte Ergebnisse.\n\n**Verfuegbare Research-Tools:**\n\n1. **Brave Search Integration:** Direkter Zugriff auf Brave Search API. Vorteil: Privacy-fokussiert, keine Tracking-Cookies, gute Ergebnisse fuer technische Themen. Konfiguration: BRAVE_API_KEY in .env setzen.\n2. **Perplexity als Backend:** Fuer zusammenfassende Recherche. Perplexity liefert bereits aufbereitete Antworten mit Quellen. Nutzen als Second-Opinion-Check fuer eigene Kapitel-Inhalte.\n3. **Web Fetching:** Der Agent kann Webseiten direkt abrufen und analysieren. Nuetzlich fuer Dokumentations-Seiten, Changelogs, Release-Notes.\n4. **Browser-Automatisierung (Playwright):** Fuer dynamische Seiten die JavaScript brauchen. Der Agent steuert einen headless Browser, navigiert, extrahiert Daten.\n\n**Faktencheck-Workflow fuer Buchkapitel:**\n\n1. Agent liest fertiges Kapitel und extrahiert alle faktischen Behauptungen\n2. Fuer jede Behauptung: Brave Search mit gezielter Query\n3. Vergleich: Stimmt die Behauptung mit den Quellen ueberein?\n4. Output: JSON mit claim, source_url, status (confirmed/disputed/unverified)\n5. Disputed Claims werden markiert → Thomas entscheidet\n\n**Quellen-Validierung:**\n\n- Mindestens 2 unabhaengige Quellen pro faktische Behauptung\n- Primaerquellen bevorzugen (offizielle Docs, GitHub, Anthropic Blog)\n- Datum pruefen: Ist die Quelle aktuell genug?\n- Keine Wikipedia als alleinige Quelle\n\n**Praxis-Tipp:** Definiere Research-Auftraege als Templates in der Pipeline. Beispiel: 'research_chapter_facts' als eigener Pipeline-Schritt nach QA, vor Final Review. So wird jedes Kapitel automatisch fakten-gecheckt.\n\n**Kosten:** Brave Search API ist kostenlos bis 2000 Queries/Monat. Perplexity hat ein Free-Tier. Browser-Automatisierung kostet nur Rechenzeit auf dem VPS.",
+    "source": "Wissensbasis 4",
+    "lastUpdated": "2026-03-03"
+  }
+]
