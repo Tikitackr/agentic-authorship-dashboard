@@ -1,41 +1,648 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Content-Pipeline — Agentic Authorship Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+<!-- M04: Content-Pipeline — Agentic Authorship Dashboard -->
+<style>
+  /* ── M04 Scoped Styles ── */
+  .m04 { max-width: 100%; }
+
+  .m04-hero {
+    background: linear-gradient(135deg, rgba(167,139,250,0.12) 0%, rgba(59,130,246,0.08) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m04-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m04-hero-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(167, 139, 250, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--purple);
+    flex-shrink: 0;
+  }
+
+  .m04-hero-icon svg { width: 20px; height: 20px; }
+
+  .m04-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m04-hero h2 .pct {
+    color: var(--green);
+    margin-left: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .m04-hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .m04-hero-desc strong { color: var(--text); }
+
+  /* Progress Bar */
+  .m04-progress-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+    margin: 0.75rem 0 0.4rem;
+  }
+
+  .m04-progress-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+    transition: width 0.6s ease;
+  }
+
+  .m04-progress-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* Stats Row */
+  .m04-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m04-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .m04-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .m04-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+  }
+
+  .m04-stat-value.green { color: var(--green); }
+  .m04-stat-value.purple { color: var(--purple); }
+  .m04-stat-value.amber { color: var(--amber); }
+
+  /* Section */
+  .m04-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .m04-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m04-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
+  .m04-section-title .badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .badge-complete { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-wip { background: var(--amber-dim); color: var(--amber); }
+
+  /* Filter Tabs */
+  .m04-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .m04-filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .m04-filter-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  .m04-filter-btn.active {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* Pipeline Phases */
+  .m04-phases {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m04-phase {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .m04-phase-num {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .m04-phase-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 0.2rem;
+  }
+
+  .m04-phase-bar {
+    height: 3px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+  }
+
+  .phase-outline  .m04-phase-num { color: var(--blue); }
+  .phase-outline  .m04-phase-bar { background: var(--blue); }
+  .phase-draft    .m04-phase-num { color: var(--purple); }
+  .phase-draft    .m04-phase-bar { background: var(--purple); }
+  .phase-review   .m04-phase-num { color: var(--amber); }
+  .phase-review   .m04-phase-bar { background: var(--amber); }
+  .phase-pdf      .m04-phase-num { color: var(--cyan, #22d3ee); }
+  .phase-pdf      .m04-phase-bar { background: var(--cyan, #22d3ee); }
+  .phase-final    .m04-phase-num { color: var(--green); }
+  .phase-final    .m04-phase-bar { background: var(--green); }
+
+  /* Chapter List */
+  .m04-chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .m04-chapter {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: grid;
+    grid-template-columns: 70px 1fr auto auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.15s;
+  }
+
+  .m04-chapter:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+  }
+
+  .m04-ch-id {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .teil-a .m04-ch-id { color: var(--blue); }
+  .teil-b .m04-ch-id { color: var(--purple); }
+  .teil-c .m04-ch-id { color: var(--green); }
+  .teil-v .m04-ch-id { color: var(--amber); }
+
+  .m04-ch-info { min-width: 0; }
+
+  .m04-ch-title {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m04-ch-meta {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+  }
+
+  .m04-ch-words {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .m04-ch-score {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 42px;
+  }
+
+  .score-high { color: var(--green); }
+  .score-mid  { color: var(--amber); }
+
+  .m04-ch-badges {
+    display: flex;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  .m04-ch-badge {
+    font-size: 0.58rem;
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .ch-badge-final { background: rgba(34,197,94,0.15); color: var(--green); }
+  .ch-badge-pdf   { background: rgba(34,211,238,0.15); color: var(--cyan, #22d3ee); }
+  .ch-badge-drive { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+  /* Production Tracker */
+  .m04-prod-grid {
+    display: grid;
+    grid-template-columns: 90px repeat(5, 1fr);
+    gap: 1px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.7rem;
+  }
+
+  .m04-prod-cell {
+    background: var(--bg-card);
+    padding: 0.5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .m04-prod-header {
+    background: rgba(245,158,11,0.06);
+    font-weight: 600;
+    color: var(--amber);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .m04-prod-label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.68rem;
+    justify-content: flex-start;
+    padding-left: 0.75rem;
+  }
+
+  .m04-prod-check { color: var(--green); font-size: 0.9rem; }
+  .m04-prod-pending { color: var(--text-dim); opacity: 0.3; font-size: 0.75rem; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .m04-stats { grid-template-columns: repeat(2, 1fr); }
+    .m04-phases { grid-template-columns: repeat(3, 1fr); }
+    .m04-chapter {
+      grid-template-columns: 60px 1fr;
+      gap: 0.5rem;
     }
-    .card {
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: 16px;
-      background: rgba(245, 158, 11, 0.05);
-      max-width: 400px;
+    .m04-ch-words, .m04-ch-score, .m04-ch-badges {
+      grid-column: 2;
+      justify-self: start;
     }
-    .module-id { color: #f59e0b; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
-    p { color: #888; font-size: 0.95rem; line-height: 1.5; }
-    a { color: #f59e0b; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="module-id">M04</div>
-    <h1>Content-Pipeline</h1>
-    <p>Dieses Modul wird entwickelt.</p>
-    <p style="margin-top: 1.5rem;"><a href="../">← Zurück zur Shell</a></p>
+    .m04-ch-badges { margin-top: -0.2rem; }
+    .m04-hero { padding: 1.25rem; }
+    .m04-prod-grid {
+      grid-template-columns: 70px repeat(5, 1fr);
+      font-size: 0.6rem;
+    }
+    .m04-prod-label { font-size: 0.6rem; padding-left: 0.4rem; }
+  }
+</style>
+
+<div class="m04">
+
+  <!-- Hero: Pipeline Status -->
+  <div class="m04-hero">
+    <div class="m04-hero-header">
+      <div class="m04-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      </div>
+      <h2>Content-Pipeline <span class="pct">100%</span></h2>
+    </div>
+    <p class="m04-hero-desc">
+      <strong>Alle 16 Kapitel</strong> haben die komplette Pipeline durchlaufen: Outline &rarr; Entwurf &rarr; Review &rarr; Final. Alle Einzel-PDFs sind gebaut. N&auml;chster Schritt: Front/Back-Matter, QR-Codes und Gesamt-PDF.
+    </p>
+    <div class="m04-progress-wrap">
+      <div class="m04-progress-bar" style="width: 100%"></div>
+    </div>
+    <p class="m04-progress-label">16 von 16 Kapiteln &mdash; Manuskript + PDFs komplett</p>
   </div>
-</body>
-</html>
+
+  <!-- Statistiken -->
+  <div class="m04-stats">
+    <div class="m04-stat">
+      <div class="m04-stat-value green">16</div>
+      <div class="m04-stat-label">Final</div>
+    </div>
+    <div class="m04-stat">
+      <div class="m04-stat-value">~72k</div>
+      <div class="m04-stat-label">W&ouml;rter</div>
+    </div>
+    <div class="m04-stat">
+      <div class="m04-stat-value purple">16</div>
+      <div class="m04-stat-label">PDFs</div>
+    </div>
+    <div class="m04-stat">
+      <div class="m04-stat-value amber">8.6</div>
+      <div class="m04-stat-label">&Oslash; Score</div>
+    </div>
+  </div>
+
+  <!-- Pipeline-Phasen Uebersicht -->
+  <div class="m04-section">
+    <div class="m04-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      Pipeline-Phasen
+      <span class="badge badge-complete">Alle abgeschlossen</span>
+    </div>
+    <div class="m04-phases" id="m04-phases">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Filter + Kapitel-Liste -->
+  <div class="m04-section">
+    <div class="m04-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      Kapitel-Status
+    </div>
+    <div class="m04-filters" id="m04-filters">
+      <!-- filled by JS -->
+    </div>
+    <div class="m04-chapter-list" id="m04-chapter-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- 5-Ebenen Produktions-Tracker -->
+  <div class="m04-section">
+    <div class="m04-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      Produktions-Tracker (5 Ebenen)
+      <span class="badge badge-wip">Phase 1 done</span>
+    </div>
+    <div class="m04-prod-grid" id="m04-prod-grid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Kapitel-Daten (Stand Session 148) ──
+  var CHAPTERS = [
+    { id: 'Vorwort', title: 'Vorwort',                          teil: '-', words: '~2.500', score: '-',   sessions: 'S131/S135', pdf: true, drive: true },
+    { id: 'Kap 1',  title: 'Was ist OpenClaw?',                 teil: 'A', words: '~4.000', score: '-',   sessions: 'S104',      pdf: true, drive: true },
+    { id: 'Kap 2',  title: 'Installation & Setup',              teil: 'A', words: '~5.000', score: '-',   sessions: 'S104',      pdf: true, drive: true },
+    { id: 'Kap 3',  title: 'Docker f\u00fcr OpenClaw',          teil: 'A', words: '~4.500', score: '-',   sessions: 'S104',      pdf: true, drive: true },
+    { id: 'Kap 4',  title: 'Agent-Konzepte',                    teil: 'A', words: '~4.500', score: '-',   sessions: 'S104',      pdf: true, drive: true },
+    { id: 'Kap 5',  title: 'Multi-Channel Setup',               teil: 'A', words: '4.184',  score: '8.5', sessions: 'S114',      pdf: true, drive: true },
+    { id: 'Kap 6',  title: 'Security Best Practices',           teil: 'A', words: '3.817',  score: '8.5', sessions: 'S115',      pdf: true, drive: true },
+    { id: 'Kap 7',  title: 'Troubleshooting & FAQ',             teil: 'A', words: '3.644',  score: '8/10',sessions: 'S116',      pdf: true, drive: true },
+    { id: 'Kap 8',  title: 'Unser Buch-Projekt: Die Vision',    teil: 'B', words: '4.800',  score: '9/10',sessions: 'S117',      pdf: true, drive: true },
+    { id: 'Kap 9',  title: 'Agent-Architektur im Detail',       teil: 'B', words: '~6.000', score: '8.5', sessions: 'S118',      pdf: true, drive: true },
+    { id: 'Kap 10', title: 'Einzelagent zum Team',              teil: 'B', words: '~5.100', score: '8.5', sessions: 'S119',      pdf: true, drive: true },
+    { id: 'Kap 11', title: 'Kosten, Zeit & Learnings',          teil: 'B', words: '4.267',  score: '8.5', sessions: 'S120',      pdf: true, drive: true },
+    { id: 'Kap 12', title: 'Von der Idee zum fertigen Buch',    teil: 'B', words: '4.333',  score: '8.5', sessions: 'S121',      pdf: true, drive: true },
+    { id: 'Kap 13', title: 'Dein Setup: Step-by-Step',          teil: 'C', words: '~5.000', score: '8.5', sessions: 'S122',      pdf: true, drive: true },
+    { id: 'Kap 13.2',title:'Dashboard, Cowan & Voice-Upgrade',  teil: 'C', words: '~4.000', score: '8.5', sessions: 'S128/S129', pdf: true, drive: true },
+    { id: 'Kap 14', title: 'Von Thema zu Buch in 30 Tagen',    teil: 'C', words: '4.633',  score: '8.5', sessions: 'S123',      pdf: true, drive: true },
+    { id: 'Kap 15', title: 'Marketing & Verkauf optimieren',    teil: 'C', words: '~4.500', score: '9/10',sessions: 'S125',      pdf: true, drive: true }
+  ];
+
+  // ── Pipeline-Phasen ──
+  var PHASES = [
+    { label: 'Outline',  count: 16, cls: 'phase-outline' },
+    { label: 'Entwurf',  count: 16, cls: 'phase-draft' },
+    { label: 'Review',   count: 16, cls: 'phase-review' },
+    { label: 'PDF',      count: 16, cls: 'phase-pdf' },
+    { label: 'Final',    count: 16, cls: 'phase-final' }
+  ];
+
+  // ── 5-Ebenen-Produktion ──
+  var PROD_COLS = ['PDF', 'Dashboard', 'QR-Codes', 'Cowan', 'Logbuch'];
+  // true = done, false = pending
+  var PROD_DATA = [
+    { label: 'Vorwort',  steps: [true,  false, false, false, true] },
+    { label: 'Kap 1',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 2',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 3',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 4',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 5',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 6',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 7',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 8',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 9',    steps: [true,  false, false, false, true] },
+    { label: 'Kap 10',   steps: [true,  false, false, false, true] },
+    { label: 'Kap 11',   steps: [true,  false, false, false, true] },
+    { label: 'Kap 12',   steps: [true,  false, false, false, true] },
+    { label: 'Kap 13',   steps: [true,  false, false, false, true] },
+    { label: 'Kap 13.2', steps: [true,  false, false, false, true] },
+    { label: 'Kap 14',   steps: [true,  false, false, false, true] },
+    { label: 'Kap 15',   steps: [true,  false, false, false, true] }
+  ];
+
+  var activeFilter = 'all';
+
+  // ── Render: Pipeline-Phasen ──
+  var phasesEl = document.getElementById('m04-phases');
+  if (phasesEl) {
+    var ph = '';
+    for (var i = 0; i < PHASES.length; i++) {
+      var p = PHASES[i];
+      ph += '<div class="m04-phase ' + p.cls + '">' +
+        '<div class="m04-phase-num">' + p.count + '</div>' +
+        '<div class="m04-phase-label">' + p.label + '</div>' +
+        '<div class="m04-phase-bar"></div>' +
+      '</div>';
+    }
+    phasesEl.innerHTML = ph;
+  }
+
+  // ── Render: Filter-Buttons ──
+  var FILTERS = [
+    { key: 'all', label: 'Alle (16)' },
+    { key: '-',   label: 'Vorwort' },
+    { key: 'A',   label: 'Teil A (7)' },
+    { key: 'B',   label: 'Teil B (5)' },
+    { key: 'C',   label: 'Teil C (4)' }
+  ];
+
+  var filtersEl = document.getElementById('m04-filters');
+  if (filtersEl) {
+    var fh = '';
+    for (var f = 0; f < FILTERS.length; f++) {
+      var fl = FILTERS[f];
+      fh += '<button class="m04-filter-btn' + (fl.key === 'all' ? ' active' : '') + '" data-filter="' + fl.key + '">' + fl.label + '</button>';
+    }
+    filtersEl.innerHTML = fh;
+
+    filtersEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('.m04-filter-btn');
+      if (!btn) return;
+      activeFilter = btn.getAttribute('data-filter');
+      var btns = filtersEl.querySelectorAll('.m04-filter-btn');
+      for (var b = 0; b < btns.length; b++) {
+        btns[b].classList.toggle('active', btns[b].getAttribute('data-filter') === activeFilter);
+      }
+      renderChapters();
+    });
+  }
+
+  // ── Parse Score ──
+  function parseScore(s) {
+    if (!s || s === '-') return null;
+    return parseFloat(s.replace('/10', ''));
+  }
+
+  // ── Render: Kapitel-Liste ──
+  function renderChapters() {
+    var listEl = document.getElementById('m04-chapter-list');
+    if (!listEl) return;
+
+    var filtered = [];
+    for (var i = 0; i < CHAPTERS.length; i++) {
+      var ch = CHAPTERS[i];
+      if (activeFilter === 'all' || ch.teil === activeFilter) {
+        filtered.push(ch);
+      }
+    }
+
+    var html = '';
+    for (var j = 0; j < filtered.length; j++) {
+      var c = filtered[j];
+      var teilClass = c.teil === 'A' ? 'teil-a' : c.teil === 'B' ? 'teil-b' : c.teil === 'C' ? 'teil-c' : 'teil-v';
+      var numScore = parseScore(c.score);
+      var scoreClass = numScore === null ? '' : numScore >= 9 ? 'score-high' : 'score-mid';
+      var scoreText = numScore === null ? '&ndash;' : numScore + '/10';
+
+      html += '<div class="m04-chapter ' + teilClass + '">' +
+        '<div class="m04-ch-id">' + c.id + '</div>' +
+        '<div class="m04-ch-info">' +
+          '<div class="m04-ch-title">' + c.title + '</div>' +
+          '<div class="m04-ch-meta">Produziert in ' + c.sessions + '</div>' +
+        '</div>' +
+        '<div class="m04-ch-words">' + c.words + ' W.</div>' +
+        '<div class="m04-ch-score ' + scoreClass + '">' + scoreText + '</div>' +
+        '<div class="m04-ch-badges">' +
+          '<span class="m04-ch-badge ch-badge-final">Final</span>' +
+          (c.pdf ? '<span class="m04-ch-badge ch-badge-pdf">PDF</span>' : '') +
+          (c.drive ? '<span class="m04-ch-badge ch-badge-drive">Drive</span>' : '') +
+        '</div>' +
+      '</div>';
+    }
+
+    listEl.innerHTML = html;
+  }
+
+  renderChapters();
+
+  // ── Render: Produktions-Tracker ──
+  var prodGrid = document.getElementById('m04-prod-grid');
+  if (prodGrid) {
+    var g = '';
+    // Header row
+    g += '<div class="m04-prod-cell m04-prod-header"></div>';
+    for (var h = 0; h < PROD_COLS.length; h++) {
+      g += '<div class="m04-prod-cell m04-prod-header">' + PROD_COLS[h] + '</div>';
+    }
+    // Data rows
+    for (var r = 0; r < PROD_DATA.length; r++) {
+      var row = PROD_DATA[r];
+      g += '<div class="m04-prod-cell m04-prod-label">' + row.label + '</div>';
+      for (var s = 0; s < row.steps.length; s++) {
+        g += '<div class="m04-prod-cell">' +
+          (row.steps[s]
+            ? '<span class="m04-prod-check">\u2713</span>'
+            : '<span class="m04-prod-pending">\u2022</span>') +
+        '</div>';
+      }
+    }
+    prodGrid.innerHTML = g;
+  }
+
+  // ── localStorage: Content-Namespace ──
+  try {
+    var chapterData = [];
+    for (var k = 0; k < CHAPTERS.length; k++) {
+      var ch2 = CHAPTERS[k];
+      chapterData.push({
+        id: ch2.id,
+        title: ch2.title,
+        status: 'final',
+        wordcount: ch2.words,
+        score: ch2.score
+      });
+    }
+    localStorage.setItem('content:chapters', JSON.stringify(chapterData));
+    localStorage.setItem('content:pipeline', 'final');
+    localStorage.setItem('shell:lastModule', 'm04');
+  } catch(e) {}
+
+})();
+</script>
