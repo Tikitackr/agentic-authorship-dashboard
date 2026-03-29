@@ -1477,21 +1477,22 @@
     var audience = state.config.audience || 'Einsteiger';
     var lang = state.config.lang === 'en' ? 'English' : 'Deutsch';
 
-    var p = 'Ich plane ein Buch und brauche eine Kapitelstruktur.\n\n';
+    var p = 'Du bist ein erfahrener Buchplaner. Ich schreibe ein Buch und brauche eine durchdachte Kapitelstruktur.\n\n';
     p += 'BUCHTITEL: ' + title + '\n';
     p += 'THEMA: ' + topic + '\n';
     p += 'ZIELGRUPPE: ' + audience + '\n';
     p += 'SPRACHE: ' + lang + '\n\n';
-    p += 'Bitte erstelle mir eine Kapitelstruktur mit:\n';
-    p += '- Einer sinnvollen Anzahl Kapitel (typisch: 8-15)\n';
-    p += '- Einem kurzen, praegnanten Titel pro Kapitel\n';
-    p += '- Optional: Gruppierung in Buchteile (z.B. "Teil A: Grundlagen")\n\n';
-    p += 'FORMAT: Gib die Kapitel als nummerierte Liste aus, z.B.:\n';
+    p += 'Erstelle eine Kapitelstruktur die:\n';
+    p += '- Einen roten Faden hat (jedes Kapitel baut auf dem vorherigen auf)\n';
+    p += '- Mit einem starken Einstieg beginnt (Neugier wecken, nicht Theorie)\n';
+    p += '- Theorie und Praxis abwechselt\n';
+    p += '- Zum Ende hin den Leser zum Handeln bringt\n';
+    p += '- 8-15 Kapitel umfasst (je nach Thema)\n\n';
+    p += 'FORMAT: Nummerierte Liste, nur Titel. Kurz (2-5 Woerter).\n';
+    p += 'Falls sinnvoll, gruppiere in Buchteile (z.B. "Teil A: Grundlagen").\n\n';
     p += '1. Einleitung\n';
     p += '2. Die Grundlagen\n';
-    p += '3. Erster Schritt\n';
-    p += '...\n\n';
-    p += 'Halte die Titel kurz (2-5 Woerter). Keine Beschreibungen, nur die Titel.';
+    p += '...';
 
     var previewEl = document.getElementById('m06-structure-prompt');
     previewEl.textContent = p;
