@@ -996,6 +996,293 @@
     .m06-io-bar-label { margin-right: 0; margin-bottom: 0.25rem; }
     .m06-chapter-collapsed { padding: 0.6rem 0.75rem; gap: 0.5rem; }
     .m06-mini-progress { width: 50px; }
+    .m06-phase-toggle { flex-direction: column; gap: 0; }
+    .m06-phase-btn { border-radius: var(--radius); }
+    .m06-conn-fields { grid-template-columns: 1fr; }
+  }
+
+  /* ── B45: Phasen-Toggle ── */
+  .m06-phase-toggle {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .m06-phase-btn {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .m06-phase-btn svg { width: 16px; height: 16px; }
+
+  .m06-phase-btn.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  .m06-phase-btn:hover:not(.active) { background: rgba(255,255,255,0.03); }
+
+  /* ── B45: Verbindungs-Dialog ── */
+  .m06-conn-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .m06-conn-overlay.visible { display: flex; }
+
+  .m06-conn-dialog {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .m06-conn-dialog h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m06-conn-dialog h3 svg { width: 20px; height: 20px; color: var(--amber); }
+
+  .m06-conn-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .m06-conn-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .m06-conn-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+
+  .m06-conn-field input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.88rem;
+    box-sizing: border-box;
+  }
+
+  .m06-conn-field input:focus { outline: none; border-color: var(--amber); }
+
+  .m06-conn-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+
+  .m06-conn-status {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    display: none;
+  }
+
+  .m06-conn-status.success {
+    display: block;
+    background: rgba(34,197,94,0.1);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .m06-conn-status.error {
+    display: block;
+    background: rgba(239,68,68,0.1);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  /* ── B45: Info-Panel (Produktion) ── */
+  .m06-phase-info {
+    background: linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(34,197,94,0.05) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .m06-phase-info strong { color: var(--text); }
+
+  .m06-phase-info-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m06-phase-info-title svg { width: 18px; height: 18px; }
+
+  .m06-phase-info-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    text-decoration: underline;
+  }
+
+  .m06-phase-info-dismiss:hover { color: var(--text); }
+
+  /* ── B45: Senden-Button ── */
+  .m06-send-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: var(--amber);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .m06-send-btn:hover { filter: brightness(1.1); }
+  .m06-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .m06-send-btn svg { width: 16px; height: 16px; }
+
+  .m06-send-btn.success {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .m06-send-btn.error {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* ── B45: Outline-Lock-Warnung ── */
+  .m06-outline-warning {
+    font-size: 0.78rem;
+    color: var(--amber);
+    margin-top: 0.25rem;
+    display: none;
+  }
+
+  .m06-outline-warning.visible { display: block; }
+
+  /* ── B45: Prompt-Vorschau (aufklappbar) ── */
+  .m06-preview-toggle {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    padding: 0;
+  }
+
+  .m06-preview-toggle:hover { color: var(--text); }
+  .m06-preview-toggle svg { width: 12px; height: 12px; transition: transform 0.2s; }
+  .m06-preview-toggle.open svg { transform: rotate(180deg); }
+
+  .m06-preview-json {
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 0.35rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .m06-preview-json.open { display: block; }
+
+  /* ── B45: Verbindungs-Badge im Header ── */
+  .m06-conn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .m06-conn-badge.connected {
+    background: rgba(34,197,94,0.1);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .m06-conn-badge.disconnected {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .m06-conn-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
   }
 </style>
 
@@ -1295,6 +1582,36 @@
     </div>
   </div>
 
+  <!-- B45: Verbindungs-Dialog -->
+  <div class="m06-conn-overlay" id="m06-conn-overlay">
+    <div class="m06-conn-dialog">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Dashboard mit Agent verbinden
+      </h3>
+      <div class="m06-conn-desc">
+        Damit dein Dashboard Outlines direkt an deinen OpenClaw-Agent senden kann,
+        brauchen wir zwei Angaben. Beides findest du in deinem Cowan-Setup (Kapitel&nbsp;13).
+      </div>
+      <div class="m06-conn-fields">
+        <div class="m06-conn-field">
+          <label>Tailscale-Adresse</label>
+          <input type="text" id="m06-conn-ip" placeholder="z.B. 100.99.167.112">
+        </div>
+        <div class="m06-conn-field">
+          <label>Sync-Token</label>
+          <input type="password" id="m06-conn-token" placeholder="Dein Sync-Token">
+        </div>
+      </div>
+      <div class="m06-conn-status" id="m06-conn-status"></div>
+      <div class="m06-conn-actions">
+        <button class="m06-btn m06-btn-secondary" id="m06-conn-skip">&Uuml;berspringen</button>
+        <button class="m06-btn m06-btn-secondary" id="m06-conn-test">Verbindung testen</button>
+        <button class="m06-btn m06-btn-primary" id="m06-conn-save">Speichern</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1351,7 +1668,9 @@
       soul: '', agents: ''
     },
     meta: { created: '', lastModified: '', changesSinceExport: 0 },
-    activeChapter: null  // null = auto (erstes unfertiges), oder explizite cid
+    activeChapter: null,  // null = auto (erstes unfertiges), oder explizite cid
+    phase: 'planung',     // 'planung' oder 'produktion'
+    connection: { tailscaleIp: '', syncToken: '', verified: false }
   };
 
   // ══════════ PERSISTENCE ══════════
@@ -1367,6 +1686,8 @@
         localStorage.setItem('m06:progress', JSON.stringify(state.progress));
         localStorage.setItem('m06:agentTeam', JSON.stringify(state.agentTeam));
         localStorage.setItem('m06:meta', JSON.stringify(state.meta));
+        localStorage.setItem('m06:phase', state.phase);
+        localStorage.setItem('m06:connection', JSON.stringify(state.connection));
         localStorage.setItem('shell:lastModule', 'm06');
         updateFab();
       } catch(e) {}
@@ -1380,11 +1701,13 @@
       var p = localStorage.getItem('m06:progress'); if (p) state.progress = JSON.parse(p);
       var a = localStorage.getItem('m06:agentTeam'); if (a) state.agentTeam = JSON.parse(a);
       var mt = localStorage.getItem('m06:meta'); if (mt) state.meta = JSON.parse(mt);
+      var ph = localStorage.getItem('m06:phase'); if (ph) state.phase = ph;
+      var cn = localStorage.getItem('m06:connection'); if (cn) state.connection = JSON.parse(cn);
     } catch(e) {}
   }
 
   function resetAll() {
-    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta'].forEach(function(k) {
+    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta','m06:phase','m06:connection'].forEach(function(k) {
       localStorage.removeItem(k);
     });
     // Clear URL hash
@@ -1813,12 +2136,15 @@
           '<div class="m06-dash-title">' + escHtml(state.config.title) + '<span class="m06-dash-pct">' + prog.pct + '%</span></div>' +
         '</div>' +
         '<div class="m06-dash-actions">' +
+          renderConnBadge() +
           '<button class="m06-btn m06-btn-ghost" id="m06-edit-setup">Setup</button>' +
           '<button class="m06-btn m06-btn-danger" id="m06-reset-btn" style="font-size:0.78rem;padding:0.4rem 0.7rem;">Zur\u00fccksetzen</button>' +
         '</div>' +
       '</div>' +
       '<div class="m06-dash-progress-wrap"><div class="m06-dash-progress-bar" style="width:' + prog.pct + '%"></div></div>' +
-      '<div class="m06-dash-progress-label">' + prog.done + ' von ' + prog.total + ' Kapiteln abgeschlossen' + (state.config.features.pipeline ? ' \u00b7 ' + prog.doneSteps + '/' + prog.totalSteps + ' Schritte' : '') + '</div>';
+      '<div class="m06-dash-progress-label">' + prog.done + ' von ' + prog.total + ' Kapiteln abgeschlossen' + (state.config.features.pipeline ? ' \u00b7 ' + prog.doneSteps + '/' + prog.totalSteps + ' Schritte' : '') + '</div>' +
+      renderPhaseToggle() +
+      renderPhaseInfo();
 
     document.getElementById('m06-edit-setup').addEventListener('click', function() {
       state.mode = 'wizard'; save(); switchMode(); populateWizard();
@@ -1827,6 +2153,41 @@
     document.getElementById('m06-reset-btn').addEventListener('click', function() {
       document.getElementById('m06-confirm-overlay').classList.add('visible');
     });
+
+    // B45: Phase-Toggle Events
+    document.querySelectorAll('.m06-phase-btn').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var newPhase = this.getAttribute('data-phase');
+        if (newPhase === state.phase) return;
+        state.phase = newPhase;
+        if (newPhase === 'produktion') phaseInfoDismissed = false; // Info nochmal zeigen beim Wechsel
+        save();
+        renderDashboard();
+      });
+    });
+
+    // B45: Connection Badge
+    var connBadgeBtn = document.getElementById('m06-conn-badge-btn');
+    if (connBadgeBtn) {
+      connBadgeBtn.addEventListener('click', function() {
+        document.getElementById('m06-conn-ip').value = state.connection.tailscaleIp || '';
+        document.getElementById('m06-conn-token').value = state.connection.syncToken || '';
+        document.getElementById('m06-conn-status').className = 'm06-conn-status';
+        document.getElementById('m06-conn-status').style.display = 'none';
+        document.getElementById('m06-conn-overlay').classList.add('visible');
+      });
+    }
+
+    // B45: Phase-Info Dismiss
+    var phaseInfoDismissBtn = document.getElementById('m06-phase-info-dismiss');
+    if (phaseInfoDismissBtn) {
+      phaseInfoDismissBtn.addEventListener('click', function() {
+        phaseInfoDismissed = true;
+        try { localStorage.setItem('m06:phaseInfoDismissed', '1'); } catch(e) {}
+        var infoEl = document.getElementById('m06-phase-info');
+        if (infoEl) infoEl.remove();
+      });
+    }
 
     // Stats
     var statsHtml = '<div class="m06-dash-stat"><div class="m06-dash-stat-value">' + prog.total + '</div><div class="m06-dash-stat-label">Kapitel</div></div>' +
@@ -1899,13 +2260,34 @@
       html += '<div class="m06-card-outline">' +
         '<textarea class="m06-card-outline-input" data-cid="' + cid + '" placeholder="' + escHtml(placeholder) + '">' + escHtml(cp.outlineText || '') + '</textarea>';
 
-      // 2. Prompt-Button
+      // 2. Prompt-Button (immer verfuegbar)
       html += '<button class="m06-card-prompt-btn" data-cid="' + cid + '">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Prompt generieren</button></div>';
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Prompt generieren</button>';
+
+      // B45: "An Agent senden" oder "Prompt kopieren" (nur in Produktion)
+      if (state.phase === 'produktion') {
+        if (hasConnection()) {
+          html += '<button class="m06-send-btn" data-cid="' + cid + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> An Agent senden</button>';
+        } else {
+          html += '<button class="m06-send-btn m06-copy-prompt-btn" data-cid="' + cid + '" style="background:var(--blue);">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Prompt kopieren</button>';
+        }
+        // Outline-Change-Warnung
+        var lastSent = cp.lastSent || '';
+        if (lastSent) {
+          html += '<div class="m06-outline-warning' + (cp._outlineChanged ? ' visible' : '') + '" data-cid="' + cid + '">\u26a0 Outline ge\u00e4ndert seit letztem Senden \u2013 erneut senden!</div>';
+        }
+        // Prompt-Vorschau
+        html += '<button class="m06-preview-toggle" data-cid="' + cid + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg> Vorschau: Was wird gesendet</button>';
+        html += '<div class="m06-preview-json" data-cid="' + cid + '">' + escHtml(buildOutlineJson(cid)) + '</div>';
+      }
+
+      html += '</div>'; // close m06-card-outline
     }
 
-    // 3. Pipeline-Checkboxen (mit Erklaertext bei Kap 1)
-    if (state.config.features.pipeline) {
+    // 3. Pipeline-Checkboxen (nur in Produktion, mit Erklaertext bei Kap 1)
+    if (state.config.features.pipeline && state.phase === 'produktion') {
       if (isFirstAndTutorial) {
         html += '<div class="m06-tutorial-dismiss-section"><button class="m06-tutorial-dismiss-btn">Tipps ausblenden &times;</button></div>';
       }
@@ -2078,6 +2460,56 @@
     // Prompt buttons
     document.querySelectorAll('.m06-card-prompt-btn').forEach(function(el) {
       el.addEventListener('click', function() { generateChapterPrompt(parseInt(this.getAttribute('data-cid'))); });
+    });
+
+    // B45: "An Agent senden" Buttons
+    document.querySelectorAll('.m06-send-btn:not(.m06-copy-prompt-btn)').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        sendOutline(cid, this);
+      });
+    });
+
+    // B45: "Prompt kopieren" Fallback-Buttons
+    document.querySelectorAll('.m06-copy-prompt-btn').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        var chapter = state.config.chapters.find(function(ch) { return ch.id === cid; });
+        if (!chapter) return;
+        var cp = state.progress.chapters[cid] || {};
+        if (!(cp.outlineText || '').trim()) {
+          this.textContent = 'Erst Outline schreiben!';
+          var btn = this;
+          setTimeout(function() { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Prompt kopieren'; }, 2000);
+          return;
+        }
+        generateChapterPrompt(cid);
+      });
+    });
+
+    // B45: Prompt-Vorschau Toggles
+    document.querySelectorAll('.m06-preview-toggle').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var cid = this.getAttribute('data-cid');
+        var jsonEl = document.querySelector('.m06-preview-json[data-cid="' + cid + '"]');
+        if (jsonEl) {
+          jsonEl.classList.toggle('open');
+          this.classList.toggle('open');
+        }
+      });
+    });
+
+    // B45: Outline-Change-Tracking (markiere wenn Outline nach Senden geaendert)
+    document.querySelectorAll('.m06-card-outline-input').forEach(function(el) {
+      el.addEventListener('input', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        var cp = state.progress.chapters[cid];
+        if (cp && cp.lastSent) {
+          cp._outlineChanged = true;
+          var warn = document.querySelector('.m06-outline-warning[data-cid="' + cid + '"]');
+          if (warn) warn.classList.add('visible');
+        }
+      });
     });
 
     // Delete
@@ -2366,6 +2798,208 @@
 
   document.getElementById('m06-profi-copy').addEventListener('click', function() {
     copyText(document.getElementById('m06-profi-output').textContent, this);
+  });
+
+  // ══════════ B45: ZWEI-PHASEN-MODUS + VERBINDUNG ══════════
+
+  var phaseInfoDismissed = false;
+  try { phaseInfoDismissed = localStorage.getItem('m06:phaseInfoDismissed') === '1'; } catch(e) {}
+
+  function hasConnection() {
+    return state.connection.tailscaleIp && state.connection.syncToken;
+  }
+
+  function getSyncUrl() {
+    var ip = state.connection.tailscaleIp.replace(/\/+$/, '');
+    if (ip.indexOf('http') !== 0) ip = 'http://' + ip;
+    if (ip.indexOf(':') === ip.lastIndexOf(':')) ip += ':3456'; // Kein Port → Default 3456
+    return ip;
+  }
+
+  function testConnection(cb) {
+    var url = getSyncUrl() + '/health';
+    var statusEl = document.getElementById('m06-conn-status');
+    statusEl.className = 'm06-conn-status';
+    statusEl.style.display = 'none';
+
+    fetch(url, { method: 'GET', signal: AbortSignal.timeout(5000) })
+      .then(function(r) {
+        if (r.ok) {
+          statusEl.textContent = 'Verbindung erfolgreich!';
+          statusEl.className = 'm06-conn-status success';
+          if (cb) cb(true);
+        } else {
+          statusEl.textContent = 'Server antwortet, aber mit Fehler (Status ' + r.status + ')';
+          statusEl.className = 'm06-conn-status error';
+          if (cb) cb(false);
+        }
+      })
+      .catch(function() {
+        statusEl.textContent = 'Verbindung fehlgeschlagen. Ist Tailscale aktiv? L\u00e4uft der Sync-Server?';
+        statusEl.className = 'm06-conn-status error';
+        if (cb) cb(false);
+      });
+  }
+
+  function sendOutline(cid, btnEl) {
+    var chapter = state.config.chapters.find(function(ch) { return ch.id === cid; });
+    if (!chapter) return;
+    var cp = state.progress.chapters[cid] || {};
+    var outlineText = cp.outlineText || '';
+
+    if (!outlineText.trim()) {
+      btnEl.textContent = 'Erst Outline schreiben!';
+      btnEl.className = 'm06-send-btn error';
+      setTimeout(function() { resetSendBtn(btnEl); }, 2000);
+      return;
+    }
+
+    var payload = {
+      version: 1,
+      kapitel: cid,
+      titel: chapter.name || ('Kapitel ' + cid),
+      outline: outlineText,
+      stil: TONE_MAP[state.agentTeam.tone] || state.agentTeam.customTone || '',
+      zielgruppe: state.config.audience || 'Einsteiger',
+      woerter: 4000,
+      features: {
+        hintBoxen: true,
+        codeBeispiele: true,
+        qrPlatzhalter: true
+      },
+      gesendetAm: new Date().toISOString()
+    };
+
+    var padded = cid < 10 ? '0' + cid : '' + cid;
+    var url = getSyncUrl() + '/outline-kapitel-' + padded + '.json';
+
+    btnEl.disabled = true;
+    btnEl.innerHTML = '<svg class="m06-spinner" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="60" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg> Sende...';
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + state.connection.syncToken
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000)
+    })
+    .then(function(r) {
+      if (r.ok) {
+        btnEl.innerHTML = '\u2713 Gesendet! \u00d6ffne jetzt Telegram.';
+        btnEl.className = 'm06-send-btn success';
+        // Markiere Outline-Schritt als erledigt
+        if (state.progress.chapters[cid]) {
+          state.progress.chapters[cid].outline = true;
+          state.progress.chapters[cid].lastSent = new Date().toISOString();
+          state.progress.chapters[cid]._outlineChanged = false;
+          save();
+        }
+      } else {
+        throw new Error('Status ' + r.status);
+      }
+    })
+    .catch(function(err) {
+      btnEl.innerHTML = 'Fehler: Verbindung fehlgeschlagen';
+      btnEl.className = 'm06-send-btn error';
+    })
+    .finally(function() {
+      btnEl.disabled = false;
+      setTimeout(function() { resetSendBtn(btnEl); }, 3000);
+    });
+  }
+
+  function resetSendBtn(btnEl) {
+    btnEl.className = 'm06-send-btn';
+    btnEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> An Agent senden';
+  }
+
+  function buildOutlineJson(cid) {
+    var chapter = state.config.chapters.find(function(ch) { return ch.id === cid; });
+    if (!chapter) return '{}';
+    var cp = state.progress.chapters[cid] || {};
+    return JSON.stringify({
+      version: 1,
+      kapitel: cid,
+      titel: chapter.name || ('Kapitel ' + cid),
+      outline: cp.outlineText || '',
+      stil: TONE_MAP[state.agentTeam.tone] || state.agentTeam.customTone || '',
+      zielgruppe: state.config.audience || 'Einsteiger',
+      woerter: 4000
+    }, null, 2);
+  }
+
+  function renderPhaseToggle() {
+    return '<div class="m06-phase-toggle">' +
+      '<button class="m06-phase-btn' + (state.phase === 'planung' ? ' active' : '') + '" data-phase="planung">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        'Planung</button>' +
+      '<button class="m06-phase-btn' + (state.phase === 'produktion' ? ' active' : '') + '" data-phase="produktion">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
+        'Produktion</button>' +
+    '</div>';
+  }
+
+  function renderPhaseInfo() {
+    if (state.phase !== 'produktion' || phaseInfoDismissed) return '';
+    return '<div class="m06-phase-info" id="m06-phase-info">' +
+      '<div class="m06-phase-info-title">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
+        'Ab jetzt wird produziert!' +
+      '</div>' +
+      '<strong>Dein Agent schreibt jetzt Kapitel f\u00fcr Kapitel. So l\u00e4ufts:</strong><br>' +
+      '1. Klick auf \u201eAn Agent senden\u201c \u2013 deine Outline geht an deinen VPS<br>' +
+      '2. \u00d6ffne Telegram und sag: \u201eSchreib Kapitel 3 nach der Outline\u201c<br>' +
+      '3. Dein Agent produziert das Kapitel und speichert es<br>' +
+      '4. Hake die Schritte hier im Dashboard ab<br><br>' +
+      '<strong>Tipp:</strong> Leg dir einen Ordner an f\u00fcr deine fertigen Kapitel. ' +
+      'Sag deinem Agent: \u201eErstelle einen Ordner mein-buch/kapitel/\u201c' +
+      '<button class="m06-phase-info-dismiss" id="m06-phase-info-dismiss">Verstanden, nicht mehr anzeigen</button>' +
+    '</div>';
+  }
+
+  function renderConnBadge() {
+    if (hasConnection()) {
+      return '<span class="m06-conn-badge connected" id="m06-conn-badge-btn">' +
+        '<span class="m06-conn-dot"></span>VPS verbunden</span>';
+    }
+    return '<span class="m06-conn-badge disconnected" id="m06-conn-badge-btn">' +
+      '<span class="m06-conn-dot"></span>Nicht verbunden</span>';
+  }
+
+  // Connection Dialog Events
+  document.getElementById('m06-conn-skip').addEventListener('click', function() {
+    document.getElementById('m06-conn-overlay').classList.remove('visible');
+  });
+
+  document.getElementById('m06-conn-test').addEventListener('click', function() {
+    var ip = document.getElementById('m06-conn-ip').value.trim();
+    var token = document.getElementById('m06-conn-token').value.trim();
+    if (!ip || !token) {
+      var s = document.getElementById('m06-conn-status');
+      s.textContent = 'Bitte beide Felder ausf\u00fcllen.';
+      s.className = 'm06-conn-status error';
+      return;
+    }
+    state.connection.tailscaleIp = ip;
+    state.connection.syncToken = token;
+    testConnection();
+  });
+
+  document.getElementById('m06-conn-save').addEventListener('click', function() {
+    var ip = document.getElementById('m06-conn-ip').value.trim();
+    var token = document.getElementById('m06-conn-token').value.trim();
+    state.connection.tailscaleIp = ip;
+    state.connection.syncToken = token;
+    state.connection.verified = true;
+    save();
+    document.getElementById('m06-conn-overlay').classList.remove('visible');
+    renderDashboard();
+  });
+
+  document.getElementById('m06-conn-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('visible');
   });
 
   // ══════════ MODE SWITCH ══════════
