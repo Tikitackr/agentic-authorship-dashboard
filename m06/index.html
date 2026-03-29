@@ -1,9 +1,44 @@
-<!-- M06: Wundertüte — Generatoren — Agentic Authorship Dashboard -->
+<!-- M06: Dein Buch-Dashboard — Agentic Authorship Dashboard -->
 <style>
-  /* ── M06 Scoped Styles ── */
-  .m06 { max-width: 100%; }
+  /* Fallback: CSS-Variablen fuer Standalone-Ansicht (Shell ueberschreibt diese) */
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a28;
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.15);
+    --amber-glow: rgba(245, 158, 11, 0.08);
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --border: rgba(245, 158, 11, 0.2);
+    --border-hover: rgba(245, 158, 11, 0.5);
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --radius: 14px;
+  }
 
-  .m06-hero {
+  /* Standalone body styling */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* ── M06 Scoped Styles ── */
+  .m06 { max-width: 900px; margin: 0 auto; }
+
+  /* ── Wizard ── */
+  .m06-wizard { display: none; }
+  .m06-wizard.active { display: block; }
+
+  .m06-wizard-header {
     background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(244,114,182,0.06) 100%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -11,14 +46,14 @@
     margin-bottom: 1.5rem;
   }
 
-  .m06-hero-header {
+  .m06-wizard-header-top {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
 
-  .m06-hero-icon {
+  .m06-wizard-icon {
     width: 40px;
     height: 40px;
     border-radius: 10px;
@@ -30,86 +65,91 @@
     flex-shrink: 0;
   }
 
-  .m06-hero-icon svg { width: 20px; height: 20px; }
+  .m06-wizard-icon svg { width: 20px; height: 20px; }
 
-  .m06-hero h2 {
+  .m06-wizard-header h2 {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--text);
   }
 
-  .m06-hero-desc {
+  .m06-wizard-desc {
     font-size: 0.88rem;
     color: var(--text-dim);
     line-height: 1.55;
   }
 
-  .m06-hero-desc strong { color: var(--text); }
+  .m06-wizard-desc strong { color: var(--text); }
 
-  /* Tabs */
-  .m06-tabs {
+  /* Step Indicator */
+  .m06-steps {
     display: flex;
+    align-items: center;
     gap: 0;
     margin-bottom: 1.5rem;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
   }
 
-  .m06-tab {
+  .m06-step-indicator {
     flex: 1;
     padding: 0.85rem 0.5rem;
     text-align: center;
-    background: var(--bg-card);
-    border: none;
-    font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 500;
     color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
+    position: relative;
+    transition: all 0.25s;
     border-right: 1px solid rgba(245,158,11,0.1);
   }
 
-  .m06-tab:last-child { border-right: none; }
+  .m06-step-indicator:last-child { border-right: none; }
 
-  .m06-tab:hover { background: var(--bg-card-hover); color: var(--text); }
-
-  .m06-tab.active {
+  .m06-step-indicator.active {
     background: var(--amber-dim);
     color: var(--amber);
     font-weight: 600;
-    box-shadow: inset 0 -3px 0 var(--amber);
   }
 
-  .m06-tab-icon { display: block; font-size: 1.1rem; margin-bottom: 0.2rem; }
-
-  /* Section */
-  .m06-section {
-    margin-bottom: 1.5rem;
+  .m06-step-indicator.done {
+    background: rgba(34,197,94,0.08);
+    color: var(--green);
   }
 
-  .m06-section-title {
-    display: flex;
+  .m06-step-indicator .m06-step-num {
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-right: 0.4rem;
+    vertical-align: middle;
   }
 
-  .m06-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
-
-  /* Form */
-  .m06-panel { display: none; }
-  .m06-panel.active { display: block; }
-
-  .m06-field {
-    margin-bottom: 1rem;
+  .m06-step-indicator.done .m06-step-num {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
   }
+
+  .m06-step-indicator.active .m06-step-num {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #0a0a0f;
+  }
+
+  /* Step Content */
+  .m06-step-content { display: none; }
+  .m06-step-content.active { display: block; }
+
+  /* Form Elements (reuse from old M06 where possible) */
+  .m06-field { margin-bottom: 1rem; }
 
   .m06-label {
     display: block;
@@ -150,17 +190,211 @@
     line-height: 1.5;
   }
 
-  .m06-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2rem;
+  .m06-input-small {
+    width: 80px;
+    padding: 0.5rem 0.65rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s;
   }
 
-  .m06-select option { background: #12121a; color: #e0e0e0; }
+  .m06-input-small:focus { border-color: var(--amber); }
 
-  /* Tone Picker */
+  /* Chapter List in Wizard */
+  .m06-chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+
+  .m06-chapter-list::-webkit-scrollbar { width: 4px; }
+  .m06-chapter-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .m06-chapter-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.65rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.15s;
+  }
+
+  .m06-chapter-item:hover { border-color: var(--border-hover); }
+
+  .m06-chapter-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--amber);
+    min-width: 22px;
+  }
+
+  .m06-chapter-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    padding: 0.2rem 0;
+  }
+
+  .m06-chapter-input::placeholder { color: var(--text-dim); }
+
+  .m06-chapter-part-select {
+    padding: 0.25rem 0.4rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.7rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .m06-chapter-part-select:focus { border-color: var(--amber); }
+
+  /* Parts Editor */
+  .m06-parts-wrap {
+    margin-top: 0.75rem;
+  }
+
+  .m06-parts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .m06-part-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m06-part-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--amber);
+    min-width: 40px;
+  }
+
+  .m06-part-input {
+    flex: 1;
+    padding: 0.4rem 0.65rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .m06-part-input:focus { border-color: var(--amber); }
+
+  .m06-part-remove {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 1rem;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .m06-part-remove:hover { color: var(--red); }
+
+  /* Feature Checkboxes */
+  .m06-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .m06-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .m06-feature:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+
+  .m06-feature.selected {
+    border-color: var(--amber);
+    background: var(--amber-dim);
+  }
+
+  .m06-feature.locked {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.06);
+    cursor: default;
+  }
+
+  .m06-feature-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: transparent;
+    transition: all 0.15s;
+    margin-top: 0.1rem;
+  }
+
+  .m06-feature.selected .m06-feature-check,
+  .m06-feature.locked .m06-feature-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .m06-feature-info { flex: 1; }
+
+  .m06-feature-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .m06-feature.selected .m06-feature-name { color: var(--amber); }
+  .m06-feature.locked .m06-feature-name { color: var(--green); }
+
+  .m06-feature-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+    line-height: 1.4;
+  }
+
+  /* Tone Picker (reused from old M06) */
   .m06-tones {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -199,86 +433,7 @@
     line-height: 1.3;
   }
 
-  /* Generate Button */
-  .m06-generate {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.85rem;
-    background: linear-gradient(135deg, var(--amber), #d97706);
-    border: none;
-    border-radius: 10px;
-    color: #0a0a0f;
-    font-family: inherit;
-    font-size: 0.92rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 1rem;
-  }
-
-  .m06-generate:hover { opacity: 0.9; transform: translateY(-1px); }
-  .m06-generate svg { width: 18px; height: 18px; }
-
-  /* Output */
-  .m06-output-wrap {
-    position: relative;
-    display: none;
-  }
-
-  .m06-output-wrap.visible { display: block; }
-
-  .m06-output-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-
-  .m06-output-filename {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--amber);
-    letter-spacing: 0.5px;
-  }
-
-  .m06-copy-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.7rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .m06-copy-btn:hover { border-color: var(--amber); color: var(--amber); }
-  .m06-copy-btn.copied { border-color: var(--green); color: var(--green); }
-  .m06-copy-btn svg { width: 14px; height: 14px; }
-
-  .m06-output {
-    background: #0d0d15;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 0.78rem;
-    line-height: 1.6;
-    color: var(--text);
-    white-space: pre-wrap;
-    word-break: break-word;
-    max-height: 500px;
-    overflow-y: auto;
-  }
-
-  /* Agent Role Cards */
+  /* Agent Roles */
   .m06-roles {
     display: flex;
     flex-direction: column;
@@ -290,7 +445,7 @@
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 0.85rem 1rem;
+    padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -327,17 +482,633 @@
   }
 
   .m06-role-info { flex: 1; }
+  .m06-role-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .m06-role-desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.1rem; }
 
-  .m06-role-name {
-    font-size: 0.85rem;
+  /* Buttons */
+  .m06-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m06-btn svg { width: 16px; height: 16px; }
+
+  .m06-btn-primary {
+    background: linear-gradient(135deg, var(--amber), #d97706);
+    color: #0a0a0f;
+  }
+
+  .m06-btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .m06-btn-secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     color: var(--text);
   }
 
-  .m06-role-desc {
-    font-size: 0.72rem;
+  .m06-btn-secondary:hover { border-color: var(--border-hover); }
+
+  .m06-btn-ghost {
+    background: transparent;
     color: var(--text-dim);
-    margin-top: 0.1rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .m06-btn-ghost:hover { color: var(--text); }
+
+  .m06-wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Dashboard View ── */
+  .m06-dashboard { display: none; }
+  .m06-dashboard.active { display: block; }
+
+  .m06-dash-header {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(34,197,94,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m06-dash-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .m06-dash-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .m06-dash-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .m06-dash-pct {
+    color: var(--green);
+    font-size: 1rem;
+    margin-left: 0.5rem;
+  }
+
+  .m06-dash-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .m06-dash-progress-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+
+  .m06-dash-progress-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    transition: width 0.6s ease;
+  }
+
+  .m06-dash-progress-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+  }
+
+  /* Stats Row */
+  .m06-dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m06-dash-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .m06-dash-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .m06-dash-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+  }
+
+  /* Chapter Grid */
+  .m06-dash-grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-dash-grid-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m06-dash-grid-title svg { width: 18px; height: 18px; color: var(--amber); }
+
+  .m06-chapter-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Part Divider */
+  .m06-part-divider {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 0.5rem;
+  }
+
+  .m06-part-divider:first-child { margin-top: 0; }
+
+  /* Chapter Card */
+  .m06-chapter-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: border-color 0.15s;
+  }
+
+  .m06-chapter-card:hover { border-color: var(--border-hover); }
+
+  .m06-chapter-card.completed {
+    border-color: rgba(34,197,94,0.3);
+  }
+
+  .m06-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .m06-card-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .m06-card-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--amber);
+    min-width: 22px;
+    flex-shrink: 0;
+  }
+
+  .m06-card-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    font-family: inherit;
+    outline: none;
+    padding: 0.1rem 0;
+    width: 100%;
+    min-width: 0;
+    transition: border-color 0.15s;
+  }
+
+  .m06-card-name:focus {
+    border-bottom-color: var(--amber);
+    color: var(--amber);
+  }
+
+  .m06-card-pct {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .m06-card-progress-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 0.65rem;
+  }
+
+  .m06-card-progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    transition: width 0.4s ease;
+  }
+
+  /* Pipeline Steps */
+  .m06-pipeline {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .m06-pipe-step {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .m06-pipe-step:hover { border-color: var(--border-hover); }
+
+  .m06-pipe-step.done {
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .m06-pipe-check {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    flex-shrink: 0;
+  }
+
+  .m06-pipe-step.done .m06-pipe-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  /* Notes */
+  .m06-card-notes {
+    margin-top: 0.5rem;
+  }
+
+  .m06-card-notes-input {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    outline: none;
+    resize: vertical;
+    min-height: 36px;
+    max-height: 120px;
+    transition: border-color 0.15s;
+  }
+
+  .m06-card-notes-input:focus { border-color: var(--amber); }
+  .m06-card-notes-input::placeholder { color: var(--text-dim); }
+
+  /* Costs Input */
+  .m06-card-cost {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .m06-card-cost-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .m06-card-cost-input {
+    width: 70px;
+    padding: 0.3rem 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .m06-card-cost-input:focus { border-color: var(--amber); }
+
+  .m06-card-cost-unit {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  /* Outline */
+  .m06-card-outline {
+    margin-top: 0.5rem;
+  }
+
+  .m06-card-outline-input {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 200px;
+    transition: border-color 0.15s;
+  }
+
+  .m06-card-outline-input:focus { border-color: var(--amber); }
+  .m06-card-outline-input::placeholder { color: var(--text-dim); }
+
+  .m06-card-prompt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--amber);
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m06-card-prompt-btn:hover {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+  }
+
+  .m06-card-prompt-btn svg { width: 12px; height: 12px; }
+
+  /* Prompt Modal */
+  .m06-prompt-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .m06-prompt-overlay.visible {
+    display: flex;
+  }
+
+  .m06-prompt-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .m06-prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m06-prompt-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .m06-prompt-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem;
+    transition: color 0.15s;
+  }
+
+  .m06-prompt-close:hover { color: var(--text); }
+
+  .m06-prompt-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .m06-prompt-output {
+    background: #0d0d15;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: inherit;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .m06-prompt-footer {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .m06-prompt-footer .m06-btn { flex: 1; }
+
+  /* Sidebar Sections */
+  .m06-sidebar-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .m06-sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .m06-sidebar-title svg { width: 16px; height: 16px; color: var(--amber); }
+
+  /* Variables */
+  .m06-var-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .m06-var-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .m06-var-key {
+    min-width: 100px;
+    padding: 0.35rem 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--amber);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.72rem;
+    outline: none;
+  }
+
+  .m06-var-key:focus { border-color: var(--amber); }
+
+  .m06-var-val {
+    flex: 1;
+    padding: 0.35rem 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    outline: none;
+  }
+
+  .m06-var-val:focus { border-color: var(--amber); }
+
+  .m06-var-remove {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    transition: color 0.15s;
+  }
+
+  .m06-var-remove:hover { color: var(--red); }
+
+  /* Cost Summary */
+  .m06-cost-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .m06-cost-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+  }
+
+  .m06-cost-row-label { color: var(--text-dim); }
+  .m06-cost-row-value { font-weight: 600; color: var(--text); }
+  .m06-cost-total { border-top: 1px solid var(--border); padding-top: 0.4rem; margin-top: 0.2rem; }
+  .m06-cost-total .m06-cost-row-value { color: var(--amber); font-size: 1rem; }
+
+  /* Add chapter button */
+  .m06-add-chapter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .m06-add-chapter:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: var(--amber-dim);
   }
 
   /* Info Box */
@@ -362,461 +1133,1296 @@
 
   .m06-info-text strong { color: var(--text); }
 
+  /* Chapter delete btn */
+  .m06-card-delete {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 0.85rem;
+    transition: color 0.15s;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  .m06-chapter-card:hover .m06-card-delete { opacity: 1; }
+  .m06-card-delete:hover { color: var(--red); }
+
   /* Responsive */
   @media (max-width: 640px) {
     .m06-tones { grid-template-columns: 1fr; }
-    .m06-hero { padding: 1.25rem; }
-    .m06-tabs { flex-wrap: wrap; }
-    .m06-tab { min-width: 50%; }
+    .m06-dash-stats { grid-template-columns: repeat(2, 1fr); }
+    .m06-pipeline { gap: 0.25rem; }
+    .m06-pipe-step { padding: 0.25rem 0.45rem; font-size: 0.65rem; }
+    .m06-dash-header-top { flex-direction: column; align-items: flex-start; }
+    .m06-steps { flex-wrap: wrap; }
+    .m06-step-indicator { min-width: 33%; }
   }
 </style>
 
 <div class="m06">
 
-  <!-- Hero -->
-  <div class="m06-hero">
-    <div class="m06-hero-header">
-      <div class="m06-hero-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+  <!-- ══════════ WIZARD VIEW ══════════ -->
+  <div class="m06-wizard active" id="m06-wizard">
+
+    <div class="m06-wizard-header">
+      <div class="m06-wizard-header-top">
+        <div class="m06-wizard-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+        </div>
+        <h2>Dein Buch-Dashboard</h2>
       </div>
-      <h2>Wundert&uuml;te &mdash; Generatoren</h2>
+      <p class="m06-wizard-desc">
+        Konfiguriere dein eigenes Dashboard f&uuml;r dein Buchprojekt. <strong>3 Schritte</strong>, dann hast du alles im Blick: Kapitel-Tracker, Pipeline, Kosten, Notizen.
+      </p>
     </div>
-    <p class="m06-hero-desc">
-      Generiere deine <strong>SOUL.md</strong> (Agent-Pers&ouml;nlichkeit) und <strong>AGENTS.md</strong> (Team-Rollen) direkt im Browser. Ausf&uuml;llen, generieren, kopieren, in deinen Workspace einf&uuml;gen.
-    </p>
-  </div>
 
-  <!-- Tabs -->
-  <div class="m06-tabs">
-    <button class="m06-tab active" data-tab="soul">
-      <span class="m06-tab-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
-      SOUL.md
-    </button>
-    <button class="m06-tab" data-tab="agents">
-      <span class="m06-tab-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
-      AGENTS.md
-    </button>
-  </div>
-
-  <!-- SOUL.md Panel -->
-  <div class="m06-panel active" id="m06-panel-soul">
-
-    <div class="m06-info-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-      <div class="m06-info-text">
-        Die <strong>SOUL.md</strong> definiert die Pers&ouml;nlichkeit deines Agents. Sie bestimmt wie er denkt, schreibt und reagiert. OpenClaw l&auml;dt sie automatisch beim Start.
+    <!-- Step Indicator -->
+    <div class="m06-steps">
+      <div class="m06-step-indicator active" data-step="1">
+        <span class="m06-step-num">1</span>Dein Buch
+      </div>
+      <div class="m06-step-indicator" data-step="2">
+        <span class="m06-step-num">2</span>Features
+      </div>
+      <div class="m06-step-indicator" data-step="3">
+        <span class="m06-step-num">3</span>Agent-Team
       </div>
     </div>
 
-    <div class="m06-field">
-      <label class="m06-label">Agent-Name</label>
-      <div class="m06-hint">Wie soll dein Agent heissen?</div>
-      <input class="m06-input" id="m06-soul-name" type="text" placeholder="z.B. Atlas, Luna, Spark..." value="">
-    </div>
+    <!-- Step 1: Dein Buch -->
+    <div class="m06-step-content active" id="m06-step-1">
+      <div class="m06-field">
+        <label class="m06-label">Buchtitel</label>
+        <div class="m06-hint">Der Arbeitstitel deines Buches</div>
+        <input class="m06-input" id="m06-book-title" type="text" placeholder="z.B. Mein Krimi, KI-Handbuch, Kochbuch...">
+      </div>
 
-    <div class="m06-field">
-      <label class="m06-label">Aufgabe / Zweck</label>
-      <div class="m06-hint">Was ist die Hauptaufgabe des Agents?</div>
-      <input class="m06-input" id="m06-soul-purpose" type="text" placeholder="z.B. Sachb&uuml;cher schreiben, Kunden beraten, Code reviewen...">
-    </div>
+      <div class="m06-field">
+        <label class="m06-label">Anzahl Kapitel</label>
+        <div class="m06-hint">Wie viele Kapitel hat dein Buch? (1-30, kannst du sp&auml;ter &auml;ndern)</div>
+        <input class="m06-input-small" id="m06-chapter-count" type="number" min="1" max="30" value="10">
+      </div>
 
-    <div class="m06-field">
-      <label class="m06-label">Zielgruppe</label>
-      <div class="m06-hint">Mit wem spricht dein Agent?</div>
-      <input class="m06-input" id="m06-soul-audience" type="text" placeholder="z.B. Einsteiger ohne Vorkenntnisse, Entwickler, Sch&uuml;ler...">
-    </div>
+      <div class="m06-field">
+        <label class="m06-label">Kapitelnamen <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-dim)">(optional)</span></label>
+        <div class="m06-hint">Benenne deine Kapitel &ndash; oder lass die Defaults und &auml;ndere sp&auml;ter</div>
+        <div class="m06-chapter-list" id="m06-chapter-list">
+          <!-- filled by JS -->
+        </div>
+      </div>
 
-    <div class="m06-field">
-      <label class="m06-label">Pers&ouml;nlichkeits-Stil</label>
-      <div class="m06-hint">W&auml;hle den Grundton deines Agents</div>
-      <div class="m06-tones" id="m06-tones">
-        <div class="m06-tone selected" data-tone="lesch">
-          <div class="m06-tone-name">Harald Lesch</div>
-          <div class="m06-tone-desc">Begeistert, bildreich, mit Tiefgang</div>
-        </div>
-        <div class="m06-tone" data-tone="sachlich">
-          <div class="m06-tone-name">Sachlich</div>
-          <div class="m06-tone-desc">Neutral, pr&auml;zise, faktenbasiert</div>
-        </div>
-        <div class="m06-tone" data-tone="coach">
-          <div class="m06-tone-name">Coach</div>
-          <div class="m06-tone-desc">Motivierend, Schritt f&uuml;r Schritt</div>
-        </div>
-        <div class="m06-tone" data-tone="kumpel">
-          <div class="m06-tone-name">Kumpel</div>
-          <div class="m06-tone-desc">Locker, nahbar, mit Humor</div>
-        </div>
-        <div class="m06-tone" data-tone="mentor">
-          <div class="m06-tone-name">Mentor</div>
-          <div class="m06-tone-desc">Weise, geduldig, Erfahrung</div>
-        </div>
-        <div class="m06-tone" data-tone="custom">
-          <div class="m06-tone-name">Eigener Stil</div>
-          <div class="m06-tone-desc">Freitext unten eingeben</div>
+      <div class="m06-field">
+        <label class="m06-label">Buchteile <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-dim)">(optional)</span></label>
+        <div class="m06-hint">Gruppiere Kapitel in Teile, z.B. "Grundlagen" und "Praxis"</div>
+        <div class="m06-parts-wrap" id="m06-parts-wrap">
+          <div class="m06-parts-list" id="m06-parts-list">
+            <!-- filled by JS -->
+          </div>
+          <button class="m06-btn m06-btn-ghost" id="m06-add-part" type="button">+ Teil hinzuf&uuml;gen</button>
         </div>
       </div>
     </div>
 
-    <div class="m06-field" id="m06-custom-tone-field" style="display:none;">
-      <label class="m06-label">Eigener Stil (Freitext)</label>
-      <textarea class="m06-textarea" id="m06-custom-tone" placeholder="Beschreibe den Ton deines Agents..."></textarea>
-    </div>
-
-    <div class="m06-field">
-      <label class="m06-label">3-T&ouml;ne-Persona</label>
-      <div class="m06-hint">Drei Facetten, die deinen Agent ausmachen (kommagetrennt)</div>
-      <input class="m06-input" id="m06-soul-tones" type="text" placeholder="z.B. Erkl&auml;rer, Mahner, Praktiker">
-    </div>
-
-    <div class="m06-field">
-      <label class="m06-label">Tabus / Verbote</label>
-      <div class="m06-hint">Was soll der Agent NICHT tun?</div>
-      <textarea class="m06-textarea" id="m06-soul-taboos" placeholder="z.B. Keine Fachbegriffe ohne Erkl&auml;rung, niemals &uuml;berheblich..."></textarea>
-    </div>
-
-    <div class="m06-field">
-      <label class="m06-label">Sprache</label>
-      <select class="m06-select" id="m06-soul-lang">
-        <option value="de">Deutsch (Du-Form)</option>
-        <option value="de-sie">Deutsch (Sie-Form)</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-
-    <button class="m06-generate" id="m06-gen-soul">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
-      SOUL.md generieren
-    </button>
-
-    <div class="m06-output-wrap" id="m06-output-soul">
-      <div class="m06-output-header">
-        <span class="m06-output-filename">SOUL.md</span>
-        <button class="m06-copy-btn" data-target="m06-soul-code">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          Kopieren
-        </button>
+    <!-- Step 2: Features -->
+    <div class="m06-step-content" id="m06-step-2">
+      <div class="m06-info-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div class="m06-info-text">
+          W&auml;hle welche Features dein Dashboard haben soll. Der <strong>Kapitel-Tracker</strong> ist immer aktiv. Alles andere ist optional.
+        </div>
       </div>
-      <div class="m06-output" id="m06-soul-code"></div>
-    </div>
-  </div>
-
-  <!-- AGENTS.md Panel -->
-  <div class="m06-panel" id="m06-panel-agents">
-
-    <div class="m06-info-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-      <div class="m06-info-text">
-        Die <strong>AGENTS.md</strong> definiert Sub-Agenten, die dein Haupt-Agent spawnen kann. Jede Rolle bekommt eigene Anweisungen und Einschr&auml;nkungen.
-      </div>
-    </div>
-
-    <div class="m06-field">
-      <label class="m06-label">Haupt-Agent Name</label>
-      <input class="m06-input" id="m06-agents-main" type="text" placeholder="Name des Haupt-Agents (z.B. Chefredakteur)">
-    </div>
-
-    <div class="m06-field">
-      <label class="m06-label">Sub-Agenten w&auml;hlen</label>
-      <div class="m06-hint">W&auml;hle die Rollen, die dein Team braucht</div>
-      <div class="m06-roles" id="m06-roles">
+      <div class="m06-features" id="m06-features">
         <!-- filled by JS -->
       </div>
     </div>
 
-    <div class="m06-field">
-      <label class="m06-label">Eigene Rolle hinzuf&uuml;gen (optional)</label>
-      <div class="m06-hint">Name und Beschreibung, kommagetrennt</div>
-      <input class="m06-input" id="m06-custom-role" type="text" placeholder="z.B. Faktenpr&uuml;fer, Pr&uuml;ft alle Zahlen und URLs">
+    <!-- Step 3: Agent-Team -->
+    <div class="m06-step-content" id="m06-step-3">
+      <div class="m06-info-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div class="m06-info-text">
+          Definiere dein Agent-Team. Die generierten <strong>SOUL.md</strong> und <strong>AGENTS.md</strong> kannst du sp&auml;ter im Dashboard kopieren. Diesen Schritt kannst du auch &uuml;berspringen.
+        </div>
+      </div>
+
+      <div class="m06-field">
+        <label class="m06-label">Agent-Name</label>
+        <div class="m06-hint">Wie soll dein Haupt-Agent heissen?</div>
+        <input class="m06-input" id="m06-agent-name" type="text" placeholder="z.B. Atlas, Luna, Chefredakteur...">
+      </div>
+
+      <div class="m06-field">
+        <label class="m06-label">Aufgabe / Zweck</label>
+        <input class="m06-input" id="m06-agent-purpose" type="text" placeholder="z.B. Sachb&uuml;cher schreiben, Code reviewen...">
+      </div>
+
+      <div class="m06-field">
+        <label class="m06-label">Zielgruppe</label>
+        <input class="m06-input" id="m06-agent-audience" type="text" placeholder="z.B. Einsteiger ohne Vorkenntnisse...">
+      </div>
+
+      <div class="m06-field">
+        <label class="m06-label">Pers&ouml;nlichkeits-Stil</label>
+        <div class="m06-tones" id="m06-tones">
+          <div class="m06-tone selected" data-tone="lesch">
+            <div class="m06-tone-name">Harald Lesch</div>
+            <div class="m06-tone-desc">Begeistert, bildreich, Tiefgang</div>
+          </div>
+          <div class="m06-tone" data-tone="sachlich">
+            <div class="m06-tone-name">Sachlich</div>
+            <div class="m06-tone-desc">Neutral, pr&auml;zise, Fakten</div>
+          </div>
+          <div class="m06-tone" data-tone="coach">
+            <div class="m06-tone-name">Coach</div>
+            <div class="m06-tone-desc">Motivierend, Schritt f&uuml;r Schritt</div>
+          </div>
+          <div class="m06-tone" data-tone="kumpel">
+            <div class="m06-tone-name">Kumpel</div>
+            <div class="m06-tone-desc">Locker, nahbar, Humor</div>
+          </div>
+          <div class="m06-tone" data-tone="mentor">
+            <div class="m06-tone-name">Mentor</div>
+            <div class="m06-tone-desc">Weise, geduldig, Erfahrung</div>
+          </div>
+          <div class="m06-tone" data-tone="custom">
+            <div class="m06-tone-name">Eigener Stil</div>
+            <div class="m06-tone-desc">Freitext eingeben</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m06-field" id="m06-custom-tone-field" style="display:none;">
+        <label class="m06-label">Eigener Stil</label>
+        <textarea class="m06-textarea" id="m06-custom-tone" placeholder="Beschreibe den Ton deines Agents..."></textarea>
+      </div>
+
+      <div class="m06-field">
+        <label class="m06-label">Sub-Agenten</label>
+        <div class="m06-hint">W&auml;hle die Rollen f&uuml;r dein Team</div>
+        <div class="m06-roles" id="m06-roles">
+          <!-- filled by JS -->
+        </div>
+      </div>
     </div>
 
-    <button class="m06-generate" id="m06-gen-agents">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      AGENTS.md generieren
-    </button>
-
-    <div class="m06-output-wrap" id="m06-output-agents">
-      <div class="m06-output-header">
-        <span class="m06-output-filename">AGENTS.md</span>
-        <button class="m06-copy-btn" data-target="m06-agents-code">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          Kopieren
-        </button>
-      </div>
-      <div class="m06-output" id="m06-agents-code"></div>
+    <!-- Navigation -->
+    <div class="m06-wizard-nav">
+      <button class="m06-btn m06-btn-secondary" id="m06-prev" style="visibility:hidden;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Zur&uuml;ck
+      </button>
+      <button class="m06-btn m06-btn-primary" id="m06-next">
+        Weiter
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
     </div>
   </div>
 
+  <!-- ══════════ DASHBOARD VIEW ══════════ -->
+  <div class="m06-dashboard" id="m06-dashboard">
+
+    <!-- Header -->
+    <div class="m06-dash-header" id="m06-dash-header">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Stats -->
+    <div class="m06-dash-stats" id="m06-dash-stats">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Chapter Grid -->
+    <div id="m06-dash-grid-wrap">
+      <div class="m06-dash-grid-header">
+        <div class="m06-dash-grid-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Kapitel
+        </div>
+        <button class="m06-btn m06-btn-ghost" id="m06-add-chapter-top" title="Kapitel hinzuf&uuml;gen">+ Kapitel</button>
+      </div>
+      <div class="m06-chapter-grid" id="m06-chapter-grid">
+        <!-- filled by JS -->
+      </div>
+      <button class="m06-add-chapter" id="m06-add-chapter-bottom">+ Kapitel hinzuf&uuml;gen</button>
+    </div>
+
+    <!-- Sidebar sections (variables, costs, agent team) -->
+    <div id="m06-sidebar" style="margin-top:1.5rem;">
+      <!-- filled by JS -->
+    </div>
+
+  </div>
+
+  <!-- Prompt Modal -->
+  <div class="m06-prompt-overlay" id="m06-prompt-overlay">
+    <div class="m06-prompt-modal">
+      <div class="m06-prompt-header">
+        <span class="m06-prompt-title" id="m06-prompt-modal-title">Prompt generiert</span>
+        <button class="m06-prompt-close" id="m06-prompt-close">&times;</button>
+      </div>
+      <div class="m06-prompt-body">
+        <div class="m06-prompt-output" id="m06-prompt-output"></div>
+      </div>
+      <div class="m06-prompt-footer">
+        <button class="m06-btn m06-btn-primary" id="m06-prompt-copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Prompt kopieren
+        </button>
+        <button class="m06-btn m06-btn-secondary" id="m06-prompt-close-btn">Schliessen</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 (function() {
   'use strict';
 
-  // ── Tab Switching ──
-  var tabs = document.querySelectorAll('.m06-tab');
-  var panels = document.querySelectorAll('.m06-panel');
+  // ══════════ CONSTANTS ══════════
+  var PIPELINE_STEPS = ['Outline', 'Entwurf', 'Review', 'Lektorat', 'Final'];
 
-  for (var t = 0; t < tabs.length; t++) {
-    tabs[t].addEventListener('click', function() {
-      var target = this.getAttribute('data-tab');
-      for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
-      for (var j = 0; j < panels.length; j++) { panels[j].classList.remove('active'); }
-      this.classList.add('active');
-      var panel = document.getElementById('m06-panel-' + target);
-      if (panel) panel.classList.add('active');
-    });
-  }
-
-  // ── URL param: ?tab=agents ──
-  try {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('tab') === 'agents') {
-      for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
-      for (var j = 0; j < panels.length; j++) { panels[j].classList.remove('active'); }
-      tabs[1].classList.add('active');
-      document.getElementById('m06-panel-agents').classList.add('active');
-    }
-  } catch(e) {}
-
-  // ── Tone Selection ──
-  var selectedTone = 'lesch';
-  var toneContainer = document.getElementById('m06-tones');
-  var customField = document.getElementById('m06-custom-tone-field');
-
-  if (toneContainer) {
-    toneContainer.addEventListener('click', function(e) {
-      var tone = e.target.closest('.m06-tone');
-      if (!tone) return;
-      selectedTone = tone.getAttribute('data-tone');
-      var all = toneContainer.querySelectorAll('.m06-tone');
-      for (var i = 0; i < all.length; i++) { all[i].classList.remove('selected'); }
-      tone.classList.add('selected');
-      if (customField) customField.style.display = selectedTone === 'custom' ? 'block' : 'none';
-    });
-  }
-
-  // ── Tone Descriptions ──
-  var TONE_MAP = {
-    lesch: 'Begeistert und bildreich wie Harald Lesch. Erklaert komplexe Themen mit Analogien aus dem Alltag. Bringt Tiefgang, ohne trocken zu werden. Nutzt rhetorische Fragen um zum Nachdenken anzuregen.',
-    sachlich: 'Neutral und praezise. Fakten stehen im Vordergrund, keine Wertungen. Klare Struktur, kurze Saetze, technisch korrekt. Fachbegriffe werden eingefuehrt und erklaert.',
-    coach: 'Motivierend und strukturiert. Fuehrt Schritt fuer Schritt durch Aufgaben. Feiert kleine Erfolge, gibt konstruktives Feedback. "Du schaffst das" statt "Man sollte".',
-    kumpel: 'Locker und nahbar. Duzt, nutzt Umgangssprache, macht gelegentlich Witze. Erklaert ohne erhobenen Zeigefinger. Fehler sind normal und kein Drama.',
-    mentor: 'Weise und geduldig. Teilt Erfahrung statt Regeln. Stellt Fragen statt Antworten zu geben. Ermutigt zum eigenen Denken. Langjaehrige Expertise spuerbar.'
-  };
-
-  // ── SOUL.md Generator ──
-  document.getElementById('m06-gen-soul').addEventListener('click', function() {
-    var name = document.getElementById('m06-soul-name').value.trim() || 'MeinAgent';
-    var purpose = document.getElementById('m06-soul-purpose').value.trim() || 'Allround-Assistent';
-    var audience = document.getElementById('m06-soul-audience').value.trim() || 'Allgemeines Publikum';
-    var tones = document.getElementById('m06-soul-tones').value.trim() || 'Erklaerer, Praktiker, Motivator';
-    var taboos = document.getElementById('m06-soul-taboos').value.trim() || 'Keine Fachbegriffe ohne Erklaerung';
-    var lang = document.getElementById('m06-soul-lang').value;
-
-    var toneDesc = TONE_MAP[selectedTone] || '';
-    if (selectedTone === 'custom') {
-      toneDesc = document.getElementById('m06-custom-tone').value.trim() || 'Eigener Stil nach Wahl.';
-    }
-
-    var langLabel = lang === 'de' ? 'Deutsch, Du-Form' : lang === 'de-sie' ? 'Deutsch, Sie-Form' : 'English';
-    var tonesList = tones.split(',');
-    var tonesSection = '';
-    for (var i = 0; i < tonesList.length; i++) {
-      var t = tonesList[i].trim();
-      if (t) tonesSection += '- **' + t + '**\n';
-    }
-
-    var md = '# SOUL.md \u2014 ' + name + '\n\n';
-    md += '> Generiert mit dem Agentic Authorship Dashboard\n\n';
-    md += '---\n\n';
-    md += '## Wer bin ich?\n\n';
-    md += 'Ich bin **' + name + '**. ' + purpose + '.\n\n';
-    md += '## Meine Zielgruppe\n\n';
-    md += audience + '\n\n';
-    md += '## Mein Stil\n\n';
-    md += toneDesc + '\n\n';
-    md += '## Meine 3 Toene\n\n';
-    md += tonesSection + '\n';
-    md += 'Ich wechsle zwischen diesen Toenen je nach Kontext. Nie nur belehren, nie nur unterhalten.\n\n';
-    md += '## Sprache\n\n';
-    md += langLabel + '\n\n';
-    md += '## Tabus\n\n';
-
-    var tabooList = taboos.split('\n');
-    for (var j = 0; j < tabooList.length; j++) {
-      var tb = tabooList[j].trim();
-      if (tb) md += '- ' + tb + '\n';
-    }
-
-    md += '\n## Leitprinzip\n\n';
-    md += 'Ich bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
-
-    var outputEl = document.getElementById('m06-output-soul');
-    var codeEl = document.getElementById('m06-soul-code');
-    if (outputEl && codeEl) {
-      codeEl.textContent = md;
-      outputEl.classList.add('visible');
-    }
-
-    // Save to localStorage
-    try {
-      localStorage.setItem('wundertuete:lastGenerated', new Date().toISOString());
-      localStorage.setItem('wundertuete:lastSoul', md);
-    } catch(e) {}
-  });
-
-  // ── Agent Roles ──
-  var ROLES = [
-    { id: 'autor',     name: 'Autor',        desc: 'Schreibt Texte nach Outline und Stilregeln' },
-    { id: 'lektor',    name: 'Lektor',        desc: 'Prueft Grammatik, Stil und Konsistenz' },
-    { id: 'pruefer',   name: 'Pruefer / QA',  desc: 'Faktenpruefung, Wortzahl, Formatierung' },
-    { id: 'forscher',  name: 'Forscher',       desc: 'Recherchiert Themen und sammelt Quellen' },
-    { id: 'uebersetzer',name: 'Uebersetzer',   desc: 'Uebersetzt zwischen Sprachen' },
-    { id: 'designer',  name: 'Designer',       desc: 'Erstellt Diagramme und Visualisierungen' },
-    { id: 'coder',     name: 'Coder',          desc: 'Schreibt und reviewt Code-Beispiele' }
+  var FEATURES = [
+    { id: 'tracker', name: 'Kapitel-Tracker mit Fortschrittsbalken', desc: 'Sieh auf einen Blick wie weit dein Buch ist.', locked: true },
+    { id: 'pipeline', name: 'Pipeline-Schritte pro Kapitel', desc: 'Outline, Entwurf, Review, Lektorat, Final \u2013 tracke jeden Schritt.' },
+    { id: 'costs', name: 'Kosten-Rechner', desc: 'Erfasse API-Kosten pro Kapitel und behalte das Budget im Blick.' },
+    { id: 'outline', name: 'Outline pro Kapitel + Prompt-Generator', desc: 'Schreibe deine Kapitel-Outline und generiere daraus einen fertigen Prompt fuer OpenClaw.' },
+    { id: 'variables', name: 'Persoenliche Variablen', desc: 'Server-IP, API-Key, Container-Name \u2013 alles an einem Ort.' },
+    { id: 'notes', name: 'Notizen pro Kapitel', desc: 'Hinterlasse dir Notizen, TODOs und Hinweise zu jedem Kapitel.' }
   ];
 
-  var selectedRoles = { autor: true, lektor: true, pruefer: true };
+  var TONE_MAP = {
+    lesch: 'Begeistert und bildreich wie Harald Lesch. Erklaert komplexe Themen mit Analogien aus dem Alltag. Bringt Tiefgang, ohne trocken zu werden.',
+    sachlich: 'Neutral und praezise. Fakten stehen im Vordergrund, keine Wertungen. Klare Struktur, kurze Saetze, technisch korrekt.',
+    coach: 'Motivierend und strukturiert. Fuehrt Schritt fuer Schritt durch Aufgaben. Feiert kleine Erfolge, gibt konstruktives Feedback.',
+    kumpel: 'Locker und nahbar. Duzt, nutzt Umgangssprache, macht gelegentlich Witze. Erklaert ohne erhobenen Zeigefinger.',
+    mentor: 'Weise und geduldig. Teilt Erfahrung statt Regeln. Stellt Fragen statt Antworten zu geben. Ermutigt zum eigenen Denken.'
+  };
 
-  function renderRoles() {
-    var rolesEl = document.getElementById('m06-roles');
-    if (!rolesEl) return;
-    var html = '';
+  var ROLES = [
+    { id: 'autor',      name: 'Autor',       desc: 'Schreibt Texte nach Outline und Stilregeln' },
+    { id: 'lektor',     name: 'Lektor',      desc: 'Prueft Grammatik, Stil und Konsistenz' },
+    { id: 'pruefer',    name: 'Pruefer / QA', desc: 'Faktenpruefung, Wortzahl, Formatierung' },
+    { id: 'forscher',   name: 'Forscher',    desc: 'Recherchiert Themen und sammelt Quellen' },
+    { id: 'uebersetzer',name: 'Uebersetzer', desc: 'Uebersetzt zwischen Sprachen' },
+    { id: 'designer',   name: 'Designer',    desc: 'Erstellt Diagramme und Visualisierungen' },
+    { id: 'coder',      name: 'Coder',       desc: 'Schreibt und reviewt Code-Beispiele' }
+  ];
+
+  // ══════════ STATE ══════════
+  var state = {
+    mode: 'wizard',
+    wizardStep: 1,
+    config: {
+      title: '',
+      chapters: [],
+      parts: [],
+      features: { tracker: true, pipeline: false, costs: false, outline: false, variables: false, notes: false }
+    },
+    progress: {
+      chapters: {},
+      variables: [],
+      costs: {}
+    },
+    agentTeam: {
+      name: '',
+      purpose: '',
+      audience: '',
+      tone: 'lesch',
+      customTone: '',
+      selectedRoles: { autor: true, lektor: true, pruefer: true },
+      soul: '',
+      agents: ''
+    },
+    meta: {
+      created: '',
+      lastModified: '',
+      lastExport: '',
+      changesSinceExport: 0
+    }
+  };
+
+  // ══════════ PERSISTENCE ══════════
+  var SAVE_DEBOUNCE = null;
+
+  function save() {
+    if (SAVE_DEBOUNCE) clearTimeout(SAVE_DEBOUNCE);
+    SAVE_DEBOUNCE = setTimeout(function() {
+      try {
+        state.meta.lastModified = new Date().toISOString();
+        state.meta.changesSinceExport++;
+        localStorage.setItem('m06:mode', state.mode);
+        localStorage.setItem('m06:config', JSON.stringify(state.config));
+        localStorage.setItem('m06:progress', JSON.stringify(state.progress));
+        localStorage.setItem('m06:agentTeam', JSON.stringify(state.agentTeam));
+        localStorage.setItem('m06:meta', JSON.stringify(state.meta));
+        localStorage.setItem('shell:lastModule', 'm06');
+      } catch(e) {}
+    }, 300);
+  }
+
+  function load() {
+    try {
+      var mode = localStorage.getItem('m06:mode');
+      if (mode) state.mode = mode;
+
+      var config = localStorage.getItem('m06:config');
+      if (config) state.config = JSON.parse(config);
+
+      var progress = localStorage.getItem('m06:progress');
+      if (progress) state.progress = JSON.parse(progress);
+
+      var agentTeam = localStorage.getItem('m06:agentTeam');
+      if (agentTeam) state.agentTeam = JSON.parse(agentTeam);
+
+      var meta = localStorage.getItem('m06:meta');
+      if (meta) state.meta = JSON.parse(meta);
+    } catch(e) {
+      // corrupt data - start fresh
+    }
+  }
+
+  // ══════════ WIZARD LOGIC ══════════
+  var wizardEl = document.getElementById('m06-wizard');
+  var dashboardEl = document.getElementById('m06-dashboard');
+  var stepIndicators = document.querySelectorAll('.m06-step-indicator');
+  var stepContents = document.querySelectorAll('.m06-step-content');
+  var prevBtn = document.getElementById('m06-prev');
+  var nextBtn = document.getElementById('m06-next');
+
+  function showWizardStep(n) {
+    state.wizardStep = n;
+    for (var i = 0; i < stepIndicators.length; i++) {
+      var si = stepIndicators[i];
+      var sn = parseInt(si.getAttribute('data-step'));
+      si.classList.remove('active', 'done');
+      if (sn < n) si.classList.add('done');
+      if (sn === n) si.classList.add('active');
+    }
+    for (var j = 0; j < stepContents.length; j++) {
+      stepContents[j].classList.remove('active');
+    }
+    var target = document.getElementById('m06-step-' + n);
+    if (target) target.classList.add('active');
+
+    prevBtn.style.visibility = n === 1 ? 'hidden' : 'visible';
+    if (n === 3) {
+      nextBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Dashboard erstellen';
+    } else {
+      nextBtn.innerHTML = 'Weiter <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    }
+  }
+
+  prevBtn.addEventListener('click', function() {
+    if (state.wizardStep > 1) {
+      collectWizardData();
+      showWizardStep(state.wizardStep - 1);
+    }
+  });
+
+  nextBtn.addEventListener('click', function() {
+    collectWizardData();
+    if (state.wizardStep < 3) {
+      showWizardStep(state.wizardStep + 1);
+    } else {
+      finishWizard();
+    }
+  });
+
+  function collectWizardData() {
+    // Step 1: Book
+    var titleEl = document.getElementById('m06-book-title');
+    if (titleEl) state.config.title = titleEl.value.trim();
+
+    var countEl = document.getElementById('m06-chapter-count');
+    if (countEl) {
+      var count = parseInt(countEl.value) || 10;
+      count = Math.max(1, Math.min(30, count));
+      syncChapterCount(count);
+    }
+
+    // Collect chapter names from inputs
+    var chInputs = document.querySelectorAll('.m06-chapter-input');
+    for (var i = 0; i < chInputs.length; i++) {
+      var idx = parseInt(chInputs[i].getAttribute('data-idx'));
+      if (state.config.chapters[idx]) {
+        state.config.chapters[idx].name = chInputs[i].value.trim();
+      }
+    }
+
+    // Collect part assignments
+    var partSelects = document.querySelectorAll('.m06-chapter-part-select');
+    for (var p = 0; p < partSelects.length; p++) {
+      var pidx = parseInt(partSelects[p].getAttribute('data-idx'));
+      if (state.config.chapters[pidx]) {
+        state.config.chapters[pidx].part = partSelects[p].value;
+      }
+    }
+
+    // Collect part names
+    var partInputs = document.querySelectorAll('.m06-part-input');
+    state.config.parts = [];
+    for (var j = 0; j < partInputs.length; j++) {
+      var val = partInputs[j].value.trim();
+      if (val) state.config.parts.push(val);
+    }
+
+    // Step 3: Agent Team
+    var agentNameEl = document.getElementById('m06-agent-name');
+    if (agentNameEl) state.agentTeam.name = agentNameEl.value.trim();
+
+    var agentPurposeEl = document.getElementById('m06-agent-purpose');
+    if (agentPurposeEl) state.agentTeam.purpose = agentPurposeEl.value.trim();
+
+    var agentAudienceEl = document.getElementById('m06-agent-audience');
+    if (agentAudienceEl) state.agentTeam.audience = agentAudienceEl.value.trim();
+
+    var customToneEl = document.getElementById('m06-custom-tone');
+    if (customToneEl) state.agentTeam.customTone = customToneEl.value.trim();
+
+    save();
+  }
+
+  function syncChapterCount(count) {
+    while (state.config.chapters.length < count) {
+      var n = state.config.chapters.length + 1;
+      state.config.chapters.push({ id: n, name: '', part: '' });
+    }
+    while (state.config.chapters.length > count) {
+      state.config.chapters.pop();
+    }
+    // Re-number
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      state.config.chapters[i].id = i + 1;
+    }
+  }
+
+  function finishWizard() {
+    if (!state.config.title) state.config.title = 'Mein Buch';
+    if (state.config.chapters.length === 0) syncChapterCount(10);
+
+    // Init progress for each chapter if missing
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      var cid = state.config.chapters[i].id;
+      if (!state.progress.chapters[cid]) {
+        state.progress.chapters[cid] = { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
+      }
+    }
+
+    // Init variables if empty
+    if (!state.progress.variables || state.progress.variables.length === 0) {
+      state.progress.variables = [
+        { key: 'server-ip', value: '' },
+        { key: 'api-key', value: '' },
+        { key: 'container', value: '' }
+      ];
+    }
+
+    // Generate SOUL.md + AGENTS.md
+    generateAgentFiles();
+
+    state.mode = 'dashboard';
+    state.meta.created = state.meta.created || new Date().toISOString();
+    save();
+    switchMode();
+  }
+
+  function generateAgentFiles() {
+    var name = state.agentTeam.name || 'MeinAgent';
+    var purpose = state.agentTeam.purpose || 'Allround-Assistent';
+    var audience = state.agentTeam.audience || 'Allgemeines Publikum';
+    var toneDesc = TONE_MAP[state.agentTeam.tone] || '';
+    if (state.agentTeam.tone === 'custom') {
+      toneDesc = state.agentTeam.customTone || 'Eigener Stil.';
+    }
+
+    // SOUL.md
+    var soul = '# SOUL.md — ' + name + '\n\n';
+    soul += '> Generiert mit dem Agentic Authorship Dashboard\n\n---\n\n';
+    soul += '## Wer bin ich?\n\nIch bin **' + name + '**. ' + purpose + '.\n\n';
+    soul += '## Meine Zielgruppe\n\n' + audience + '\n\n';
+    soul += '## Mein Stil\n\n' + toneDesc + '\n\n';
+    soul += '## Leitprinzip\n\nIch bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
+    state.agentTeam.soul = soul;
+
+    // AGENTS.md
+    var activeRoles = [];
     for (var i = 0; i < ROLES.length; i++) {
-      var r = ROLES[i];
-      var sel = selectedRoles[r.id] ? ' selected' : '';
-      html += '<div class="m06-role' + sel + '" data-role="' + r.id + '">' +
-        '<div class="m06-role-check">' + (selectedRoles[r.id] ? '\u2713' : '') + '</div>' +
-        '<div class="m06-role-info">' +
-          '<div class="m06-role-name">' + r.name + '</div>' +
-          '<div class="m06-role-desc">' + r.desc + '</div>' +
+      if (state.agentTeam.selectedRoles[ROLES[i].id]) activeRoles.push(ROLES[i]);
+    }
+
+    var agents = '# AGENTS.md — Team-Konfiguration\n\n';
+    agents += '> Haupt-Agent: **' + name + '**\n\n---\n\n';
+    agents += '## allowAgents\n\n```json\n"subagents": {\n  "allowAgents": [';
+    var names = [];
+    for (var j = 0; j < activeRoles.length; j++) names.push('"' + activeRoles[j].id + '"');
+    agents += names.join(', ') + ']\n}\n```\n\n---\n\n';
+
+    for (var k = 0; k < activeRoles.length; k++) {
+      var r = activeRoles[k];
+      agents += '## Agent: ' + r.name + '\n\n**ID:** `' + r.id + '`\n**Rolle:** ' + r.desc + '\n\n';
+      agents += '### Anweisungen\n\n- Folge den Vorgaben des ' + name + '\n- Arbeite nur innerhalb deiner Rolle\n- Lies die SOUL.md fuer Stil und Tonalitaet\n\n---\n\n';
+    }
+    state.agentTeam.agents = agents;
+  }
+
+  // ══════════ WIZARD RENDERERS ══════════
+
+  function renderChapterList() {
+    var container = document.getElementById('m06-chapter-list');
+    if (!container) return;
+
+    var count = parseInt(document.getElementById('m06-chapter-count').value) || 10;
+    count = Math.max(1, Math.min(30, count));
+    syncChapterCount(count);
+
+    var html = '';
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      var ch = state.config.chapters[i];
+      var partOptions = '<option value="">—</option>';
+      for (var p = 0; p < state.config.parts.length; p++) {
+        var selected = ch.part === state.config.parts[p] ? ' selected' : '';
+        partOptions += '<option value="' + escHtml(state.config.parts[p]) + '"' + selected + '>' + escHtml(state.config.parts[p]) + '</option>';
+      }
+      html += '<div class="m06-chapter-item">' +
+        '<span class="m06-chapter-num">' + ch.id + '</span>' +
+        '<input class="m06-chapter-input" data-idx="' + i + '" type="text" placeholder="Kapitel ' + ch.id + '" value="' + escHtml(ch.name) + '">' +
+        (state.config.parts.length > 0 ? '<select class="m06-chapter-part-select" data-idx="' + i + '">' + partOptions + '</select>' : '') +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderParts() {
+    var container = document.getElementById('m06-parts-list');
+    if (!container) return;
+    var html = '';
+    for (var i = 0; i < state.config.parts.length; i++) {
+      html += '<div class="m06-part-item">' +
+        '<span class="m06-part-label">Teil ' + String.fromCharCode(65 + i) + '</span>' +
+        '<input class="m06-part-input" type="text" value="' + escHtml(state.config.parts[i]) + '" placeholder="z.B. Grundlagen">' +
+        '<button class="m06-part-remove" data-idx="' + i + '" title="Entfernen">&times;</button>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+
+    // Bind remove
+    var removeBtns = container.querySelectorAll('.m06-part-remove');
+    for (var j = 0; j < removeBtns.length; j++) {
+      removeBtns[j].addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        state.config.parts.splice(idx, 1);
+        renderParts();
+        renderChapterList();
+        save();
+      });
+    }
+
+    // Re-render chapter list to update dropdowns
+    renderChapterList();
+  }
+
+  document.getElementById('m06-add-part').addEventListener('click', function() {
+    var letter = String.fromCharCode(65 + state.config.parts.length);
+    state.config.parts.push('Teil ' + letter);
+    renderParts();
+    save();
+  });
+
+  // Chapter count change
+  document.getElementById('m06-chapter-count').addEventListener('change', function() {
+    renderChapterList();
+    save();
+  });
+  document.getElementById('m06-chapter-count').addEventListener('input', function() {
+    renderChapterList();
+  });
+
+  function renderFeatures() {
+    var container = document.getElementById('m06-features');
+    if (!container) return;
+    var html = '';
+    for (var i = 0; i < FEATURES.length; i++) {
+      var f = FEATURES[i];
+      var isLocked = f.locked;
+      var isSelected = state.config.features[f.id];
+      var cls = 'm06-feature';
+      if (isLocked) cls += ' locked';
+      else if (isSelected) cls += ' selected';
+
+      html += '<div class="' + cls + '" data-feature="' + f.id + '">' +
+        '<div class="m06-feature-check">' + (isSelected || isLocked ? '\u2713' : '') + '</div>' +
+        '<div class="m06-feature-info">' +
+          '<div class="m06-feature-name">' + f.name + (isLocked ? ' (immer aktiv)' : '') + '</div>' +
+          '<div class="m06-feature-desc">' + f.desc + '</div>' +
         '</div>' +
       '</div>';
     }
-    rolesEl.innerHTML = html;
+    container.innerHTML = html;
 
-    var items = rolesEl.querySelectorAll('.m06-role');
+    // Bind clicks
+    var items = container.querySelectorAll('.m06-feature:not(.locked)');
     for (var j = 0; j < items.length; j++) {
       items[j].addEventListener('click', function() {
-        var roleId = this.getAttribute('data-role');
-        selectedRoles[roleId] = !selectedRoles[roleId];
-        this.classList.toggle('selected');
-        var check = this.querySelector('.m06-role-check');
-        check.textContent = selectedRoles[roleId] ? '\u2713' : '';
-        if (selectedRoles[roleId]) {
-          check.style.background = 'var(--green)';
-          check.style.borderColor = 'var(--green)';
-          check.style.color = '#fff';
-        } else {
-          check.style.background = 'transparent';
-          check.style.borderColor = 'var(--border)';
-          check.style.color = 'transparent';
-        }
+        var fid = this.getAttribute('data-feature');
+        state.config.features[fid] = !state.config.features[fid];
+        renderFeatures();
+        save();
       });
     }
   }
 
-  renderRoles();
-
-  // ── AGENTS.md Generator ──
-  document.getElementById('m06-gen-agents').addEventListener('click', function() {
-    var mainName = document.getElementById('m06-agents-main').value.trim() || 'Chefredakteur';
-    var customRole = document.getElementById('m06-custom-role').value.trim();
-
-    var activeRoles = [];
-    for (var i = 0; i < ROLES.length; i++) {
-      if (selectedRoles[ROLES[i].id]) activeRoles.push(ROLES[i]);
-    }
-
-    if (customRole) {
-      var parts = customRole.split(',');
-      activeRoles.push({ id: 'custom', name: parts[0].trim(), desc: (parts[1] || 'Eigene Rolle').trim() });
-    }
-
-    var md = '# AGENTS.md \u2014 Team-Konfiguration\n\n';
-    md += '> Generiert mit dem Agentic Authorship Dashboard\n';
-    md += '> Haupt-Agent: **' + mainName + '**\n\n';
-    md += '---\n\n';
-    md += '## allowAgents\n\n';
-    md += 'In `openclaw.json` eintragen:\n\n';
-    md += '```json\n';
-    md += '"subagents": {\n';
-    md += '  "allowAgents": [';
-    var names = [];
-    for (var j = 0; j < activeRoles.length; j++) {
-      names.push('"' + activeRoles[j].id + '"');
-    }
-    md += names.join(', ');
-    md += ']\n}\n```\n\n';
-    md += '---\n\n';
-
-    for (var k = 0; k < activeRoles.length; k++) {
-      var r = activeRoles[k];
-      md += '## Agent: ' + r.name + '\n\n';
-      md += '**ID:** `' + r.id + '`\n';
-      md += '**Rolle:** ' + r.desc + '\n\n';
-      md += '### Anweisungen\n\n';
-      md += '- Folge den Vorgaben des ' + mainName + 's\n';
-      md += '- Arbeite nur innerhalb deiner Rolle\n';
-      md += '- Melde Probleme oder Unsicherheiten zurueck\n';
-      md += '- Lies die SOUL.md fuer Stil und Tonalitaet\n\n';
-      md += '### Einschraenkungen\n\n';
-      md += '- Keine eigenstaendigen Aenderungen am Gesamtprojekt\n';
-      md += '- Keine Kommunikation mit anderen Agents (nur ueber ' + mainName + ')\n\n';
-      md += '---\n\n';
-    }
-
-    var outputEl = document.getElementById('m06-output-agents');
-    var codeEl = document.getElementById('m06-agents-code');
-    if (outputEl && codeEl) {
-      codeEl.textContent = md;
-      outputEl.classList.add('visible');
-    }
-
-    try {
-      localStorage.setItem('wundertuete:lastGenerated', new Date().toISOString());
-      localStorage.setItem('wundertuete:lastAgents', md);
-    } catch(e) {}
-  });
-
-  // ── Copy Buttons ──
-  var copyBtns = document.querySelectorAll('.m06-copy-btn');
-  for (var c = 0; c < copyBtns.length; c++) {
-    copyBtns[c].addEventListener('click', function(e) {
-      e.stopPropagation();
-      var targetId = this.getAttribute('data-target');
-      var targetEl = document.getElementById(targetId);
-      if (!targetEl) return;
-
-      var btn = this;
-      try {
-        navigator.clipboard.writeText(targetEl.textContent).then(function() {
-          btn.classList.add('copied');
-          btn.querySelector('svg').style.display = 'none';
-          var origText = btn.childNodes[btn.childNodes.length - 1];
-          var savedText = origText.textContent;
-          origText.textContent = ' Kopiert!';
-          setTimeout(function() {
-            btn.classList.remove('copied');
-            btn.querySelector('svg').style.display = '';
-            origText.textContent = savedText;
-          }, 2000);
-        });
-      } catch(err) {
-        // Fallback
-        var range = document.createRange();
-        range.selectNodeContents(targetEl);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
+  // Tone picker
+  var tonesEl = document.getElementById('m06-tones');
+  if (tonesEl) {
+    tonesEl.addEventListener('click', function(e) {
+      var tone = e.target.closest('.m06-tone');
+      if (!tone) return;
+      state.agentTeam.tone = tone.getAttribute('data-tone');
+      var all = tonesEl.querySelectorAll('.m06-tone');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('selected');
+      tone.classList.add('selected');
+      var ctf = document.getElementById('m06-custom-tone-field');
+      if (ctf) ctf.style.display = state.agentTeam.tone === 'custom' ? 'block' : 'none';
+      save();
     });
   }
 
-  // ── localStorage bookmark ──
-  try {
-    localStorage.setItem('shell:lastModule', 'm06');
-  } catch(e) {}
+  // Roles renderer
+  function renderRoles() {
+    var container = document.getElementById('m06-roles');
+    if (!container) return;
+    var html = '';
+    for (var i = 0; i < ROLES.length; i++) {
+      var r = ROLES[i];
+      var sel = state.agentTeam.selectedRoles[r.id];
+      html += '<div class="m06-role' + (sel ? ' selected' : '') + '" data-role="' + r.id + '">' +
+        '<div class="m06-role-check">' + (sel ? '\u2713' : '') + '</div>' +
+        '<div class="m06-role-info"><div class="m06-role-name">' + r.name + '</div><div class="m06-role-desc">' + r.desc + '</div></div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+
+    var items = container.querySelectorAll('.m06-role');
+    for (var j = 0; j < items.length; j++) {
+      items[j].addEventListener('click', function() {
+        var rid = this.getAttribute('data-role');
+        state.agentTeam.selectedRoles[rid] = !state.agentTeam.selectedRoles[rid];
+        renderRoles();
+        save();
+      });
+    }
+  }
+
+  // ══════════ DASHBOARD RENDERERS ══════════
+
+  function calcProgress() {
+    var total = state.config.chapters.length;
+    if (total === 0) return { pct: 0, done: 0, total: 0, totalSteps: 0, doneSteps: 0 };
+
+    var done = 0;
+    var totalSteps = 0;
+    var doneSteps = 0;
+
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      var cid = state.config.chapters[i].id;
+      var cp = state.progress.chapters[cid];
+      if (!cp) continue;
+
+      if (state.config.features.pipeline) {
+        var steps = ['outline', 'draft', 'review', 'edit', 'final'];
+        for (var s = 0; s < steps.length; s++) {
+          totalSteps++;
+          if (cp[steps[s]]) doneSteps++;
+        }
+        if (cp['final']) done++;
+      } else {
+        // Simple mode: just final
+        totalSteps++;
+        if (cp['final']) { doneSteps++; done++; }
+      }
+    }
+
+    var pct = totalSteps > 0 ? Math.round((doneSteps / totalSteps) * 100) : 0;
+    return { pct: pct, done: done, total: total, totalSteps: totalSteps, doneSteps: doneSteps };
+  }
+
+  function calcChapterProgress(cid) {
+    var cp = state.progress.chapters[cid];
+    if (!cp) return 0;
+    if (!state.config.features.pipeline) return cp['final'] ? 100 : 0;
+    var steps = ['outline', 'draft', 'review', 'edit', 'final'];
+    var d = 0;
+    for (var i = 0; i < steps.length; i++) { if (cp[steps[i]]) d++; }
+    return Math.round((d / steps.length) * 100);
+  }
+
+  function calcTotalCost() {
+    var total = 0;
+    for (var key in state.progress.chapters) {
+      var c = state.progress.chapters[key];
+      if (c && c.cost) total += parseFloat(c.cost) || 0;
+    }
+    return total;
+  }
+
+  function renderDashboard() {
+    var prog = calcProgress();
+
+    // Header
+    var headerEl = document.getElementById('m06-dash-header');
+    headerEl.innerHTML =
+      '<div class="m06-dash-header-top">' +
+        '<div class="m06-dash-header-left">' +
+          '<div class="m06-wizard-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>' +
+          '<div class="m06-dash-title">' + escHtml(state.config.title) + '<span class="m06-dash-pct">' + prog.pct + '%</span></div>' +
+        '</div>' +
+        '<div class="m06-dash-actions">' +
+          '<button class="m06-btn m06-btn-ghost" id="m06-edit-setup" title="Setup bearbeiten"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Setup</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="m06-dash-progress-wrap"><div class="m06-dash-progress-bar" style="width:' + prog.pct + '%"></div></div>' +
+      '<div class="m06-dash-progress-label">' + prog.done + ' von ' + prog.total + ' Kapiteln abgeschlossen' + (state.config.features.pipeline ? ' &middot; ' + prog.doneSteps + '/' + prog.totalSteps + ' Schritte' : '') + '</div>';
+
+    // Bind edit setup
+    document.getElementById('m06-edit-setup').addEventListener('click', function() {
+      state.mode = 'wizard';
+      save();
+      switchMode();
+      populateWizardFromState();
+    });
+
+    // Stats
+    var statsEl = document.getElementById('m06-dash-stats');
+    var statsHtml = '<div class="m06-dash-stat"><div class="m06-dash-stat-value">' + prog.total + '</div><div class="m06-dash-stat-label">Kapitel</div></div>' +
+      '<div class="m06-dash-stat"><div class="m06-dash-stat-value">' + prog.done + '</div><div class="m06-dash-stat-label">Fertig</div></div>' +
+      '<div class="m06-dash-stat"><div class="m06-dash-stat-value">' + prog.pct + '%</div><div class="m06-dash-stat-label">Fortschritt</div></div>';
+    if (state.config.features.costs) {
+      statsHtml += '<div class="m06-dash-stat"><div class="m06-dash-stat-value">' + calcTotalCost().toFixed(2) + ' &euro;</div><div class="m06-dash-stat-label">Kosten</div></div>';
+    }
+    statsEl.innerHTML = statsHtml;
+
+    // Chapter Grid
+    renderChapterGrid();
+
+    // Sidebar
+    renderSidebar();
+  }
+
+  function renderChapterGrid() {
+    var gridEl = document.getElementById('m06-chapter-grid');
+    var html = '';
+    var currentPart = null;
+
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      var ch = state.config.chapters[i];
+      var cid = ch.id;
+      var cp = state.progress.chapters[cid] || { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
+      var chProg = calcChapterProgress(cid);
+
+      // Part divider
+      if (state.config.parts.length > 0 && ch.part && ch.part !== currentPart) {
+        currentPart = ch.part;
+        html += '<div class="m06-part-divider">' + escHtml(ch.part) + '</div>';
+      }
+
+      var cardClass = 'm06-chapter-card' + (chProg === 100 ? ' completed' : '');
+      html += '<div class="' + cardClass + '" data-cid="' + cid + '">';
+
+      // Top row
+      html += '<div class="m06-card-top">' +
+        '<div class="m06-card-left">' +
+          '<span class="m06-card-num">' + cid + '</span>' +
+          '<input class="m06-card-name" data-cid="' + cid + '" type="text" value="' + escHtml(ch.name || 'Kapitel ' + cid) + '">' +
+        '</div>' +
+        '<span class="m06-card-pct">' + chProg + '%</span>' +
+        '<button class="m06-card-delete" data-cid="' + cid + '" title="Kapitel entfernen">&times;</button>' +
+      '</div>';
+
+      // Progress bar
+      html += '<div class="m06-card-progress-wrap"><div class="m06-card-progress-bar" style="width:' + chProg + '%"></div></div>';
+
+      // Pipeline steps
+      if (state.config.features.pipeline) {
+        html += '<div class="m06-pipeline">';
+        var stepKeys = ['outline', 'draft', 'review', 'edit', 'final'];
+        for (var s = 0; s < PIPELINE_STEPS.length; s++) {
+          var isDone = cp[stepKeys[s]];
+          html += '<div class="m06-pipe-step' + (isDone ? ' done' : '') + '" data-cid="' + cid + '" data-step="' + stepKeys[s] + '">' +
+            '<div class="m06-pipe-check">' + (isDone ? '\u2713' : '') + '</div>' +
+            PIPELINE_STEPS[s] +
+          '</div>';
+        }
+        html += '</div>';
+      }
+
+      // Notes
+      if (state.config.features.notes) {
+        html += '<div class="m06-card-notes"><textarea class="m06-card-notes-input" data-cid="' + cid + '" placeholder="Notizen...">' + escHtml(cp.notes || '') + '</textarea></div>';
+      }
+
+      // Cost
+      if (state.config.features.costs) {
+        html += '<div class="m06-card-cost">' +
+          '<span class="m06-card-cost-label">Kosten:</span>' +
+          '<input class="m06-card-cost-input" data-cid="' + cid + '" type="number" step="0.01" min="0" value="' + (cp.cost || 0) + '">' +
+          '<span class="m06-card-cost-unit">&euro;</span>' +
+        '</div>';
+      }
+
+      // Outline + Prompt Generator
+      if (state.config.features.outline) {
+        html += '<div class="m06-card-outline">' +
+          '<textarea class="m06-card-outline-input" data-cid="' + cid + '" placeholder="Kapitel-Outline: Thema, Abschnitte, Lernziele, Wortzahl...">' + escHtml(cp.outlineText || '') + '</textarea>' +
+          '<button class="m06-card-prompt-btn" data-cid="' + cid + '" title="Prompt fuer dieses Kapitel generieren">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>' +
+            ' Prompt generieren' +
+          '</button>' +
+        '</div>';
+      }
+
+      html += '</div>';
+    }
+
+    gridEl.innerHTML = html;
+    bindChapterEvents();
+  }
+
+  function bindChapterEvents() {
+    // Pipeline step toggles
+    var pipeSteps = document.querySelectorAll('.m06-pipe-step');
+    for (var i = 0; i < pipeSteps.length; i++) {
+      pipeSteps[i].addEventListener('click', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        var step = this.getAttribute('data-step');
+        if (!state.progress.chapters[cid]) return;
+        state.progress.chapters[cid][step] = !state.progress.chapters[cid][step];
+        save();
+        renderDashboard();
+      });
+    }
+
+    // Chapter name editing
+    var nameInputs = document.querySelectorAll('.m06-card-name');
+    for (var j = 0; j < nameInputs.length; j++) {
+      nameInputs[j].addEventListener('change', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        for (var c = 0; c < state.config.chapters.length; c++) {
+          if (state.config.chapters[c].id === cid) {
+            state.config.chapters[c].name = this.value.trim();
+            break;
+          }
+        }
+        save();
+      });
+    }
+
+    // Notes
+    var notesInputs = document.querySelectorAll('.m06-card-notes-input');
+    for (var n = 0; n < notesInputs.length; n++) {
+      notesInputs[n].addEventListener('input', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        if (state.progress.chapters[cid]) {
+          state.progress.chapters[cid].notes = this.value;
+          save();
+        }
+      });
+    }
+
+    // Costs
+    var costInputs = document.querySelectorAll('.m06-card-cost-input');
+    for (var co = 0; co < costInputs.length; co++) {
+      costInputs[co].addEventListener('change', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        if (state.progress.chapters[cid]) {
+          state.progress.chapters[cid].cost = parseFloat(this.value) || 0;
+          save();
+          // Update stats without full re-render
+          var statsEl = document.getElementById('m06-dash-stats');
+          if (statsEl) {
+            var statDivs = statsEl.querySelectorAll('.m06-dash-stat');
+            for (var s = 0; s < statDivs.length; s++) {
+              var label = statDivs[s].querySelector('.m06-dash-stat-label');
+              if (label && label.textContent === 'Kosten') {
+                statDivs[s].querySelector('.m06-dash-stat-value').innerHTML = calcTotalCost().toFixed(2) + ' &euro;';
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Outline text
+    var outlineInputs = document.querySelectorAll('.m06-card-outline-input');
+    for (var oi = 0; oi < outlineInputs.length; oi++) {
+      outlineInputs[oi].addEventListener('input', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        if (state.progress.chapters[cid]) {
+          state.progress.chapters[cid].outlineText = this.value;
+          save();
+        }
+      });
+    }
+
+    // Prompt generator buttons
+    var promptBtns = document.querySelectorAll('.m06-card-prompt-btn');
+    for (var pb = 0; pb < promptBtns.length; pb++) {
+      promptBtns[pb].addEventListener('click', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        generatePrompt(cid);
+      });
+    }
+
+    // Delete chapter
+    var deleteBtns = document.querySelectorAll('.m06-card-delete');
+    for (var d = 0; d < deleteBtns.length; d++) {
+      deleteBtns[d].addEventListener('click', function() {
+        var cid = parseInt(this.getAttribute('data-cid'));
+        if (state.config.chapters.length <= 1) return; // keep at least 1
+        state.config.chapters = state.config.chapters.filter(function(ch) { return ch.id !== cid; });
+        delete state.progress.chapters[cid];
+        // Re-number
+        for (var r = 0; r < state.config.chapters.length; r++) {
+          var oldId = state.config.chapters[r].id;
+          var newId = r + 1;
+          if (oldId !== newId) {
+            state.config.chapters[r].id = newId;
+            if (state.progress.chapters[oldId]) {
+              state.progress.chapters[newId] = state.progress.chapters[oldId];
+              delete state.progress.chapters[oldId];
+            }
+          }
+        }
+        save();
+        renderDashboard();
+      });
+    }
+  }
+
+  // Add chapter
+  function addChapter() {
+    var newId = state.config.chapters.length + 1;
+    state.config.chapters.push({ id: newId, name: '', part: '' });
+    state.progress.chapters[newId] = { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
+    save();
+    renderDashboard();
+  }
+
+  document.getElementById('m06-add-chapter-top').addEventListener('click', addChapter);
+  document.getElementById('m06-add-chapter-bottom').addEventListener('click', addChapter);
+
+  function renderSidebar() {
+    var sidebarEl = document.getElementById('m06-sidebar');
+    var html = '';
+
+    // Variables
+    if (state.config.features.variables) {
+      html += '<div class="m06-sidebar-section">' +
+        '<div class="m06-sidebar-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Persoenliche Variablen</div>' +
+        '<div class="m06-var-list" id="m06-var-list">';
+
+      for (var v = 0; v < state.progress.variables.length; v++) {
+        var vr = state.progress.variables[v];
+        html += '<div class="m06-var-row">' +
+          '<input class="m06-var-key" data-vidx="' + v + '" value="' + escHtml(vr.key) + '" placeholder="Key">' +
+          '<input class="m06-var-val" data-vidx="' + v + '" value="' + escHtml(vr.value) + '" placeholder="Wert">' +
+          '<button class="m06-var-remove" data-vidx="' + v + '" title="Entfernen">&times;</button>' +
+        '</div>';
+      }
+
+      html += '</div>' +
+        '<button class="m06-btn m06-btn-ghost" id="m06-add-var" style="margin-top:0.5rem;">+ Variable</button>' +
+      '</div>';
+    }
+
+    // Cost Summary
+    if (state.config.features.costs) {
+      var totalCost = calcTotalCost();
+      var avgCost = state.config.chapters.length > 0 ? totalCost / state.config.chapters.length : 0;
+      html += '<div class="m06-sidebar-section">' +
+        '<div class="m06-sidebar-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> Kosten-Uebersicht</div>' +
+        '<div class="m06-cost-summary">' +
+          '<div class="m06-cost-row"><span class="m06-cost-row-label">Kapitel erfasst</span><span class="m06-cost-row-value">' + state.config.chapters.length + '</span></div>' +
+          '<div class="m06-cost-row"><span class="m06-cost-row-label">Durchschnitt</span><span class="m06-cost-row-value">' + avgCost.toFixed(2) + ' &euro;</span></div>' +
+          '<div class="m06-cost-row m06-cost-total"><span class="m06-cost-row-label">Gesamt</span><span class="m06-cost-row-value">' + totalCost.toFixed(2) + ' &euro;</span></div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // Agent Team
+    if (state.agentTeam.soul || state.agentTeam.agents) {
+      html += '<div class="m06-sidebar-section">' +
+        '<div class="m06-sidebar-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Agent-Team</div>' +
+        '<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.75rem;">' + escHtml(state.agentTeam.name || 'MeinAgent') + ' &middot; ' + Object.keys(state.agentTeam.selectedRoles).filter(function(k) { return state.agentTeam.selectedRoles[k]; }).length + ' Rollen</div>' +
+        '<div style="display:flex;gap:0.5rem;">' +
+          '<button class="m06-btn m06-btn-secondary" id="m06-copy-soul" style="flex:1;font-size:0.78rem;padding:0.5rem;">SOUL.md kopieren</button>' +
+          '<button class="m06-btn m06-btn-secondary" id="m06-copy-agents" style="flex:1;font-size:0.78rem;padding:0.5rem;">AGENTS.md kopieren</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    sidebarEl.innerHTML = html;
+
+    // Bind variable events
+    if (state.config.features.variables) {
+      var varKeys = document.querySelectorAll('.m06-var-key');
+      for (var vk = 0; vk < varKeys.length; vk++) {
+        varKeys[vk].addEventListener('change', function() {
+          var idx = parseInt(this.getAttribute('data-vidx'));
+          if (state.progress.variables[idx]) {
+            state.progress.variables[idx].key = this.value.trim();
+            save();
+          }
+        });
+      }
+
+      var varVals = document.querySelectorAll('.m06-var-val');
+      for (var vv = 0; vv < varVals.length; vv++) {
+        varVals[vv].addEventListener('change', function() {
+          var idx = parseInt(this.getAttribute('data-vidx'));
+          if (state.progress.variables[idx]) {
+            state.progress.variables[idx].value = this.value;
+            save();
+          }
+        });
+      }
+
+      var varRemoveBtns = document.querySelectorAll('.m06-var-remove');
+      for (var vr = 0; vr < varRemoveBtns.length; vr++) {
+        varRemoveBtns[vr].addEventListener('click', function() {
+          var idx = parseInt(this.getAttribute('data-vidx'));
+          state.progress.variables.splice(idx, 1);
+          save();
+          renderSidebar();
+        });
+      }
+
+      var addVarBtn = document.getElementById('m06-add-var');
+      if (addVarBtn) {
+        addVarBtn.addEventListener('click', function() {
+          state.progress.variables.push({ key: '', value: '' });
+          save();
+          renderSidebar();
+        });
+      }
+    }
+
+    // Bind copy buttons
+    var copySoulBtn = document.getElementById('m06-copy-soul');
+    if (copySoulBtn) {
+      copySoulBtn.addEventListener('click', function() {
+        copyToClipboard(state.agentTeam.soul, this);
+      });
+    }
+
+    var copyAgentsBtn = document.getElementById('m06-copy-agents');
+    if (copyAgentsBtn) {
+      copyAgentsBtn.addEventListener('click', function() {
+        copyToClipboard(state.agentTeam.agents, this);
+      });
+    }
+  }
+
+  function copyToClipboard(text, btn) {
+    try {
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Kopiert!';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(function() {
+          btn.textContent = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    } catch(e) {}
+  }
+
+  // ══════════ MODE SWITCH ══════════
+
+  function switchMode() {
+    if (state.mode === 'dashboard') {
+      wizardEl.classList.remove('active');
+      dashboardEl.classList.add('active');
+      renderDashboard();
+    } else {
+      dashboardEl.classList.remove('active');
+      wizardEl.classList.add('active');
+    }
+  }
+
+  function populateWizardFromState() {
+    var titleEl = document.getElementById('m06-book-title');
+    if (titleEl) titleEl.value = state.config.title;
+
+    var countEl = document.getElementById('m06-chapter-count');
+    if (countEl) countEl.value = state.config.chapters.length || 10;
+
+    var nameEl = document.getElementById('m06-agent-name');
+    if (nameEl) nameEl.value = state.agentTeam.name || '';
+
+    var purposeEl = document.getElementById('m06-agent-purpose');
+    if (purposeEl) purposeEl.value = state.agentTeam.purpose || '';
+
+    var audienceEl = document.getElementById('m06-agent-audience');
+    if (audienceEl) audienceEl.value = state.agentTeam.audience || '';
+
+    // Set tone
+    var toneEls = document.querySelectorAll('.m06-tone');
+    for (var t = 0; t < toneEls.length; t++) {
+      toneEls[t].classList.remove('selected');
+      if (toneEls[t].getAttribute('data-tone') === state.agentTeam.tone) {
+        toneEls[t].classList.add('selected');
+      }
+    }
+
+    var ctf = document.getElementById('m06-custom-tone-field');
+    if (ctf) ctf.style.display = state.agentTeam.tone === 'custom' ? 'block' : 'none';
+    var cte = document.getElementById('m06-custom-tone');
+    if (cte) cte.value = state.agentTeam.customTone || '';
+
+    renderParts();
+    renderChapterList();
+    renderFeatures();
+    renderRoles();
+    showWizardStep(1);
+  }
+
+  // ══════════ PROMPT GENERATOR ══════════
+
+  function generatePrompt(cid) {
+    var chapter = null;
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      if (state.config.chapters[i].id === cid) { chapter = state.config.chapters[i]; break; }
+    }
+    if (!chapter) return;
+
+    var cp = state.progress.chapters[cid] || {};
+    var chName = chapter.name || ('Kapitel ' + cid);
+    var outlineText = cp.outlineText || '';
+    var bookTitle = state.config.title || 'Mein Buch';
+    var agentName = state.agentTeam.name || 'Chefredakteur';
+    var audience = state.agentTeam.audience || 'Einsteiger';
+    var toneKey = state.agentTeam.tone || 'sachlich';
+    var toneDesc = TONE_MAP[toneKey] || '';
+    if (toneKey === 'custom') toneDesc = state.agentTeam.customTone || 'Eigener Stil.';
+
+    // Active roles
+    var activeRoles = [];
+    for (var r = 0; r < ROLES.length; r++) {
+      if (state.agentTeam.selectedRoles[ROLES[r].id]) activeRoles.push(ROLES[r].name);
+    }
+
+    // Build the prompt
+    var p = '';
+    p += '== KAPITEL-AUFTRAG ==\n\n';
+    p += 'Buch: ' + bookTitle + '\n';
+    p += 'Kapitel ' + cid + ': ' + chName + '\n';
+    if (chapter.part) p += 'Buchteil: ' + chapter.part + '\n';
+    p += '\n';
+
+    p += '== ROLLE ==\n\n';
+    p += 'Du bist ' + agentName + ', der Hauptagent fuer dieses Buchprojekt.\n';
+    p += 'Zielgruppe: ' + audience + '\n';
+    p += 'Stil: ' + toneDesc + '\n\n';
+
+    if (activeRoles.length > 0) {
+      p += 'Dein Team: ' + activeRoles.join(', ') + '\n';
+      p += 'Nutze deine Sub-Agenten: Der Autor schreibt den Entwurf, der Lektor prueft Stil und Grammatik, der Pruefer kontrolliert Fakten und Formatierung.\n\n';
+    }
+
+    p += '== ANWEISUNGEN ==\n\n';
+    p += '1. Schreibe Kapitel ' + cid + ' ("' + chName + '") als Fliesstext.\n';
+    p += '2. Ziellaenge: ca. 4.000-5.000 Woerter.\n';
+    p += '3. Sprache: Deutsch, Du-Form, lebendig und direkt.\n';
+    p += '4. Keine Bullet-Point-Listen im Fliesstext. Erzaehle, liste nicht auf.\n';
+    p += '5. Technische Begriffe sofort in Alltagssprache uebersetzen.\n';
+    p += '6. Mindestens 2 Analogien aus dem Alltag einbauen.\n';
+    p += '7. Satzanfaenge variieren. Nicht drei Saetze mit demselben Wort beginnen.\n';
+    p += '8. Kurze Saetze bevorzugen. Maximal 2 Kommas pro Satz.\n';
+
+    p += '\n== STRUKTUR ==\n\n';
+    p += 'Jeder Abschnitt folgt diesem Aufbau:\n';
+    p += '- Einstieg: Rhetorische Frage, historischer Bogen oder Provokation\n';
+    p += '- Kernerklaerung: Schrittweise, mit Analogien und Tonwechsel\n';
+    p += '- Mahner-Moment (optional): Was kann schiefgehen?\n';
+    p += '- Offene Frage oder starker Schlusssatz\n\n';
+
+    p += '== VERBOTEN ==\n\n';
+    p += '- "Zusammenfassend laesst sich sagen..."\n';
+    p += '- "Stell dir vor" (maximal 1x im ganzen Kapitel)\n';
+    p += '- Marketing-Sprache ("revolutionaer", "Gamechanger")\n';
+    p += '- KI-Marker: "grundlegend", "nahtlos", "robust", "ermoeglicht es", "nicht nur... sondern auch"\n';
+    p += '- Passiv-Konstruktionen und Nominalstil\n';
+    p += '- Gedankenstriche (maximal 3 pro Seite)\n\n';
+
+    if (outlineText) {
+      p += '== OUTLINE ==\n\n';
+      p += outlineText + '\n\n';
+    } else {
+      p += '== OUTLINE ==\n\n';
+      p += '(Noch keine Outline hinterlegt. Schreibe zuerst eine Outline fuer dieses Kapitel, dann generiere den Prompt erneut.)\n\n';
+    }
+
+    p += '== LOS GEHTS ==\n\n';
+    p += 'Schreibe jetzt Kapitel ' + cid + '. Beginne mit einem starken Einstieg, nicht mit der Kapitelueberschrift.';
+
+    // Show modal
+    var overlay = document.getElementById('m06-prompt-overlay');
+    var output = document.getElementById('m06-prompt-output');
+    var title = document.getElementById('m06-prompt-modal-title');
+    title.textContent = 'Prompt: Kapitel ' + cid + ' \u2013 ' + chName;
+    output.textContent = p;
+    overlay.classList.add('visible');
+  }
+
+  // Modal controls
+  var promptOverlay = document.getElementById('m06-prompt-overlay');
+  var promptCloseBtn = document.getElementById('m06-prompt-close');
+  var promptCloseBtn2 = document.getElementById('m06-prompt-close-btn');
+  var promptCopyBtn = document.getElementById('m06-prompt-copy');
+
+  function closePromptModal() {
+    promptOverlay.classList.remove('visible');
+  }
+
+  promptCloseBtn.addEventListener('click', closePromptModal);
+  promptCloseBtn2.addEventListener('click', closePromptModal);
+  promptOverlay.addEventListener('click', function(e) {
+    if (e.target === promptOverlay) closePromptModal();
+  });
+
+  promptCopyBtn.addEventListener('click', function() {
+    var output = document.getElementById('m06-prompt-output');
+    copyToClipboard(output.textContent, promptCopyBtn);
+  });
+
+  // ══════════ HELPERS ══════════
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ══════════ INIT ══════════
+
+  load();
+
+  if (state.mode === 'dashboard' && state.config.chapters.length > 0) {
+    // Existing dashboard - show it
+    switchMode();
+  } else {
+    // Wizard mode
+    state.mode = 'wizard';
+    if (state.config.chapters.length === 0) syncChapterCount(10);
+    populateWizardFromState();
+    switchMode();
+  }
+
+  // Set shell:lastModule
+  try { localStorage.setItem('shell:lastModule', 'm06'); } catch(e) {}
 
 })();
 </script>
