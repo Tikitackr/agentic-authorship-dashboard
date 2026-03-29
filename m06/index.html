@@ -870,6 +870,44 @@
   .m06-io-btn:hover { border-color: var(--border-hover); }
   .m06-io-btn svg { width: 14px; height: 14px; }
 
+  /* ── Tutorial Hints (Kapitel 1) ── */
+  .m06-hint-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text-dim);
+  }
+  .m06-hint-step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: #0a0a0f;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+  .m06-hint-step strong { color: var(--amber); }
+  .m06-hint-dismiss {
+    background: none; border: none; color: var(--text-dim); cursor: pointer;
+    font-size: 0.85rem; padding: 0; margin-left: auto; line-height: 1; flex-shrink: 0;
+  }
+  .m06-hint-dismiss:hover { color: var(--text); }
+  .m06-tutorial-tag {
+    display: inline-block;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    background: rgba(245,158,11,0.15); color: var(--amber);
+    padding: 0.15rem 0.45rem; border-radius: 5px;
+    margin-left: 0.5rem; vertical-align: middle;
+  }
+
   /* Responsive */
   @media (max-width: 640px) {
     .m06-tones { grid-template-columns: 1fr; }
@@ -1728,6 +1766,10 @@
     renderSidebar();
   }
 
+  var TUTORIAL_PLACEHOLDER = 'Beispiel:\n- Worum geht es? Warum liest jemand dieses Kapitel?\n- Abschnitt 1: Grundbegriffe kl\u00e4ren (Was ist X?)\n- Abschnitt 2: Erstes Praxisbeispiel (Schritt f\u00fcr Schritt)\n- Abschnitt 3: H\u00e4ufige Fehler und wie man sie vermeidet\n- Lernziel: Der Leser kann danach selbstst\u00e4ndig Y machen';
+  var tutorialDismissed = false;
+  try { tutorialDismissed = localStorage.getItem('m06:tutorialDismissed') === '1'; } catch(e) {}
+
   function renderGrid() {
     var gridEl = document.getElementById('m06-chapter-grid');
     var html = '';
@@ -1736,16 +1778,25 @@
       var cid = ch.id;
       var cp = state.progress.chapters[cid] || { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
       var pct = calcChapterPct(cid);
+      var isFirst = (i === 0 && !tutorialDismissed);
 
       html += '<div class="m06-chapter-card' + (pct === 100 ? ' completed' : '') + '" data-cid="' + cid + '">';
       html += '<div class="m06-card-top"><div class="m06-card-left"><span class="m06-card-num">' + cid + '</span>' +
-        '<input class="m06-card-name" data-cid="' + cid + '" type="text" value="' + escHtml(ch.name || 'Kapitel ' + cid) + '"></div>' +
+        '<input class="m06-card-name" data-cid="' + cid + '" type="text" value="' + escHtml(ch.name || 'Kapitel ' + cid) + '">' +
+        (isFirst ? '<span class="m06-tutorial-tag">Tutorial</span>' : '') +
+        '</div>' +
         '<span class="m06-card-pct">' + pct + '%</span>' +
         '<button class="m06-card-delete" data-cid="' + cid + '">&times;</button></div>';
 
       html += '<div class="m06-card-progress-wrap"><div class="m06-card-progress-bar" style="width:' + pct + '%"></div></div>';
 
       if (state.config.features.pipeline) {
+        if (isFirst) {
+          html += '<div class="m06-hint-step" id="m06-tutorial-hint-3">' +
+            '<span class="m06-hint-step-num">3</span>' +
+            '<div><strong>Hake ab was erledigt ist</strong> \u2013 dein Fortschritt z\u00e4hlt automatisch mit. Von Outline bis Final.</div>' +
+            '<button class="m06-hint-dismiss m06-tutorial-dismiss-btn">&times;</button></div>';
+        }
         html += '<div class="m06-pipeline">';
         for (var s = 0; s < PIPELINE_STEPS.length; s++) {
           var isDone = cp[PIPELINE_KEYS[s]];
@@ -1756,9 +1807,22 @@
       }
 
       if (state.config.features.outline) {
+        if (isFirst) {
+          html += '<div class="m06-hint-step" id="m06-tutorial-hint-1">' +
+            '<span class="m06-hint-step-num">1</span>' +
+            '<div><strong>Schreibe eine kurze Outline</strong> \u2013 Stichpunkte reichen. Worum geht es, welche Abschnitte, was soll der Leser danach k\u00f6nnen?</div>' +
+            '<button class="m06-hint-dismiss m06-tutorial-dismiss-btn">&times;</button></div>';
+        }
+        var placeholder = isFirst ? TUTORIAL_PLACEHOLDER : 'Kapitel-Outline: Thema, Abschnitte, Lernziele...';
         html += '<div class="m06-card-outline">' +
-          '<textarea class="m06-card-outline-input" data-cid="' + cid + '" placeholder="Kapitel-Outline: Thema, Abschnitte, Lernziele...">' + escHtml(cp.outlineText || '') + '</textarea>' +
-          '<button class="m06-card-prompt-btn" data-cid="' + cid + '">' +
+          '<textarea class="m06-card-outline-input" data-cid="' + cid + '" placeholder="' + escHtml(placeholder) + '">' + escHtml(cp.outlineText || '') + '</textarea>';
+        if (isFirst) {
+          html += '<div class="m06-hint-step" id="m06-tutorial-hint-2" style="margin-top:0.5rem;">' +
+            '<span class="m06-hint-step-num">2</span>' +
+            '<div><strong>Klicke "Prompt generieren"</strong> \u2013 das Dashboard baut aus deiner Outline einen fertigen KI-Prompt. Kopiere ihn in claude.ai oder ChatGPT.</div>' +
+            '<button class="m06-hint-dismiss m06-tutorial-dismiss-btn">&times;</button></div>';
+        }
+        html += '<button class="m06-card-prompt-btn" data-cid="' + cid + '">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Prompt generieren</button></div>';
       }
 
@@ -1776,6 +1840,16 @@
     }
     gridEl.innerHTML = html;
     bindGridEvents();
+
+    // Tutorial dismiss buttons
+    var dismissBtns = document.querySelectorAll('.m06-tutorial-dismiss-btn');
+    for (var d = 0; d < dismissBtns.length; d++) {
+      dismissBtns[d].addEventListener('click', function() {
+        tutorialDismissed = true;
+        try { localStorage.setItem('m06:tutorialDismissed', '1'); } catch(e) {}
+        renderGrid();
+      });
+    }
   }
 
   function bindGridEvents() {
