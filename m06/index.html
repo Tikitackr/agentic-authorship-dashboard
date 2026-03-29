@@ -707,6 +707,169 @@
   .m06-confirm-btns { display: flex; gap: 0.5rem; }
   .m06-confirm-btns .m06-btn { flex: 1; }
 
+  /* ── Save FAB (Floating Action Button) ── */
+  .m06-save-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--green);
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .m06-save-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(0,0,0,0.4); }
+  .m06-save-fab svg { width: 24px; height: 24px; }
+  .m06-save-fab.warn { border-color: var(--amber); background: rgba(245,158,11,0.15); color: var(--amber); }
+  .m06-save-fab.urgent { border-color: var(--red); background: rgba(239,68,68,0.15); color: var(--red); animation: m06-pulse 2s ease-in-out infinite; }
+  .m06-save-fab .m06-fab-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .m06-save-fab .m06-fab-badge:empty { display: none; }
+  @keyframes m06-pulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(239,68,68,0.2); }
+    50% { box-shadow: 0 4px 30px rgba(239,68,68,0.5); }
+  }
+
+  /* ── Bookmark Banner ── */
+  .m06-bookmark-banner {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+  .m06-bookmark-banner.visible { display: flex; }
+  .m06-bookmark-banner svg { width: 18px; height: 18px; color: var(--green); flex-shrink: 0; }
+  .m06-bookmark-text { flex: 1; line-height: 1.4; }
+  .m06-bookmark-text strong { color: var(--green); }
+  .m06-bookmark-btn {
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .m06-bookmark-btn:hover { background: rgba(34,197,94,0.25); }
+  .m06-bookmark-btn.copied { background: var(--green); color: #0a0a0f; }
+  .m06-bookmark-dismiss {
+    background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 0.2rem; line-height: 1;
+  }
+
+  /* ── Import Overlay (Drag & Drop) ── */
+  .m06-import-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10,10,15,0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    transition: opacity 0.2s;
+  }
+  .m06-import-overlay.visible { display: flex; }
+  .m06-import-drop {
+    border: 3px dashed var(--amber);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 420px;
+    pointer-events: none;
+  }
+  .m06-import-drop svg { width: 48px; height: 48px; color: var(--amber); margin-bottom: 1rem; }
+  .m06-import-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .m06-import-sub { font-size: 0.82rem; color: var(--text-dim); }
+
+  /* ── Profi-Modus Section ── */
+  .m06-profi {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 1.5rem;
+    overflow: hidden;
+  }
+  .m06-profi-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+  }
+  .m06-profi-toggle:hover { background: var(--bg-card-hover); }
+  .m06-profi-toggle svg { width: 18px; height: 18px; color: var(--purple); }
+  .m06-profi-toggle .m06-profi-arrow { margin-left: auto; transition: transform 0.2s; color: var(--text-dim); }
+  .m06-profi-toggle .m06-profi-arrow.open { transform: rotate(180deg); }
+  .m06-profi-badge {
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    background: rgba(167,139,250,0.15); color: var(--purple);
+    padding: 0.2rem 0.5rem; border-radius: 6px;
+  }
+  .m06-profi-body { display: none; padding: 0 1.25rem 1.25rem; }
+  .m06-profi-body.open { display: block; }
+  .m06-profi-desc { font-size: 0.82rem; color: var(--text-dim); line-height: 1.55; margin-bottom: 1rem; }
+  .m06-profi-desc strong { color: var(--text); }
+
+  /* ── Import/Export Bar ── */
+  .m06-io-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex-wrap: wrap;
+  }
+  .m06-io-bar-label { font-size: 0.78rem; color: var(--text-dim); margin-right: auto; }
+  .m06-io-btn {
+    background: var(--bg-card-hover); border: 1px solid var(--border); color: var(--text);
+    padding: 0.4rem 0.75rem; border-radius: 8px; font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .m06-io-btn:hover { border-color: var(--border-hover); }
+  .m06-io-btn svg { width: 14px; height: 14px; }
+
   /* Responsive */
   @media (max-width: 640px) {
     .m06-tones { grid-template-columns: 1fr; }
@@ -716,6 +879,11 @@
     .m06-dash-header-top { flex-direction: column; align-items: flex-start; }
     .m06-steps { flex-wrap: wrap; }
     .m06-step-indicator { min-width: 33%; }
+    .m06-save-fab { bottom: 1rem; right: 1rem; width: 48px; height: 48px; }
+    .m06-save-fab svg { width: 20px; height: 20px; }
+    .m06-bookmark-banner { flex-direction: column; text-align: center; }
+    .m06-io-bar { flex-direction: column; align-items: stretch; }
+    .m06-io-bar-label { margin-right: 0; margin-bottom: 0.25rem; }
   }
 </style>
 
@@ -897,6 +1065,28 @@
 
   <!-- ══════════ DASHBOARD VIEW ══════════ -->
   <div class="m06-dashboard" id="m06-dashboard">
+
+    <!-- Bookmark Banner -->
+    <div class="m06-bookmark-banner" id="m06-bookmark-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+      <div class="m06-bookmark-text"><strong>Dein Dashboard ist fertig!</strong> Speichere ein Lesezeichen &ndash; dann &uuml;berlebt deine Konfiguration auch eine Cache-L&ouml;schung.</div>
+      <button class="m06-bookmark-btn" id="m06-bookmark-copy">Link kopieren</button>
+      <button class="m06-bookmark-dismiss" id="m06-bookmark-dismiss">&times;</button>
+    </div>
+
+    <!-- Import/Export Bar -->
+    <div class="m06-io-bar" id="m06-io-bar">
+      <span class="m06-io-bar-label">Datensicherung</span>
+      <button class="m06-io-btn" id="m06-export-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        JSON exportieren
+      </button>
+      <button class="m06-io-btn" id="m06-import-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        JSON importieren
+      </button>
+    </div>
+
     <div class="m06-dash-header" id="m06-dash-header"></div>
     <div class="m06-dash-stats" id="m06-dash-stats"></div>
     <div id="m06-dash-grid-wrap">
@@ -911,6 +1101,51 @@
       <button class="m06-add-chapter" id="m06-add-chapter-bottom">+ Kapitel hinzuf&uuml;gen</button>
     </div>
     <div id="m06-sidebar" style="margin-top:1.5rem;"></div>
+
+    <!-- Profi-Modus -->
+    <div class="m06-profi" id="m06-profi">
+      <button class="m06-profi-toggle" id="m06-profi-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Profi-Modus: Eigenes Dashboard generieren
+        <span class="m06-profi-badge">Prompt-Generator</span>
+        <svg class="m06-profi-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="m06-profi-body" id="m06-profi-body">
+        <p class="m06-profi-desc">
+          Du willst <strong>volle Kontrolle</strong>? Generiere dir einen optimierten Prompt, den du in
+          <strong>claude.ai</strong> oder <strong>ChatGPT</strong> einf&uuml;gst. Die KI erstellt dir ein
+          komplett eigenes React-Dashboard als Artifact &ndash; mit deinen Kapiteln, deinem Design, deinen Features.
+        </p>
+        <div class="m06-field">
+          <label class="m06-label">Zus&auml;tzliche W&uuml;nsche (optional)</label>
+          <div class="m06-hint">z.B. "dunkles Lila statt Amber", "Timer pro Kapitel", "Kanban-Board statt Grid"</div>
+          <textarea class="m06-textarea" id="m06-profi-wishes" placeholder="Deine besonderen Wuensche ans Dashboard..."></textarea>
+        </div>
+        <button class="m06-btn m06-btn-primary" id="m06-profi-generate" style="margin-bottom:1rem;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Dashboard-Prompt generieren
+        </button>
+        <div class="m06-prompt-preview" id="m06-profi-output" style="display:none;"></div>
+        <div id="m06-profi-copy-wrap" style="display:none;margin-top:0.75rem;">
+          <button class="m06-btn m06-btn-copy" id="m06-profi-copy">Prompt kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save FAB -->
+  <div class="m06-save-fab" id="m06-save-fab" style="display:none;" title="Fortschritt als JSON exportieren">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span class="m06-fab-badge" id="m06-fab-badge"></span>
+  </div>
+
+  <!-- Import Drag&Drop Overlay -->
+  <div class="m06-import-overlay" id="m06-import-overlay">
+    <div class="m06-import-drop">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div class="m06-import-title">JSON-Backup hier ablegen</div>
+      <div class="m06-import-sub">Dein gesamter Fortschritt wird wiederhergestellt.</div>
+    </div>
   </div>
 
   <!-- Prompt Modal -->
@@ -1020,6 +1255,7 @@
         localStorage.setItem('m06:agentTeam', JSON.stringify(state.agentTeam));
         localStorage.setItem('m06:meta', JSON.stringify(state.meta));
         localStorage.setItem('shell:lastModule', 'm06');
+        updateFab();
       } catch(e) {}
     }, 300);
   }
@@ -1038,7 +1274,96 @@
     ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta'].forEach(function(k) {
       localStorage.removeItem(k);
     });
+    // Clear URL hash
+    if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
     location.reload();
+  }
+
+  // ══════════ URL BOOKMARK ══════════
+  function encodeConfigToUrl() {
+    try {
+      var configStr = JSON.stringify(state.config);
+      var encoded = btoa(unescape(encodeURIComponent(configStr)));
+      var newHash = '#config=' + encoded;
+      if (window.location.hash !== newHash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search + newHash);
+      }
+    } catch(e) {}
+  }
+
+  function loadConfigFromUrl() {
+    try {
+      var hash = window.location.hash;
+      if (!hash || hash.indexOf('config=') === -1) return null;
+      var encoded = hash.split('config=')[1];
+      if (!encoded) return null;
+      var configStr = decodeURIComponent(escape(atob(encoded)));
+      return JSON.parse(configStr);
+    } catch(e) { return null; }
+  }
+
+  // ══════════ JSON EXPORT / IMPORT ══════════
+  function exportJSON() {
+    var data = {
+      version: 1,
+      exported: new Date().toISOString(),
+      config: state.config,
+      progress: state.progress,
+      agentTeam: state.agentTeam,
+      meta: state.meta
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var filename = (state.config.title || 'mein-buch').toLowerCase().replace(/[^a-z0-9äöü]/gi, '-').replace(/-+/g, '-') + '-dashboard.json';
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    state.meta.lastExport = new Date().toISOString();
+    state.meta.changesSinceExport = 0;
+    save();
+    updateFab();
+  }
+
+  function importJSON(jsonStr) {
+    try {
+      var data = JSON.parse(jsonStr);
+      if (!data.config || !data.config.chapters) throw new Error('Ungueltige Datei');
+      state.config = data.config;
+      state.progress = data.progress || { chapters: {}, variables: [] };
+      state.agentTeam = data.agentTeam || state.agentTeam;
+      state.meta = data.meta || state.meta;
+      state.meta.changesSinceExport = 0;
+      state.mode = 'dashboard';
+      save();
+      encodeConfigToUrl();
+      switchMode();
+      return true;
+    } catch(e) {
+      alert('Import fehlgeschlagen: ' + e.message);
+      return false;
+    }
+  }
+
+  function handleFileDrop(file) {
+    if (!file || !file.name.endsWith('.json')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) { importJSON(e.target.result); };
+    reader.readAsText(file);
+  }
+
+  // ══════════ SAVE FAB ══════════
+  var fabEl, fabBadge;
+  function updateFab() {
+    if (!fabEl) return;
+    if (state.mode !== 'dashboard') { fabEl.style.display = 'none'; return; }
+    fabEl.style.display = 'flex';
+    var c = state.meta.changesSinceExport || 0;
+    fabEl.classList.remove('warn', 'urgent');
+    if (c >= 20) fabEl.classList.add('urgent');
+    else if (c >= 5) fabEl.classList.add('warn');
+    fabBadge.textContent = c > 0 ? c : '';
   }
 
   // ══════════ WIZARD ══════════
@@ -1116,7 +1441,11 @@
     state.mode = 'dashboard';
     state.meta.created = state.meta.created || new Date().toISOString();
     save();
+    encodeConfigToUrl();
     switchMode();
+    // Show bookmark banner
+    var banner = document.getElementById('m06-bookmark-banner');
+    if (banner) banner.classList.add('visible');
   }
 
   function generateAgentFiles() {
@@ -1359,6 +1688,7 @@
   }
 
   function renderDashboard() {
+    encodeConfigToUrl();
     var prog = calcProgress();
 
     // Header
@@ -1645,15 +1975,155 @@
   document.getElementById('m06-confirm-reset').addEventListener('click', function() { resetAll(); });
   document.getElementById('m06-confirm-overlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('visible'); });
 
+  // ══════════ BOOKMARK BANNER ══════════
+  document.getElementById('m06-bookmark-copy').addEventListener('click', function() {
+    var btn = this;
+    try {
+      navigator.clipboard.writeText(window.location.href).then(function() {
+        btn.textContent = 'Kopiert!';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'Link kopieren'; btn.classList.remove('copied'); }, 2000);
+      });
+    } catch(e) {}
+  });
+
+  document.getElementById('m06-bookmark-dismiss').addEventListener('click', function() {
+    document.getElementById('m06-bookmark-banner').classList.remove('visible');
+    try { localStorage.setItem('m06:bannerDismissed', '1'); } catch(e) {}
+  });
+
+  // ══════════ EXPORT / IMPORT BUTTONS ══════════
+  document.getElementById('m06-export-btn').addEventListener('click', exportJSON);
+
+  document.getElementById('m06-import-btn').addEventListener('click', function() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+      if (e.target.files[0]) handleFileDrop(e.target.files[0]);
+    };
+    input.click();
+  });
+
+  // ══════════ SAVE FAB ══════════
+  fabEl = document.getElementById('m06-save-fab');
+  fabBadge = document.getElementById('m06-fab-badge');
+  fabEl.addEventListener('click', exportJSON);
+
+  // ══════════ DRAG & DROP IMPORT ══════════
+  var importOverlay = document.getElementById('m06-import-overlay');
+  var dragCounter = 0;
+
+  document.addEventListener('dragenter', function(e) {
+    e.preventDefault();
+    dragCounter++;
+    if (dragCounter === 1) importOverlay.classList.add('visible');
+  });
+
+  document.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter <= 0) { dragCounter = 0; importOverlay.classList.remove('visible'); }
+  });
+
+  document.addEventListener('dragover', function(e) { e.preventDefault(); });
+
+  document.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dragCounter = 0;
+    importOverlay.classList.remove('visible');
+    if (e.dataTransfer && e.dataTransfer.files[0]) handleFileDrop(e.dataTransfer.files[0]);
+  });
+
+  // ══════════ PROFI-MODUS ══════════
+  document.getElementById('m06-profi-toggle').addEventListener('click', function() {
+    var body = document.getElementById('m06-profi-body');
+    var arrow = this.querySelector('.m06-profi-arrow');
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  });
+
+  document.getElementById('m06-profi-generate').addEventListener('click', function() {
+    collectData();
+    var title = state.config.title || 'Mein Buch';
+    var chapCount = state.config.chapters.length || 10;
+    var audience = state.config.audience || 'Einsteiger';
+    var features = state.config.features;
+    var wishes = (document.getElementById('m06-profi-wishes').value || '').trim();
+
+    var chapList = '';
+    for (var i = 0; i < state.config.chapters.length; i++) {
+      var ch = state.config.chapters[i];
+      chapList += '  ' + (i+1) + '. ' + (ch.name || 'Kapitel ' + (i+1)) + '\n';
+    }
+
+    var featureList = [];
+    featureList.push('Kapitel-Tracker mit Fortschrittsbalken (immer aktiv)');
+    if (features.pipeline) featureList.push('Pipeline-Schritte pro Kapitel (Outline, Entwurf, Review, Lektorat, Final)');
+    if (features.outline) featureList.push('Outline-Textfeld + Prompt-Generator pro Kapitel');
+    if (features.costs) featureList.push('Kosten-Rechner (API-Verbrauch pro Kapitel)');
+    if (features.variables) featureList.push('Persoenliche Variablen (Server-IP, API-Key, etc.)');
+    if (features.notes) featureList.push('Notizen pro Kapitel');
+
+    var p = 'Erstelle mir ein interaktives React-Dashboard als Artifact fuer mein Buchprojekt.\n\n';
+    p += '**Mein Buch:**\n';
+    p += '- Titel: ' + title + '\n';
+    p += '- Zielgruppe: ' + audience + '\n';
+    p += '- Anzahl Kapitel: ' + chapCount + '\n';
+    p += '- Kapitel:\n' + chapList + '\n';
+
+    p += '**Gewuenschte Features:**\n';
+    for (var f = 0; f < featureList.length; f++) {
+      p += '- ' + featureList[f] + '\n';
+    }
+    p += '- Export/Import (JSON) zum Sichern des Fortschritts\n';
+    p += '\n';
+
+    p += '**Anforderungen:**\n';
+    p += '1. React-Komponente mit useState fuer State-Management\n';
+    p += '2. Tailwind CSS fuer Styling (Dark Mode, bg-gray-900)\n';
+    p += '3. Checkboxen zum Abhaken der Pipeline-Schritte\n';
+    p += '4. Fortschrittsbalken pro Kapitel und Gesamt\n';
+    p += '5. Kapitelnamen direkt im Dashboard editierbar\n';
+    p += '6. Export-Button: JSON-Download mit allem Fortschritt\n';
+    p += '7. Import-Button: JSON-Datei laden und Fortschritt wiederherstellen\n';
+    p += '\n';
+
+    p += '**Design:**\n';
+    p += '- Professionell, clean, Dark Mode\n';
+    p += '- Farbschema: Amber/Gold Akzente auf dunklem Hintergrund\n';
+    p += '- Responsive (Desktop-first, funktional ab 375px)\n';
+    p += '- Inline SVG-Icons (Lucide-Stil), keine externen Abhaengigkeiten\n';
+    p += '\n';
+
+    if (wishes) {
+      p += '**Meine besonderen Wuensche:**\n' + wishes + '\n\n';
+    }
+
+    p += 'Erstelle das komplette Dashboard als eine einzige React-Komponente mit default export. Alle Daten im State, kein Backend noetig. Sofort lauffaehig als Claude Artifact.';
+
+    var outputEl = document.getElementById('m06-profi-output');
+    outputEl.textContent = p;
+    outputEl.style.display = 'block';
+    document.getElementById('m06-profi-copy-wrap').style.display = 'block';
+  });
+
+  document.getElementById('m06-profi-copy').addEventListener('click', function() {
+    copyText(document.getElementById('m06-profi-output').textContent, this);
+  });
+
   // ══════════ MODE SWITCH ══════════
   function switchMode() {
     if (state.mode === 'dashboard') {
       wizardEl.classList.remove('active');
       dashboardEl.classList.add('active');
       renderDashboard();
+      updateFab();
     } else {
       dashboardEl.classList.remove('active');
       wizardEl.classList.add('active');
+      if (fabEl) fabEl.style.display = 'none';
     }
   }
 
@@ -1696,8 +2166,35 @@
 
   // ══════════ INIT ══════════
   load();
+
+  // Check URL for config (Bookmark recovery)
+  var urlConfig = loadConfigFromUrl();
+  if (urlConfig && (!state.config.chapters || state.config.chapters.length === 0)) {
+    // URL has config but localStorage is empty → restore from bookmark
+    state.config = urlConfig;
+    state.mode = 'dashboard';
+    // Init progress for chapters
+    for (var ci = 0; ci < state.config.chapters.length; ci++) {
+      var cid = state.config.chapters[ci].id;
+      if (!state.progress.chapters[cid]) {
+        state.progress.chapters[cid] = { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
+      }
+    }
+    if (!state.progress.variables || state.progress.variables.length === 0) {
+      state.progress.variables = [{ key: 'server-ip', value: '' }, { key: 'api-key', value: '' }];
+    }
+    state.meta.created = state.meta.created || new Date().toISOString();
+    save();
+  }
+
   if (state.mode === 'dashboard' && state.config.chapters.length > 0) {
     switchMode();
+    encodeConfigToUrl();
+    updateFab();
+    // Show bookmark banner if not dismissed and no export yet
+    if (!state.meta.lastExport && !localStorage.getItem('m06:bannerDismissed')) {
+      document.getElementById('m06-bookmark-banner').classList.add('visible');
+    }
   } else {
     state.mode = 'wizard';
     populateWizard();
