@@ -2367,7 +2367,8 @@
     renderSidebar();
   }
 
-  var TUTORIAL_PLACEHOLDER = 'Beispiel:\n- Worum geht es? Warum liest jemand dieses Kapitel?\n- Abschnitt 1: Grundbegriffe kl\u00e4ren (Was ist X?)\n- Abschnitt 2: Erstes Praxisbeispiel (Schritt f\u00fcr Schritt)\n- Abschnitt 3: H\u00e4ufige Fehler und wie man sie vermeidet\n- Lernziel: Der Leser kann danach selbstst\u00e4ndig Y machen';
+  var TUTORIAL_EXAMPLE_OUTLINE = '- Worum geht es? Warum ist dieses Thema wichtig?\n- Abschnitt 1: Grundbegriffe kl\u00e4ren (Was ist X?)\n- Abschnitt 2: Erstes Praxisbeispiel (Schritt f\u00fcr Schritt)\n- Abschnitt 3: H\u00e4ufige Fehler und wie man sie vermeidet\n- Lernziel: Der Leser kann danach selbstst\u00e4ndig Y machen';
+  var TUTORIAL_PLACEHOLDER = 'Kapitel-Outline: Thema, Abschnitte, Lernziele...';
 
   var PIPELINE_EXPLANATIONS = [
     'Schreibe Stichpunkte ins Outline-Feld oben',
@@ -2527,12 +2528,15 @@
     html += '<div class="m06-tut-content">';
 
     if (state.tutorialStep === 1) {
+      var outlineVal = cp.outlineText || TUTORIAL_EXAMPLE_OUTLINE;
+      var isExample = !cp.outlineText;
       html += '<div class="m06-tut-title">Schritt 1: Outline schreiben</div>' +
         '<div class="m06-tut-desc">' +
           'Schreibe Stichpunkte f\u00fcr dein Kapitel. Was ist das Thema? Welche Abschnitte gibt es?' +
         '</div>' +
-        '<textarea id="m06-tut-outline-input" class="m06-card-outline-input" data-cid="' + cid + '" placeholder="Kapitel-Outline: Thema, Abschnitte, Lernziele...">' + escHtml(cp.outlineText || '') + '</textarea>' +
-        '<div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.5rem;">' +
+        '<textarea id="m06-tut-outline-input" class="m06-card-outline-input" data-cid="' + cid + '" placeholder="' + escHtml(TUTORIAL_PLACEHOLDER) + '" style="' + (isExample ? 'color:var(--text-dim);' : '') + '">' + escHtml(outlineVal) + '</textarea>' +
+        (isExample ? '<div style="font-size:0.78rem;color:var(--amber);margin-top:0.5rem;">\u270f\ufe0f Das ist ein Beispiel \u2013 \u00fcberschreibe es mit deiner eigenen Outline.</div>' : '') +
+        '<div style="font-size:0.72rem;color:var(--text-dim);margin-top:0.35rem;">' +
           'Mindestens 20 Zeichen, damit es weitergeht.' +
         '</div>';
     } else if (state.tutorialStep === 2) {
@@ -2779,10 +2783,18 @@
       });
     }
 
-    // Schritt 1: Outline-Input validierung
+    // Schritt 1: Outline-Input
     var outlineInput = document.getElementById('m06-tut-outline-input');
     if (outlineInput) {
+      // Beim ersten Fokus: Beispiel-Farbe auf normal + Text selektieren
+      outlineInput.addEventListener('focus', function() {
+        if (this.style.color === 'var(--text-dim)') {
+          this.style.color = '';
+          this.select();
+        }
+      });
       outlineInput.addEventListener('input', function() {
+        this.style.color = '';
         if (state.progress.chapters[ch1Id]) {
           state.progress.chapters[ch1Id].outlineText = this.value;
           save();
