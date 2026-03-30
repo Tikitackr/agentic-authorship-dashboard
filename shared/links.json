@@ -4,12 +4,13 @@
     "usage_dashboard": "Dashboard laedt diese Datei beim Start und ersetzt alle {{PLATZHALTER}} im HTML.",
     "usage_buch": "kapitel-zu-pdf.py liest diese Datei und ersetzt Platzhalter im Markdown VOR der Konvertierung.",
     "regel": "Wenn sich eine URL aendert (Domain-Umzug, Repo-Umbenennung), NUR diese Datei aendern. Kein Code, kein HTML, kein Markdown anfassen.",
-    "version": "1.0.0",
-    "updated": "2026-03-27"
+    "version": "1.1.0",
+    "updated": "2026-03-30"
   },
 
   "eigene_projekte": {
-    "DASHBOARD_URL":     "https://tikitackr.github.io/agentic-authorship-dashboard",
+    "DASHBOARD_URL":     "https://openclaw-buch.de",
+    "DASHBOARD_URL_OLD": "https://tikitackr.github.io/agentic-authorship-dashboard",
     "DASHBOARD_OLD_URL": "https://tikitackr.github.io/OpenClaw-Dashboard",
     "COWAN_URL":         "https://tikitackr.github.io/Cowan",
     "COWAN_COMPANION":   "https://tikitackr.github.io/Cowan/?mode=companion",
