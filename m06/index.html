@@ -1779,6 +1779,7 @@
       <div class="m06-conn-desc">
         Damit dein Dashboard Outlines direkt an deinen OpenClaw-Agent senden kann,
         brauchen wir zwei Angaben. Beides findest du in deinem Cowan-Setup (Kapitel&nbsp;13).
+        <br><span style="font-size:0.78rem;color:var(--text-dim);margin-top:0.3rem;display:inline-block;">Tipp: Daten zentral unter <a href="#" onclick="if(typeof loadModule==='function')loadModule('m03');else window.location.href='../m03/';return false;" style="color:var(--amber);text-decoration:underline;">Meine Daten (M03)</a> verwalten &ndash; alle Module lesen von dort.</span>
       </div>
       <div class="m06-conn-fields">
         <div class="m06-conn-field">
@@ -1858,7 +1859,7 @@
     activeChapter: null,  // null = auto (erstes unfertiges), oder explizite cid
     tutorialStep: 1,      // Tutorial-Schritt 1-5 für Kapitel 1
     tutorialCompleted: false, // ob Kapitel 1 Final ist (freischaltet alle anderen)
-    connection: { tailscaleIp: '', syncToken: '', verified: false }
+    connection: { tailscaleIp: '', syncToken: '', syncPort: '3456', verified: false }
   };
 
   // ══════════ PERSISTENCE ══════════
@@ -1876,7 +1877,10 @@
         localStorage.setItem('m06:meta', JSON.stringify(state.meta));
         localStorage.setItem('m06:tutorialStep', state.tutorialStep);
         localStorage.setItem('m06:tutorialCompleted', state.tutorialCompleted ? '1' : '0');
-        localStorage.setItem('m06:connection', JSON.stringify(state.connection));
+        // Connection-Daten → aa-settings.* (zentral, M03 verwaltet)
+        if (state.connection.tailscaleIp) localStorage.setItem('aa-settings.tailscaleIp', state.connection.tailscaleIp);
+        if (state.connection.syncToken) localStorage.setItem('aa-settings.syncToken', state.connection.syncToken);
+        if (state.connection.syncPort) localStorage.setItem('aa-settings.syncPort', state.connection.syncPort);
         localStorage.setItem('shell:lastModule', 'm06');
         updateFab();
       } catch(e) {}
@@ -1892,12 +1896,28 @@
       var mt = localStorage.getItem('m06:meta'); if (mt) state.meta = JSON.parse(mt);
       var ts = localStorage.getItem('m06:tutorialStep'); if (ts) state.tutorialStep = parseInt(ts) || 1;
       var tc = localStorage.getItem('m06:tutorialCompleted'); if (tc) state.tutorialCompleted = tc === '1';
-      var cn = localStorage.getItem('m06:connection'); if (cn) state.connection = JSON.parse(cn);
+      // Connection-Daten aus aa-settings.* lesen (zentral, M03 verwaltet)
+      var aaIp = localStorage.getItem('aa-settings.tailscaleIp');
+      var aaToken = localStorage.getItem('aa-settings.syncToken');
+      var aaPort = localStorage.getItem('aa-settings.syncPort');
+      if (aaIp) state.connection.tailscaleIp = aaIp;
+      if (aaToken) state.connection.syncToken = aaToken;
+      if (aaPort) state.connection.syncPort = aaPort;
+      // Fallback: alte m06:connection Daten migrieren
+      if (!state.connection.tailscaleIp) {
+        var cn = localStorage.getItem('m06:connection');
+        if (cn) {
+          var old = JSON.parse(cn);
+          if (old.tailscaleIp) { state.connection.tailscaleIp = old.tailscaleIp; localStorage.setItem('aa-settings.tailscaleIp', old.tailscaleIp); }
+          if (old.syncToken) { state.connection.syncToken = old.syncToken; localStorage.setItem('aa-settings.syncToken', old.syncToken); }
+          localStorage.removeItem('m06:connection');
+        }
+      }
     } catch(e) {}
   }
 
   function resetAll() {
-    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta','m06:tutorialStep','m06:tutorialCompleted','m06:connection'].forEach(function(k) {
+    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta','m06:tutorialStep','m06:tutorialCompleted'].forEach(function(k) {
       localStorage.removeItem(k);
     });
     // Clear URL hash
@@ -3278,7 +3298,8 @@
   function getSyncUrl() {
     var ip = state.connection.tailscaleIp.replace(/\/+$/, '');
     if (ip.indexOf('http') !== 0) ip = 'http://' + ip;
-    if (ip.indexOf(':') === ip.lastIndexOf(':')) ip += ':3456'; // Kein Port → Default 3456
+    var port = state.connection.syncPort || '3456';
+    if (ip.indexOf(':') === ip.lastIndexOf(':')) ip += ':' + port;
     return ip;
   }
 

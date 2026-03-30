@@ -1,11 +1,28 @@
-<!-- M03: Sprint-Verwaltung — Agentic Authorship Dashboard -->
+<!-- M03: Meine Daten — Agentic Authorship Dashboard -->
 <style>
+  /* ── CSS-Fallback fuer Standalone ── */
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a28;
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.15);
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --border: rgba(245, 158, 11, 0.2);
+    --border-hover: rgba(245, 158, 11, 0.5);
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --radius: 14px;
+  }
+
   /* ── M03 Scoped Styles ── */
   .m03 { max-width: 100%; }
 
-  /* Hero: Aktueller Sprint */
+  /* Hero */
   .m03-hero {
-    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(239,68,68,0.06) 100%);
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(59,130,246,0.06) 100%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1.5rem;
@@ -16,7 +33,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .m03-hero-icon {
@@ -40,13 +57,14 @@
     flex: 1;
   }
 
-  .m03-hero h2 .pct {
-    color: var(--amber);
-    margin-left: 0.5rem;
-    font-size: 1rem;
+  .m03-hero-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
   }
 
-  .m03-sprint-badge {
+  /* Status Badge */
+  .m03-status-badge {
     font-size: 0.68rem;
     padding: 0.2rem 0.6rem;
     border-radius: 8px;
@@ -55,68 +73,9 @@
     letter-spacing: 0.5px;
   }
 
-  .badge-active { background: rgba(34,197,94,0.15); color: var(--green); }
-  .badge-none { background: rgba(136,136,136,0.15); color: var(--text-dim); }
-
-  .m03-hero-meta {
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-  }
-
-  .m03-hero-meta strong { color: var(--text); }
-
-  .m03-progress-wrap {
-    background: rgba(255,255,255,0.06);
-    border-radius: 6px;
-    height: 10px;
-    overflow: hidden;
-    margin-bottom: 0.4rem;
-  }
-
-  .m03-progress-bar {
-    height: 100%;
-    border-radius: 6px;
-    background: linear-gradient(90deg, var(--amber), var(--green));
-    transition: width 0.6s ease;
-  }
-
-  .m03-progress-label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-  }
-
-  /* Stats */
-  .m03-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .m03-stat {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.8rem;
-    text-align: center;
-  }
-
-  .m03-stat-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-  }
-
-  .m03-stat-label {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.2rem;
-  }
+  .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-missing { background: rgba(239,68,68,0.1); color: var(--red); }
+  .badge-demo { background: rgba(59,130,246,0.15); color: var(--blue); }
 
   /* Section */
   .m03-section {
@@ -137,8 +96,8 @@
 
   .m03-section-title svg { width: 18px; height: 18px; color: var(--amber); flex-shrink: 0; }
 
-  /* Sprint erstellen / bearbeiten */
-  .m03-form {
+  /* Form */
+  .m03-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -146,21 +105,13 @@
     margin-bottom: 1rem;
   }
 
-  .m03-form-row {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
+  .m03-field {
+    margin-bottom: 1rem;
   }
 
-  .m03-form-row:last-child { margin-bottom: 0; }
+  .m03-field:last-child { margin-bottom: 0; }
 
-  .m03-input-group {
-    flex: 1;
-    min-width: 120px;
-  }
-
-  .m03-input-group label {
+  .m03-label {
     display: block;
     font-size: 0.7rem;
     color: var(--text-dim);
@@ -169,12 +120,22 @@
     margin-bottom: 0.3rem;
   }
 
+  .m03-label-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+    line-height: 1.4;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
   .m03-input {
     width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.75rem;
     font-size: 0.85rem;
     color: var(--text);
     font-family: inherit;
@@ -184,7 +145,9 @@
 
   .m03-input:focus { border-color: var(--amber); }
   .m03-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+  .m03-input.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; letter-spacing: 0.5px; }
 
+  /* Buttons */
   .m03-btn {
     background: var(--amber-dim);
     border: 1px solid var(--amber);
@@ -217,264 +180,316 @@
 
   .m03-btn-red:hover { background: rgba(239,68,68,0.2); }
 
+  .m03-btn-blue {
+    background: rgba(59,130,246,0.15);
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .m03-btn-blue:hover { background: rgba(59,130,246,0.25); }
+
   .m03-btn-row {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+    margin-top: 1rem;
   }
 
-  /* Ziele / Goals */
-  .m03-goal-input-row {
+  .m03-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Connection Test Result */
+  .m03-test-result {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    display: none;
+  }
+
+  .m03-test-result.success {
+    display: block;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .m03-test-result.error {
+    display: block;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--red);
+  }
+
+  .m03-test-result.info {
+    display: block;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: var(--blue);
+  }
+
+  /* Privacy Box */
+  .m03-privacy {
+    background: rgba(34,197,94,0.06);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .m03-privacy-header {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--green);
   }
 
-  .m03-goal-input-row .m03-input { flex: 1; }
+  .m03-privacy-header svg { width: 18px; height: 18px; }
 
-  .m03-goals {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+  .m03-privacy p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.5;
   }
 
-  .m03-goal {
+  /* Info Banner (Browser-Empfehlung) */
+  .m03-info {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.5rem 0.4rem;
-    border-bottom: 1px solid rgba(245,158,11,0.06);
-    cursor: pointer;
-    transition: background 0.1s;
-  }
-
-  .m03-goal:hover { background: rgba(255,255,255,0.02); }
-  .m03-goal:last-child { border-bottom: none; }
-  .m03-goal.goal-done { opacity: 0.45; }
-
-  .m03-goal-check {
-    width: 18px;
-    height: 18px;
-    border-radius: 5px;
-    border: 1.5px solid var(--text-dim);
-    flex-shrink: 0;
-    margin-top: 1px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-    background: transparent;
-  }
-
-  .m03-goal:hover .m03-goal-check { border-color: var(--amber); }
-
-  .m03-goal.goal-done .m03-goal-check {
-    background: var(--green);
-    border-color: var(--green);
-  }
-
-  .m03-goal-check svg { width: 12px; height: 12px; color: #fff; display: none; }
-  .m03-goal.goal-done .m03-goal-check svg { display: block; }
-
-  .m03-goal-text {
     font-size: 0.82rem;
-    color: var(--text);
-    line-height: 1.4;
-    flex: 1;
+    color: var(--text-dim);
+    line-height: 1.5;
   }
 
-  .m03-goal.goal-done .m03-goal-text {
-    text-decoration: line-through;
-    color: var(--text-dim);
-  }
+  .m03-info svg { width: 18px; height: 18px; color: var(--blue); flex-shrink: 0; margin-top: 1px; }
+  .m03-info strong { color: var(--text); }
 
-  .m03-goal-delete {
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-dim);
+  /* Saved Toast */
+  .m03-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--green);
+    color: #000;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
     opacity: 0;
-    transition: opacity 0.15s;
-    flex-shrink: 0;
-    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
   }
 
-  .m03-goal:hover .m03-goal-delete { opacity: 0.6; }
-  .m03-goal-delete:hover { opacity: 1 !important; color: var(--red); }
-  .m03-goal-delete svg { width: 14px; height: 14px; }
-
-  /* Empty State */
-  .m03-empty {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--text-dim);
-    font-size: 0.88rem;
+  .m03-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 
-  /* Velocity Chart */
-  .m03-velocity {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 120px;
-    padding: 0 0.5rem;
-  }
-
-  .m03-vel-bar-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  /* Demo Banner */
+  .m03-demo-banner {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    display: none;
     align-items: center;
-    gap: 4px;
-    height: 100%;
-    justify-content: flex-end;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--blue);
   }
 
-  .m03-vel-bar {
-    width: 100%;
-    max-width: 40px;
-    border-radius: 4px 4px 0 0;
-    background: linear-gradient(180deg, var(--amber) 0%, rgba(245,158,11,0.4) 100%);
-    transition: height 0.4s ease;
-    min-height: 2px;
+  .m03-demo-banner.active { display: flex; }
+  .m03-demo-banner svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Data Overview Stats */
+  .m03-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
   }
 
-  .m03-vel-label {
-    font-size: 0.58rem;
-    color: var(--text-dim);
+  .m03-ov-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem;
     text-align: center;
+  }
+
+  .m03-ov-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
     line-height: 1.2;
   }
 
-  .m03-vel-count {
+  .m03-ov-value.ok { color: var(--green); }
+  .m03-ov-value.missing { color: var(--red); }
+
+  .m03-ov-label {
     font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--amber);
-  }
-
-  /* History */
-  .m03-history-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.8rem 1rem;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .m03-history-item:hover {
-    border-color: var(--border-hover);
-    background: var(--bg-card-hover);
-  }
-
-  .m03-history-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.3rem;
-  }
-
-  .m03-history-name {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .m03-history-pct {
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-
-  .m03-history-dates {
-    font-size: 0.7rem;
     color: var(--text-dim);
-    margin-bottom: 0.4rem;
-  }
-
-  .m03-history-goals {
-    display: none;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .m03-history-item.expanded .m03-history-goals { display: block; }
-
-  .m03-history-goal {
-    font-size: 0.75rem;
-    padding: 0.2rem 0;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .m03-history-goal .done-mark { color: var(--green); }
-  .m03-history-goal .open-mark { color: var(--text-dim); opacity: 0.4; }
-
-  .m03-history-mini-bar {
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.06);
-    overflow: hidden;
-  }
-
-  .m03-history-mini-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.2rem;
   }
 
   /* Responsive */
   @media (max-width: 640px) {
-    .m03-stats { grid-template-columns: repeat(3, 1fr); }
     .m03-hero { padding: 1.25rem; }
-    .m03-form-row { flex-direction: column; }
-    .m03-velocity { height: 90px; }
+    .m03-overview { grid-template-columns: 1fr; }
+    .m03-btn-row { flex-direction: column; }
   }
 </style>
 
 <div class="m03">
 
-  <!-- Hero: Aktueller Sprint -->
+  <!-- Toast -->
+  <div class="m03-toast" id="m03-toast">Gespeichert</div>
+
+  <!-- Hero -->
   <div class="m03-hero">
     <div class="m03-hero-header">
       <div class="m03-hero-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
-      <h2 id="m03-hero-title">Sprint-Verwaltung</h2>
-      <span class="m03-sprint-badge" id="m03-badge">Kein Sprint</span>
+      <h2>Meine Daten</h2>
+      <span class="m03-status-badge" id="m03-badge">-</span>
     </div>
-    <div id="m03-hero-body"></div>
+    <p class="m03-hero-desc">Deine Verbindungsdaten und Einstellungen. Alle Module lesen von hier.</p>
   </div>
 
-  <!-- Stats -->
-  <div class="m03-stats">
-    <div class="m03-stat">
-      <div class="m03-stat-value" id="m03-stat-total">0</div>
-      <div class="m03-stat-label">Sprints</div>
+  <!-- Demo Banner -->
+  <div class="m03-demo-banner" id="m03-demo-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H2v13h20V7h-5l-2.5-3z"></path><circle cx="12" cy="14" r="4"></circle></svg>
+    <span><strong>Demo-Modus aktiv.</strong> Du siehst Beispieldaten. Ersetze sie durch deine echten Daten, wenn du soweit bist.</span>
+  </div>
+
+  <!-- Overview Stats -->
+  <div class="m03-overview">
+    <div class="m03-ov-item">
+      <div class="m03-ov-value" id="m03-ov-name">&ndash;</div>
+      <div class="m03-ov-label">Name</div>
     </div>
-    <div class="m03-stat">
-      <div class="m03-stat-value" id="m03-stat-goals">0</div>
-      <div class="m03-stat-label">Ziele gesamt</div>
+    <div class="m03-ov-item">
+      <div class="m03-ov-value" id="m03-ov-conn">&ndash;</div>
+      <div class="m03-ov-label">Verbindung</div>
     </div>
-    <div class="m03-stat">
-      <div class="m03-stat-value" id="m03-stat-avg">0</div>
-      <div class="m03-stat-label">&#8709; pro Sprint</div>
+    <div class="m03-ov-item">
+      <div class="m03-ov-value" id="m03-ov-browser">&ndash;</div>
+      <div class="m03-ov-label">Browser</div>
     </div>
   </div>
 
-  <!-- Sprint-Aktionen -->
-  <div class="m03-section" id="m03-sprint-section"></div>
+  <!-- Datenschutz -->
+  <div class="m03-privacy">
+    <div class="m03-privacy-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      Deine Daten bleiben in deinem Browser
+    </div>
+    <p>Nichts wird an einen Server gesendet. Alle Einstellungen werden ausschliesslich im localStorage deines Browsers gespeichert. Wenn du den Browser wechselst oder den Cache loeschst, sind die Daten weg &ndash; du kannst sie jederzeit neu eingeben.</p>
+  </div>
 
-  <!-- Velocity -->
-  <div class="m03-section" id="m03-velocity-section"></div>
+  <!-- Persoenliche Daten -->
+  <div class="m03-section">
+    <div class="m03-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      Persoenlich
+    </div>
+    <div class="m03-card">
+      <div class="m03-field">
+        <label class="m03-label">Dein Name</label>
+        <input class="m03-input" id="m03-name" type="text" placeholder="z.B. Thomas">
+        <p class="m03-label-hint">Wird in Prompts und Willkommensnachrichten verwendet.</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- Sprint-Historie -->
-  <div class="m03-section" id="m03-history-section"></div>
+  <!-- Verbindungsdaten -->
+  <div class="m03-section">
+    <div class="m03-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      VPS-Verbindung
+    </div>
+
+    <div class="m03-info">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>Diese Daten brauchst du nur, wenn du einen eigenen VPS mit OpenClaw hast. Ohne VPS kannst du alles manuell per <strong>Copy &amp; Paste</strong> machen &ndash; die Verbindung ist optional.</span>
+    </div>
+
+    <div class="m03-card">
+      <div class="m03-field">
+        <label class="m03-label">Tailscale IP</label>
+        <input class="m03-input mono" id="m03-ip" type="text" placeholder="z.B. 100.99.167.112">
+        <p class="m03-label-hint">Findest du mit <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">tailscale ip -4</code> auf deinem VPS.</p>
+      </div>
+      <div class="m03-field">
+        <label class="m03-label">Sync Token</label>
+        <input class="m03-input mono" id="m03-token" type="password" placeholder="64-stelliger Hex-Token">
+        <p class="m03-label-hint">Wurde beim Setup generiert. Liegt in <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">/root/sync-data/SYNC_TOKEN.txt</code> auf dem VPS.</p>
+      </div>
+      <div class="m03-field">
+        <label class="m03-label">Sync Port</label>
+        <input class="m03-input mono" id="m03-port" type="text" placeholder="3456" value="3456">
+        <p class="m03-label-hint">Standard: 3456. Nur aendern, wenn du den Port angepasst hast.</p>
+      </div>
+
+      <div class="m03-btn-row">
+        <button class="m03-btn-green m03-btn" id="m03-test-btn">Verbindung testen</button>
+      </div>
+      <div class="m03-test-result" id="m03-test-result"></div>
+    </div>
+  </div>
+
+  <!-- Browser-Empfehlung -->
+  <div class="m03-section">
+    <div class="m03-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+      Browser-Empfehlung
+    </div>
+    <div class="m03-card">
+      <div class="m03-field">
+        <label class="m03-label">Bevorzugter Browser</label>
+        <select class="m03-input" id="m03-browser">
+          <option value="chrome">Chrome (empfohlen)</option>
+          <option value="claude">Claude (claude.ai)</option>
+          <option value="safari">Safari</option>
+          <option value="firefox">Firefox</option>
+          <option value="other">Anderer</option>
+        </select>
+        <p class="m03-label-hint">Chrome hat die beste Kompatibilitaet mit dem Dashboard. Claude (claude.ai) ist die beste Wahl fuer die Buchproduktion.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aktionen -->
+  <div class="m03-section">
+    <div class="m03-section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      Aktionen
+    </div>
+    <div class="m03-btn-row">
+      <button class="m03-btn" id="m03-save-btn">Speichern</button>
+      <button class="m03-btn-blue m03-btn" id="m03-demo-btn">Demo-Daten laden</button>
+      <button class="m03-btn-red m03-btn" id="m03-clear-btn">Alle Daten loeschen</button>
+    </div>
+  </div>
 
 </div>
 
@@ -482,398 +497,304 @@
 (function() {
   'use strict';
 
-  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-  var xSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+  // ── Namespace ──
+  var NS = 'aa-settings.';
+
+  // ── Demo-Daten ──
+  var DEMO = {
+    name: 'Max Mustermann',
+    tailscaleIp: '100.123.45.67',
+    syncToken: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
+    syncPort: '3456',
+    browser: 'chrome',
+    isDemo: 'true'
+  };
 
   // ── State ──
-  var currentSprint = null;
-  var history = [];
-
-  function loadState() {
-    try {
-      var c = localStorage.getItem('sprint:current');
-      if (c) currentSprint = JSON.parse(c);
-      var h = localStorage.getItem('sprint:history');
-      if (h) history = JSON.parse(h);
-    } catch(e) {}
+  function load(key) {
+    try { return localStorage.getItem(NS + key) || ''; } catch(e) { return ''; }
   }
 
-  function saveState() {
+  function save(key, val) {
     try {
-      if (currentSprint) {
-        localStorage.setItem('sprint:current', JSON.stringify(currentSprint));
+      if (val === '' || val === null || val === undefined) {
+        localStorage.removeItem(NS + key);
       } else {
-        localStorage.removeItem('sprint:current');
+        localStorage.setItem(NS + key, val);
       }
-      localStorage.setItem('sprint:history', JSON.stringify(history));
     } catch(e) {}
   }
 
-  function todayStr() {
-    var d = new Date();
-    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
-    var dd = ('0' + d.getDate()).slice(-2);
-    return d.getFullYear() + '-' + mm + '-' + dd;
-  }
-
-  function formatDate(str) {
-    if (!str) return '';
-    var parts = str.split('-');
-    if (parts.length !== 3) return str;
-    return parts[2] + '.' + parts[1] + '.' + parts[0];
-  }
-
-  // ── Sprint Actions ──
-  function startSprint(name, start, end) {
-    currentSprint = {
-      name: name || 'Sprint ' + (history.length + 1),
-      start: start || todayStr(),
-      end: end || '',
-      goals: []
+  function loadAll() {
+    return {
+      name: load('name'),
+      tailscaleIp: load('tailscaleIp'),
+      syncToken: load('syncToken'),
+      syncPort: load('syncPort') || '3456',
+      browser: load('browser') || 'chrome',
+      isDemo: load('isDemo') === 'true'
     };
-    saveState();
-    render();
   }
 
-  function completeSprint() {
-    if (!currentSprint) return;
-    var entry = {
-      name: currentSprint.name,
-      start: currentSprint.start,
-      end: currentSprint.end || todayStr(),
-      completed: todayStr(),
-      goals: currentSprint.goals.slice()
+  function saveAll(data) {
+    save('name', data.name);
+    save('tailscaleIp', data.tailscaleIp);
+    save('syncToken', data.syncToken);
+    save('syncPort', data.syncPort);
+    save('browser', data.browser);
+    save('isDemo', data.isDemo ? 'true' : '');
+  }
+
+  function readForm() {
+    return {
+      name: document.getElementById('m03-name').value.trim(),
+      tailscaleIp: document.getElementById('m03-ip').value.trim(),
+      syncToken: document.getElementById('m03-token').value.trim(),
+      syncPort: document.getElementById('m03-port').value.trim() || '3456',
+      browser: document.getElementById('m03-browser').value,
+      isDemo: false
     };
-    history.unshift(entry);
-    currentSprint = null;
-    saveState();
-    render();
   }
 
-  function cancelSprint() {
-    if (!currentSprint) return;
-    if (!confirm('Sprint abbrechen? Ziele gehen verloren.')) return;
-    currentSprint = null;
-    saveState();
-    render();
+  function fillForm(data) {
+    document.getElementById('m03-name').value = data.name;
+    document.getElementById('m03-ip').value = data.tailscaleIp;
+    document.getElementById('m03-token').value = data.syncToken;
+    document.getElementById('m03-port').value = data.syncPort || '3456';
+    document.getElementById('m03-browser').value = data.browser || 'chrome';
   }
 
-  function addGoal(text) {
-    if (!currentSprint || !text.trim()) return;
-    currentSprint.goals.push({ text: text.trim(), done: false });
-    saveState();
-    render();
-  }
-
-  function toggleGoal(idx) {
-    if (!currentSprint || idx < 0 || idx >= currentSprint.goals.length) return;
-    currentSprint.goals[idx].done = !currentSprint.goals[idx].done;
-    saveState();
-    render();
-  }
-
-  function deleteGoal(idx) {
-    if (!currentSprint || idx < 0 || idx >= currentSprint.goals.length) return;
-    currentSprint.goals.splice(idx, 1);
-    saveState();
-    render();
-  }
-
-  function deleteHistoryItem(idx) {
-    if (idx < 0 || idx >= history.length) return;
-    if (!confirm('Sprint "' + history[idx].name + '" aus der Historie entfernen?')) return;
-    history.splice(idx, 1);
-    saveState();
-    render();
-  }
-
-  // ── Counts ──
-  function getGoalCounts(goals) {
-    var done = 0;
-    for (var i = 0; i < goals.length; i++) {
-      if (goals[i].done) done++;
+  // ── Overview ──
+  function updateOverview(data) {
+    // Name
+    var nameEl = document.getElementById('m03-ov-name');
+    if (data.name) {
+      nameEl.textContent = data.name;
+      nameEl.className = 'm03-ov-value ok';
+    } else {
+      nameEl.innerHTML = '&ndash;';
+      nameEl.className = 'm03-ov-value missing';
     }
-    return { total: goals.length, done: done };
-  }
 
-  // ── Render ──
-  function render() {
-    renderHero();
-    renderStats();
-    renderSprintSection();
-    renderVelocity();
-    renderHistory();
-  }
+    // Connection
+    var connEl = document.getElementById('m03-ov-conn');
+    if (data.tailscaleIp && data.syncToken) {
+      connEl.textContent = '\u2713';
+      connEl.className = 'm03-ov-value ok';
+    } else if (data.tailscaleIp || data.syncToken) {
+      connEl.textContent = '\u00bd';
+      connEl.className = 'm03-ov-value missing';
+    } else {
+      connEl.innerHTML = '&ndash;';
+      connEl.className = 'm03-ov-value';
+    }
 
-  function renderHero() {
-    var title = document.getElementById('m03-hero-title');
+    // Browser
+    var browserEl = document.getElementById('m03-ov-browser');
+    var browserMap = { chrome: 'Chrome', claude: 'Claude', safari: 'Safari', firefox: 'Firefox', other: 'Andere' };
+    browserEl.textContent = browserMap[data.browser] || 'Chrome';
+    browserEl.className = 'm03-ov-value ok';
+
+    // Badge
     var badge = document.getElementById('m03-badge');
-    var body = document.getElementById('m03-hero-body');
-
-    if (currentSprint) {
-      var counts = getGoalCounts(currentSprint.goals);
-      var pct = counts.total > 0 ? Math.round(counts.done / counts.total * 100) : 0;
-
-      title.innerHTML = escHtml(currentSprint.name) + ' <span class="pct">' + pct + '%</span>';
-      badge.textContent = 'Aktiv';
-      badge.className = 'm03-sprint-badge badge-active';
-
-      var dateText = formatDate(currentSprint.start);
-      if (currentSprint.end) dateText += ' \u2013 ' + formatDate(currentSprint.end);
-
-      body.innerHTML =
-        '<p class="m03-hero-meta"><strong>' + dateText + '</strong> \u00b7 ' + counts.done + ' von ' + counts.total + ' Zielen erreicht</p>' +
-        '<div class="m03-progress-wrap"><div class="m03-progress-bar" style="width:' + pct + '%"></div></div>' +
-        '<p class="m03-progress-label">' + (counts.total === 0 ? 'Noch keine Ziele hinzugefuegt' : counts.done + ' von ' + counts.total + ' Zielen erledigt') + '</p>';
+    if (data.isDemo) {
+      badge.textContent = 'Demo';
+      badge.className = 'm03-status-badge badge-demo';
+    } else if (data.name && data.tailscaleIp && data.syncToken) {
+      badge.textContent = 'Eingerichtet';
+      badge.className = 'm03-status-badge badge-ok';
+    } else if (data.name) {
+      badge.textContent = 'Teilweise';
+      badge.className = 'm03-status-badge badge-missing';
     } else {
-      title.textContent = 'Sprint-Verwaltung';
-      badge.textContent = 'Kein Sprint';
-      badge.className = 'm03-sprint-badge badge-none';
-      body.innerHTML = '<p class="m03-hero-meta">Plane Sprints, setze Ziele und verfolge deinen Fortschritt. Jeder Sprint fokussiert eine Woche oder Session.</p>';
+      badge.textContent = 'Nicht eingerichtet';
+      badge.className = 'm03-status-badge badge-missing';
     }
+
+    // Demo Banner
+    var demoBanner = document.getElementById('m03-demo-banner');
+    demoBanner.className = 'm03-demo-banner' + (data.isDemo ? ' active' : '');
   }
 
-  function renderStats() {
-    var totalSprints = history.length + (currentSprint ? 1 : 0);
-    var totalGoals = 0;
-    var totalDone = 0;
-
-    for (var i = 0; i < history.length; i++) {
-      for (var j = 0; j < history[i].goals.length; j++) {
-        totalGoals++;
-        if (history[i].goals[j].done) totalDone++;
-      }
-    }
-    if (currentSprint) {
-      var cc = getGoalCounts(currentSprint.goals);
-      totalGoals += cc.total;
-      totalDone += cc.done;
-    }
-
-    var avg = history.length > 0 ? Math.round(totalDone / history.length * 10) / 10 : 0;
-
-    document.getElementById('m03-stat-total').textContent = totalSprints;
-    document.getElementById('m03-stat-goals').textContent = totalDone + '/' + totalGoals;
-    document.getElementById('m03-stat-avg').textContent = avg;
+  // ── Toast ──
+  function showToast(msg) {
+    var toast = document.getElementById('m03-toast');
+    toast.textContent = msg || 'Gespeichert';
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2000);
   }
 
-  function renderSprintSection() {
-    var sec = document.getElementById('m03-sprint-section');
-    var html = '';
+  // ── Connection Test ──
+  function testConnection() {
+    var ip = document.getElementById('m03-ip').value.trim();
+    var token = document.getElementById('m03-token').value.trim();
+    var port = document.getElementById('m03-port').value.trim() || '3456';
+    var resultEl = document.getElementById('m03-test-result');
+    var testBtn = document.getElementById('m03-test-btn');
 
-    if (!currentSprint) {
-      // Sprint erstellen
-      html += '<div class="m03-section-title">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>';
-      html += 'Neuen Sprint starten</div>';
-      html += '<div class="m03-form">';
-      html += '<div class="m03-form-row">';
-      html += '<div class="m03-input-group"><label>Name</label><input class="m03-input" id="m03-name" type="text" placeholder="z.B. Sprint 1: Dashboard-Umbau"></div>';
-      html += '</div>';
-      html += '<div class="m03-form-row">';
-      html += '<div class="m03-input-group"><label>Start</label><input class="m03-input" id="m03-start" type="date" value="' + todayStr() + '"></div>';
-      html += '<div class="m03-input-group"><label>Ende (optional)</label><input class="m03-input" id="m03-end" type="date"></div>';
-      html += '</div>';
-      html += '<div class="m03-form-row"><button class="m03-btn" id="m03-start-btn">Sprint starten</button></div>';
-      html += '</div>';
-    } else {
-      // Ziele verwalten
-      html += '<div class="m03-section-title">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>';
-      html += 'Sprint-Ziele</div>';
+    if (!ip || !token) {
+      resultEl.className = 'm03-test-result error';
+      resultEl.textContent = 'Bitte erst Tailscale IP und Sync Token eingeben.';
+      return;
+    }
 
-      // Add goal input
-      html += '<div class="m03-goal-input-row">';
-      html += '<input class="m03-input" id="m03-goal-input" type="text" placeholder="Neues Ziel hinzufuegen...">';
-      html += '<button class="m03-btn" id="m03-add-goal-btn">+</button>';
-      html += '</div>';
+    testBtn.disabled = true;
+    testBtn.textContent = 'Teste...';
+    resultEl.className = 'm03-test-result info';
+    resultEl.textContent = 'Verbindung wird geprueft...';
 
-      // Goals list
-      if (currentSprint.goals.length === 0) {
-        html += '<div class="m03-empty">Noch keine Ziele. Fuege dein erstes Sprint-Ziel hinzu.</div>';
+    var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/api/health';
+
+    fetch(url, {
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer ' + token },
+      signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined
+    })
+    .then(function(res) {
+      if (res.ok) {
+        resultEl.className = 'm03-test-result success';
+        resultEl.textContent = '\u2713 Verbindung erfolgreich! Dein Sync-Server ist erreichbar.';
+      } else if (res.status === 401 || res.status === 403) {
+        resultEl.className = 'm03-test-result error';
+        resultEl.textContent = 'Token abgelehnt. Pruefe den Sync Token in SYNC_TOKEN.txt.';
       } else {
-        html += '<div class="m03-goals">';
-        for (var i = 0; i < currentSprint.goals.length; i++) {
-          var g = currentSprint.goals[i];
-          html += '<div class="m03-goal' + (g.done ? ' goal-done' : '') + '" data-idx="' + i + '">';
-          html += '<div class="m03-goal-check">' + checkSvg + '</div>';
-          html += '<span class="m03-goal-text">' + escHtml(g.text) + '</span>';
-          html += '<div class="m03-goal-delete" data-delete="' + i + '">' + xSvg + '</div>';
-          html += '</div>';
-        }
-        html += '</div>';
+        resultEl.className = 'm03-test-result error';
+        resultEl.textContent = 'Server antwortet mit Status ' + res.status + '. Pruefe IP und Port.';
       }
-
-      // Sprint controls
-      html += '<div class="m03-btn-row" style="margin-top:1rem;">';
-      html += '<button class="m03-btn m03-btn-green" id="m03-complete-btn">Sprint abschliessen</button>';
-      html += '<button class="m03-btn m03-btn-red" id="m03-cancel-btn">Abbrechen</button>';
-      html += '</div>';
-    }
-
-    sec.innerHTML = html;
-
-    // Event handlers
-    if (!currentSprint) {
-      var startBtn = document.getElementById('m03-start-btn');
-      if (startBtn) {
-        startBtn.addEventListener('click', function() {
-          var name = document.getElementById('m03-name').value;
-          var start = document.getElementById('m03-start').value;
-          var end = document.getElementById('m03-end').value;
-          startSprint(name, start, end);
-        });
+    })
+    .catch(function(err) {
+      resultEl.className = 'm03-test-result error';
+      if (err.name === 'TimeoutError' || (err.message && err.message.indexOf('timeout') !== -1)) {
+        resultEl.textContent = 'Zeitueberschreitung. Ist Tailscale aktiv und die IP korrekt?';
+      } else {
+        resultEl.textContent = 'Nicht erreichbar. Ist Tailscale auf diesem Geraet verbunden? IP: ' + ip + ':' + port;
       }
-    } else {
-      var goalInput = document.getElementById('m03-goal-input');
-      var addBtn = document.getElementById('m03-add-goal-btn');
-
-      if (addBtn) {
-        addBtn.addEventListener('click', function() {
-          addGoal(goalInput.value);
-        });
-      }
-      if (goalInput) {
-        goalInput.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') { addGoal(this.value); }
-        });
-      }
-
-      // Goal toggle
-      var goals = sec.querySelectorAll('.m03-goal');
-      for (var gi = 0; gi < goals.length; gi++) {
-        (function(el) {
-          el.addEventListener('click', function(e) {
-            if (e.target.closest('.m03-goal-delete')) return;
-            toggleGoal(parseInt(el.getAttribute('data-idx')));
-          });
-        })(goals[gi]);
-      }
-
-      // Goal delete
-      var delBtns = sec.querySelectorAll('.m03-goal-delete');
-      for (var di = 0; di < delBtns.length; di++) {
-        (function(el) {
-          el.addEventListener('click', function(e) {
-            e.stopPropagation();
-            deleteGoal(parseInt(el.getAttribute('data-delete')));
-          });
-        })(delBtns[di]);
-      }
-
-      var completeBtn = document.getElementById('m03-complete-btn');
-      if (completeBtn) completeBtn.addEventListener('click', completeSprint);
-
-      var cancelBtn = document.getElementById('m03-cancel-btn');
-      if (cancelBtn) cancelBtn.addEventListener('click', cancelSprint);
-    }
+    })
+    .finally(function() {
+      testBtn.disabled = false;
+      testBtn.textContent = 'Verbindung testen';
+    });
   }
 
-  function renderVelocity() {
-    var sec = document.getElementById('m03-velocity-section');
-    if (history.length === 0) {
-      sec.innerHTML = '';
-      return;
-    }
+  // ── Event Handlers ──
 
-    var html = '<div class="m03-section-title">';
-    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>';
-    html += 'Velocity</div>';
+  // Save
+  document.getElementById('m03-save-btn').addEventListener('click', function() {
+    var data = readForm();
+    saveAll(data);
+    updateOverview(data);
 
-    // Letzte 8 Sprints (neueste rechts)
-    var shown = history.slice(0, 8).reverse();
-    var maxGoals = 1;
-    for (var i = 0; i < shown.length; i++) {
-      var c = getGoalCounts(shown[i].goals);
-      if (c.done > maxGoals) maxGoals = c.done;
-    }
-
-    html += '<div class="m03-velocity">';
-    for (var j = 0; j < shown.length; j++) {
-      var sp = shown[j];
-      var counts = getGoalCounts(sp.goals);
-      var barH = maxGoals > 0 ? Math.max(4, Math.round(counts.done / maxGoals * 90)) : 4;
-
-      html += '<div class="m03-vel-bar-wrap">';
-      html += '<span class="m03-vel-count">' + counts.done + '</span>';
-      html += '<div class="m03-vel-bar" style="height:' + barH + 'px"></div>';
-      var label = sp.name.length > 10 ? sp.name.substring(0, 9) + '\u2026' : sp.name;
-      html += '<span class="m03-vel-label">' + escHtml(label) + '</span>';
-      html += '</div>';
-    }
-    html += '</div>';
-
-    sec.innerHTML = html;
-  }
-
-  function renderHistory() {
-    var sec = document.getElementById('m03-history-section');
-    if (history.length === 0) {
-      sec.innerHTML = '';
-      return;
-    }
-
-    var html = '<div class="m03-section-title">';
-    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
-    html += 'Sprint-Historie</div>';
-
-    for (var i = 0; i < history.length; i++) {
-      var sp = history[i];
-      var counts = getGoalCounts(sp.goals);
-      var pct = counts.total > 0 ? Math.round(counts.done / counts.total * 100) : 0;
-      var pctColor = pct === 100 ? 'color:var(--green)' : pct >= 50 ? 'color:var(--amber)' : 'color:var(--red)';
-
-      html += '<div class="m03-history-item" data-history="' + i + '">';
-      html += '<div class="m03-history-top">';
-      html += '<span class="m03-history-name">' + escHtml(sp.name) + '</span>';
-      html += '<span class="m03-history-pct" style="' + pctColor + '">' + pct + '% (' + counts.done + '/' + counts.total + ')</span>';
-      html += '</div>';
-      html += '<div class="m03-history-dates">' + formatDate(sp.start) + ' \u2013 ' + formatDate(sp.completed || sp.end) + '</div>';
-      html += '<div class="m03-history-mini-bar"><div class="m03-history-mini-fill" style="width:' + pct + '%"></div></div>';
-
-      // Expandable goals
-      html += '<div class="m03-history-goals">';
-      for (var j = 0; j < sp.goals.length; j++) {
-        var g = sp.goals[j];
-        html += '<div class="m03-history-goal">';
-        html += g.done ? '<span class="done-mark">\u2713</span>' : '<span class="open-mark">\u2013</span>';
-        html += '<span>' + escHtml(g.text) + '</span>';
-        html += '</div>';
+    // Migrate: if M06 has old connection data, update it too
+    try {
+      var m06conn = localStorage.getItem('m06:connection');
+      if (m06conn) {
+        var c = JSON.parse(m06conn);
+        c.tailscaleIp = data.tailscaleIp;
+        c.syncToken = data.syncToken;
+        localStorage.setItem('m06:connection', JSON.stringify(c));
       }
-      html += '<div style="margin-top:0.5rem;text-align:right;"><button class="m03-btn m03-btn-red" data-del-history="' + i + '" style="font-size:0.7rem;padding:0.25rem 0.6rem;">Entfernen</button></div>';
-      html += '</div>';
-      html += '</div>';
-    }
+    } catch(e) {}
 
-    sec.innerHTML = html;
+    showToast('Gespeichert');
+  });
 
-    // Toggle expand
-    var items = sec.querySelectorAll('.m03-history-item');
-    for (var k = 0; k < items.length; k++) {
-      (function(el) {
-        el.addEventListener('click', function(e) {
-          if (e.target.closest('[data-del-history]')) {
-            e.stopPropagation();
-            deleteHistoryItem(parseInt(e.target.closest('[data-del-history]').getAttribute('data-del-history')));
-            return;
-          }
-          el.classList.toggle('expanded');
-        });
-      })(items[k]);
+  // Demo
+  document.getElementById('m03-demo-btn').addEventListener('click', function() {
+    var demoData = {
+      name: DEMO.name,
+      tailscaleIp: DEMO.tailscaleIp,
+      syncToken: DEMO.syncToken,
+      syncPort: DEMO.syncPort,
+      browser: DEMO.browser,
+      isDemo: true
+    };
+    saveAll(demoData);
+    fillForm(demoData);
+    updateOverview(demoData);
+    showToast('Demo-Daten geladen');
+  });
+
+  // Clear
+  document.getElementById('m03-clear-btn').addEventListener('click', function() {
+    if (!confirm('Alle gespeicherten Daten loeschen?')) return;
+
+    // Clear aa-settings namespace
+    var keysToRemove = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(NS) === 0) keysToRemove.push(k);
     }
+    keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
+
+    // Reset form
+    var empty = { name: '', tailscaleIp: '', syncToken: '', syncPort: '3456', browser: 'chrome', isDemo: false };
+    fillForm(empty);
+    updateOverview(empty);
+
+    // Hide test result
+    document.getElementById('m03-test-result').className = 'm03-test-result';
+    document.getElementById('m03-test-result').textContent = '';
+
+    showToast('Daten geloescht');
+  });
+
+  // Test
+  document.getElementById('m03-test-btn').addEventListener('click', testConnection);
+
+  // ── Auto-Save on Input ──
+  var inputs = document.querySelectorAll('#m03-name, #m03-ip, #m03-token, #m03-port, #m03-browser');
+  var autoSaveTimer = null;
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('input', function() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(function() {
+        var data = readForm();
+        saveAll(data);
+        updateOverview(data);
+      }, 800);
+    });
+    inputs[i].addEventListener('change', function() {
+      var data = readForm();
+      saveAll(data);
+      updateOverview(data);
+    });
   }
 
-  // ── Helpers ──
-  function escHtml(str) {
-    var div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
+  // ── URL-Parameter: ?demo=true ──
+  function checkDemoParam() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('demo') === 'true') {
+        document.getElementById('m03-demo-btn').click();
+      }
+    } catch(e) {}
+    try {
+      if (window.location.hash.indexOf('demo=true') !== -1) {
+        document.getElementById('m03-demo-btn').click();
+      }
+    } catch(e) {}
   }
 
   // ── Init ──
   try { localStorage.setItem('shell:lastModule', 'm03'); } catch(e) {}
-  loadState();
-  render();
+
+  var data = loadAll();
+
+  // Migration: Pull from m06:connection if aa-settings are empty
+  if (!data.tailscaleIp && !data.syncToken) {
+    try {
+      var m06conn = localStorage.getItem('m06:connection');
+      if (m06conn) {
+        var c = JSON.parse(m06conn);
+        if (c.tailscaleIp) { data.tailscaleIp = c.tailscaleIp; save('tailscaleIp', c.tailscaleIp); }
+        if (c.syncToken) { data.syncToken = c.syncToken; save('syncToken', c.syncToken); }
+      }
+    } catch(e) {}
+  }
+
+  fillForm(data);
+  updateOverview(data);
+  checkDemoParam();
 
 })();
 </script>
