@@ -980,6 +980,193 @@
   .m06-all-done-text { font-size: 1rem; font-weight: 600; color: var(--green); }
   .m06-all-done-sub { font-size: 0.82rem; color: var(--text-dim); margin-top: 0.25rem; }
 
+  /* ── Tutorial-First: Gesperrte Kapitel ── */
+  .m06-chapter-collapsed.m06-locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Tutorial-First: Tutorial-Karte ── */
+  .m06-tutorial-card {
+    background: var(--bg-card);
+    border: 2px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    animation: m06-expand 0.25s ease;
+  }
+
+  .m06-tutorial-banner {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(167,139,250,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .m06-tutorial-banner strong { color: var(--amber); }
+
+  .m06-tut-step-indicator {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .m06-tut-step-ind {
+    flex: 1;
+    padding: 0.6rem 0.3rem;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    transition: all 0.25s;
+    border-right: 1px solid rgba(245,158,11,0.1);
+  }
+  .m06-tut-step-ind:last-child { border-right: none; }
+  .m06-tut-step-ind.active { background: var(--amber-dim); color: var(--amber); font-weight: 600; }
+  .m06-tut-step-ind.done { background: rgba(34,197,94,0.08); color: var(--green); }
+
+  .m06-tut-content { min-height: 200px; }
+
+  .m06-tut-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-tut-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .m06-tut-desc strong { color: var(--text); }
+
+  .m06-tut-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .m06-tut-check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+
+  .m06-tut-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .m06-tut-check-item .m06-tut-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: transparent;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .m06-tut-check-item.checked .m06-tut-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+
+  .m06-tut-option-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-tut-option-box h4 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .m06-tut-option-box p {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-tut-success {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .m06-tut-success-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-tut-success h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+  }
+
+  .m06-tut-success-list {
+    text-align: left;
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 2;
+    margin-bottom: 1rem;
+  }
+
+  .m06-tut-success-tip {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 0.75rem;
+  }
+
+  .m06-prompt-preview {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
   /* Responsive */
   @media (max-width: 640px) {
     .m06-tones { grid-template-columns: 1fr; }
@@ -1669,7 +1856,8 @@
     },
     meta: { created: '', lastModified: '', changesSinceExport: 0 },
     activeChapter: null,  // null = auto (erstes unfertiges), oder explizite cid
-    phase: 'planung',     // 'planung' oder 'produktion'
+    tutorialStep: 1,      // Tutorial-Schritt 1-5 für Kapitel 1
+    tutorialCompleted: false, // ob Kapitel 1 Final ist (freischaltet alle anderen)
     connection: { tailscaleIp: '', syncToken: '', verified: false }
   };
 
@@ -1686,7 +1874,8 @@
         localStorage.setItem('m06:progress', JSON.stringify(state.progress));
         localStorage.setItem('m06:agentTeam', JSON.stringify(state.agentTeam));
         localStorage.setItem('m06:meta', JSON.stringify(state.meta));
-        localStorage.setItem('m06:phase', state.phase);
+        localStorage.setItem('m06:tutorialStep', state.tutorialStep);
+        localStorage.setItem('m06:tutorialCompleted', state.tutorialCompleted ? '1' : '0');
         localStorage.setItem('m06:connection', JSON.stringify(state.connection));
         localStorage.setItem('shell:lastModule', 'm06');
         updateFab();
@@ -1701,13 +1890,14 @@
       var p = localStorage.getItem('m06:progress'); if (p) state.progress = JSON.parse(p);
       var a = localStorage.getItem('m06:agentTeam'); if (a) state.agentTeam = JSON.parse(a);
       var mt = localStorage.getItem('m06:meta'); if (mt) state.meta = JSON.parse(mt);
-      var ph = localStorage.getItem('m06:phase'); if (ph) state.phase = ph;
+      var ts = localStorage.getItem('m06:tutorialStep'); if (ts) state.tutorialStep = parseInt(ts) || 1;
+      var tc = localStorage.getItem('m06:tutorialCompleted'); if (tc) state.tutorialCompleted = tc === '1';
       var cn = localStorage.getItem('m06:connection'); if (cn) state.connection = JSON.parse(cn);
     } catch(e) {}
   }
 
   function resetAll() {
-    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta','m06:phase','m06:connection'].forEach(function(k) {
+    ['m06:mode','m06:config','m06:progress','m06:agentTeam','m06:meta','m06:tutorialStep','m06:tutorialCompleted','m06:connection'].forEach(function(k) {
       localStorage.removeItem(k);
     });
     // Clear URL hash
@@ -2142,9 +2332,7 @@
         '</div>' +
       '</div>' +
       '<div class="m06-dash-progress-wrap"><div class="m06-dash-progress-bar" style="width:' + prog.pct + '%"></div></div>' +
-      '<div class="m06-dash-progress-label">' + prog.done + ' von ' + prog.total + ' Kapiteln abgeschlossen' + (state.config.features.pipeline ? ' \u00b7 ' + prog.doneSteps + '/' + prog.totalSteps + ' Schritte' : '') + '</div>' +
-      renderPhaseToggle() +
-      renderPhaseInfo();
+      '<div class="m06-dash-progress-label">' + prog.done + ' von ' + prog.total + ' Kapiteln abgeschlossen' + (state.config.features.pipeline ? ' \u00b7 ' + prog.doneSteps + '/' + prog.totalSteps + ' Schritte' : '') + '</div>';
 
     document.getElementById('m06-edit-setup').addEventListener('click', function() {
       state.mode = 'wizard'; save(); switchMode(); populateWizard();
@@ -2154,19 +2342,7 @@
       document.getElementById('m06-confirm-overlay').classList.add('visible');
     });
 
-    // B45: Phase-Toggle Events
-    document.querySelectorAll('.m06-phase-btn').forEach(function(el) {
-      el.addEventListener('click', function() {
-        var newPhase = this.getAttribute('data-phase');
-        if (newPhase === state.phase) return;
-        state.phase = newPhase;
-        if (newPhase === 'produktion') phaseInfoDismissed = false; // Info nochmal zeigen beim Wechsel
-        save();
-        renderDashboard();
-      });
-    });
-
-    // B45: Connection Badge
+    // B46: Connection Badge
     var connBadgeBtn = document.getElementById('m06-conn-badge-btn');
     if (connBadgeBtn) {
       connBadgeBtn.addEventListener('click', function() {
@@ -2175,17 +2351,6 @@
         document.getElementById('m06-conn-status').className = 'm06-conn-status';
         document.getElementById('m06-conn-status').style.display = 'none';
         document.getElementById('m06-conn-overlay').classList.add('visible');
-      });
-    }
-
-    // B45: Phase-Info Dismiss
-    var phaseInfoDismissBtn = document.getElementById('m06-phase-info-dismiss');
-    if (phaseInfoDismissBtn) {
-      phaseInfoDismissBtn.addEventListener('click', function() {
-        phaseInfoDismissed = true;
-        try { localStorage.setItem('m06:phaseInfoDismissed', '1'); } catch(e) {}
-        var infoEl = document.getElementById('m06-phase-info');
-        if (infoEl) infoEl.remove();
       });
     }
 
@@ -2264,30 +2429,28 @@
       html += '<button class="m06-card-prompt-btn" data-cid="' + cid + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Prompt generieren</button>';
 
-      // B45: "An Agent senden" oder "Prompt kopieren" (nur in Produktion)
-      if (state.phase === 'produktion') {
-        if (hasConnection()) {
-          html += '<button class="m06-send-btn" data-cid="' + cid + '">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> An Agent senden</button>';
-        } else {
-          html += '<button class="m06-send-btn m06-copy-prompt-btn" data-cid="' + cid + '" style="background:var(--blue);">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Prompt kopieren</button>';
-        }
-        // Outline-Change-Warnung
-        var lastSent = cp.lastSent || '';
-        if (lastSent) {
-          html += '<div class="m06-outline-warning' + (cp._outlineChanged ? ' visible' : '') + '" data-cid="' + cid + '">\u26a0 Outline ge\u00e4ndert seit letztem Senden \u2013 erneut senden!</div>';
-        }
-        // Prompt-Vorschau
-        html += '<button class="m06-preview-toggle" data-cid="' + cid + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg> Vorschau: Was wird gesendet</button>';
-        html += '<div class="m06-preview-json" data-cid="' + cid + '">' + escHtml(buildOutlineJson(cid)) + '</div>';
+      // B46: "An Agent senden" oder "Prompt kopieren" (IMMER sichtbar)
+      if (hasConnection()) {
+        html += '<button class="m06-send-btn" data-cid="' + cid + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> An Agent senden</button>';
+      } else {
+        html += '<button class="m06-send-btn m06-copy-prompt-btn" data-cid="' + cid + '" style="background:var(--blue);">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Prompt kopieren</button>';
       }
+      // Outline-Change-Warnung
+      var lastSent = cp.lastSent || '';
+      if (lastSent) {
+        html += '<div class="m06-outline-warning' + (cp._outlineChanged ? ' visible' : '') + '" data-cid="' + cid + '">\u26a0 Outline ge\u00e4ndert seit letztem Senden \u2013 erneut senden!</div>';
+      }
+      // Prompt-Vorschau
+      html += '<button class="m06-preview-toggle" data-cid="' + cid + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg> Vorschau: Was wird gesendet</button>';
+      html += '<div class="m06-preview-json" data-cid="' + cid + '">' + escHtml(buildOutlineJson(cid)) + '</div>';
 
       html += '</div>'; // close m06-card-outline
     }
 
-    // 3. Pipeline-Checkboxen (nur in Produktion, mit Erklaertext bei Kap 1)
-    if (state.config.features.pipeline && state.phase === 'produktion') {
+    // 3. Pipeline-Checkboxen (IMMER sichtbar nach B46)
+    if (state.config.features.pipeline) {
       if (isFirstAndTutorial) {
         html += '<div class="m06-tutorial-dismiss-section"><button class="m06-tutorial-dismiss-btn">Tipps ausblenden &times;</button></div>';
       }
@@ -2327,11 +2490,149 @@
     return html;
   }
 
+  // ── Hilfsfunktion: Ist Kapitel 1 Final? ──
+  function isChapter1Final() {
+    var ch1 = state.config.chapters[0];
+    return ch1 && state.progress.chapters[ch1.id] && state.progress.chapters[ch1.id]['final'];
+  }
+
+  // ── Gesperrte Zeile (Kapitel 2+, wenn Kap 1 nicht Final) ──
+  function renderLockedRow(ch, cid, pct) {
+    return '<div class="m06-chapter-collapsed m06-locked" data-cid="' + cid + '">' +
+      '<span class="m06-card-num" style="color:var(--text-dim);">' + cid + '</span>' +
+      '<span style="flex:1;font-size:0.88rem;color:var(--text-dim);opacity:0.5;">' + escHtml(ch.name || 'Kapitel ' + cid) + '</span>' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" opacity="0.4"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
+    '</div>';
+  }
+
+  // ── Tutorial-Karte (5 Schritte) ──
+  function renderTutorialCard(ch, cid, cp, pct) {
+    var html = '<div class="m06-tutorial-card" data-cid="' + cid + '">';
+
+    // Banner
+    html += '<div class="m06-tutorial-banner">' +
+      '<strong>Lerne den Ablauf hier kennen:</strong><br>' +
+      'Gehe Schritt f\u00fcr Schritt durch \u2013 danach kannst du alle anderen Kapitel bearbeiten.' +
+    '</div>';
+
+    // Step Indicator
+    html += '<div class="m06-tut-step-indicator">';
+    for (var i = 1; i <= 5; i++) {
+      var stepClass = i < state.tutorialStep ? 'done' : i === state.tutorialStep ? 'active' : '';
+      html += '<div class="m06-tut-step-ind ' + stepClass + '">Schritt ' + i + '</div>';
+    }
+    html += '</div>';
+
+    // Content
+    html += '<div class="m06-tut-content">';
+
+    if (state.tutorialStep === 1) {
+      html += '<div class="m06-tut-title">Schritt 1: Outline schreiben</div>' +
+        '<div class="m06-tut-desc">' +
+          'Schreibe Stichpunkte f\u00fcr dein Kapitel. Was ist das Thema? Welche Abschnitte gibt es?' +
+        '</div>' +
+        '<textarea id="m06-tut-outline-input" class="m06-card-outline-input" data-cid="' + cid + '" placeholder="Kapitel-Outline: Thema, Abschnitte, Lernziele...">' + escHtml(cp.outlineText || '') + '</textarea>' +
+        '<div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.5rem;">' +
+          'Mindestens 20 Zeichen, damit es weitergeht.' +
+        '</div>';
+    } else if (state.tutorialStep === 2) {
+      var prompt = buildOutlineJson(cid);
+      html += '<div class="m06-tut-title">Schritt 2: Prompt generieren</div>' +
+        '<div class="m06-tut-desc">' +
+          'Hier ist der Prompt, den deine KI zum Schreiben bekommt:' +
+        '</div>' +
+        '<div class="m06-prompt-preview">' + escHtml(prompt) + '</div>' +
+        '<div class="m06-tut-desc" style="font-size:0.8rem;color:var(--text-dim);">' +
+          'Dieser Prompt basiert auf deiner Outline und den Einstellungen oben.' +
+        '</div>';
+    } else if (state.tutorialStep === 3) {
+      html += '<div class="m06-tut-title">Schritt 3: An die KI senden</div>' +
+        '<div class="m06-tut-desc">' +
+          'W\u00e4hle eine Option:' +
+        '</div>' +
+        '<div class="m06-tut-option-box">' +
+          '<h4>\ud83d\ude80 Mit VPS (empfohlen)</h4>' +
+          '<p>Verbinde dich mit deinem VPS und sende den Prompt direkt.</p>' +
+          '<div style="display:grid;gap:0.5rem;">' +
+            '<input id="m06-tut-vps-ip" type="text" placeholder="Tailscale IP (z.B. 100.x.x.x)" style="padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:0.85rem;">' +
+            '<input id="m06-tut-vps-token" type="password" placeholder="Sync Token" style="padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:0.85rem;">' +
+            '<button id="m06-tut-vps-send" class="m06-btn m06-btn-primary" style="padding:0.5rem;">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>' +
+              'An VPS senden' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="m06-tut-option-box">' +
+          '<h4>\ud83d\udccb Ohne VPS</h4>' +
+          '<p>Kopiere den Prompt und sende ihn manuell.</p>' +
+          '<button id="m06-tut-copy-prompt" class="m06-btn m06-btn-secondary" style="width:100%;padding:0.5rem;">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+            'Prompt kopieren' +
+          '</button>' +
+        '</div>';
+    } else if (state.tutorialStep === 4) {
+      html += '<div class="m06-tut-title">Schritt 4: Qualit\u00e4t pr\u00fcfen</div>' +
+        '<div class="m06-tut-desc">' +
+          'Hake diese Punkte ab, wenn alles passt:' +
+        '</div>' +
+        '<div class="m06-tut-check-list">' +
+          '<div class="m06-tut-check-item" data-check="0"><div class="m06-tut-checkbox"></div>Die KI hat die Outline eingehalten</div>' +
+          '<div class="m06-tut-check-item" data-check="1"><div class="m06-tut-checkbox"></div>Kein Unsinns-Text oder \"Lorem Ipsum\"</div>' +
+          '<div class="m06-tut-check-item" data-check="2"><div class="m06-tut-checkbox"></div>Struktur und Formulierungen sind OK</div>' +
+          '<div class="m06-tut-check-item" data-check="3"><div class="m06-tut-checkbox"></div>Ich bin zufrieden damit</div>' +
+        '</div>' +
+        '<div class="m06-tut-desc" style="font-size:0.8rem;color:var(--text-dim);margin-top:1rem;">' +
+          'Falls nicht: Gehe einen Schritt zur\u00fcck und verbessere deine Outline.' +
+        '</div>';
+    } else if (state.tutorialStep === 5) {
+      html += '<div class="m06-tut-success">' +
+        '<div class="m06-tut-success-icon">\u2728</div>' +
+        '<h3>Gl\u00fcckwunsch!</h3>' +
+        '<div class="m06-tut-desc">Du kennst jetzt den kompletten Ablauf:</div>' +
+        '<div class="m06-tut-success-list">' +
+          '1. Outline schreiben<br>' +
+          '2. Prompt generieren<br>' +
+          '3. An KI senden<br>' +
+          '4. Qualit\u00e4t pr\u00fcfen<br>' +
+          '5. Kapitel abschlie\u00dfen' +
+        '</div>' +
+        '<div class="m06-tut-success-tip">' +
+          'Alle anderen Kapitel funktionieren genauso. Du kannst sofort loslegen!' +
+        '</div>' +
+        '<button id="m06-tut-show-all-chapters" class="m06-btn m06-btn-primary" style="width:100%;padding:0.75rem;margin-top:1rem;">' +
+          'Alle Kapitel anzeigen' +
+        '</button>' +
+      '</div>';
+    }
+
+    html += '</div>';
+
+    // Navigation
+    html += '<div class="m06-tut-nav">';
+    if (state.tutorialStep > 1) {
+      html += '<button id="m06-tut-prev" class="m06-btn m06-btn-secondary">&larr; Zur\u00fcck</button>';
+    } else {
+      html += '<div></div>';
+    }
+    if (state.tutorialStep < 5) {
+      html += '<button id="m06-tut-next" class="m06-btn m06-btn-primary">Weiter &rarr;</button>';
+    } else if (state.tutorialStep === 5) {
+      // Button wird oben in Step 5 gerendert
+    }
+    html += '</div>';
+
+    html += '</div>';
+    return html;
+  }
+
   // ── Akkordeon-Grid rendern ──
   function renderGrid() {
     var gridEl = document.getElementById('m06-chapter-grid');
     var activeCid = state.activeChapter || getActiveChapterId();
     var html = '';
+
+    // Ist Kap 1 Final?
+    var ch1Final = isChapter1Final();
 
     for (var i = 0; i < state.config.chapters.length; i++) {
       var ch = state.config.chapters[i];
@@ -2340,17 +2641,24 @@
       var pct = calcChapterPct(cid);
       var isDone = cp['final'];
       var isActive = (cid === activeCid);
-      var isFirstAndTutorial = (i === 0 && !tutorialDismissed);
 
-      if (isActive) {
-        html += renderExpandedCard(ch, cid, cp, pct, isFirstAndTutorial);
+      if (i === 0 && !ch1Final) {
+        // Kapitel 1: Tutorial-Wizard
+        html += renderTutorialCard(ch, cid, cp, pct);
+      } else if (i > 0 && !ch1Final) {
+        // Kapitel 2+: Gesperrt bis Kap 1 Final
+        html += renderLockedRow(ch, cid, pct);
+      } else if (isActive) {
+        // Normal aufgeklappt (nach Freischaltung)
+        html += renderExpandedCard(ch, cid, cp, pct, false);
       } else {
+        // Eingeklappt
         html += renderCollapsedRow(ch, cid, pct, isDone);
       }
     }
 
     // Alle fertig?
-    if (!activeCid && state.config.chapters.length > 0) {
+    if (!activeCid && state.config.chapters.length > 0 && ch1Final) {
       html += '<div class="m06-all-done">' +
         '<div class="m06-all-done-icon">\u2728</div>' +
         '<div class="m06-all-done-text">Alle Kapitel abgeschlossen!</div>' +
@@ -2361,11 +2669,12 @@
     gridEl.innerHTML = html;
     bindGridEvents();
     bindAccordionEvents();
+    bindTutorialEvents();
   }
 
   function bindAccordionEvents() {
-    // Eingeklappte Zeilen: Klick → aufklappen
-    document.querySelectorAll('.m06-chapter-collapsed').forEach(function(el) {
+    // Eingeklappte Zeilen: Klick → aufklappen (aber nicht die Locked-Zeilen)
+    document.querySelectorAll('.m06-chapter-collapsed:not(.m06-locked)').forEach(function(el) {
       el.addEventListener('click', function() {
         state.activeChapter = parseInt(this.getAttribute('data-cid'));
         renderGrid();
@@ -2393,6 +2702,131 @@
         renderGrid();
       });
     });
+  }
+
+  function bindTutorialEvents() {
+    // Tutorial-Navigation
+    var prevBtn = document.getElementById('m06-tut-prev');
+    var nextBtn = document.getElementById('m06-tut-next');
+    var showAllBtn = document.getElementById('m06-tut-show-all-chapters');
+
+    // Chapter 1 ID ermitteln
+    var ch1 = state.config.chapters[0];
+    var ch1Id = ch1 ? ch1.id : 1;
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        if (state.tutorialStep > 1) {
+          state.tutorialStep--;
+          save();
+          renderGrid();
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        // Schritt 1: Outline-L\u00e4nge pr\u00fcfen
+        if (state.tutorialStep === 1) {
+          var input = document.getElementById('m06-tut-outline-input');
+          if (!input || (input.value || '').trim().length < 20) {
+            alert('Bitte schreibe mindestens 20 Zeichen!');
+            return;
+          }
+          // Speichern
+          if (state.progress.chapters[ch1Id]) {
+            state.progress.chapters[ch1Id].outlineText = input.value;
+          }
+        }
+        // Schritt 4: Checklisten pr\u00fcfen
+        if (state.tutorialStep === 4) {
+          var checks = document.querySelectorAll('.m06-tut-check-item');
+          var allChecked = true;
+          for (var i = 0; i < checks.length; i++) {
+            if (!checks[i].classList.contains('checked')) {
+              allChecked = false;
+              break;
+            }
+          }
+          if (!allChecked) {
+            alert('Bitte alle Punkte abh\u00e4kchen, bevor du weitermachst!');
+            return;
+          }
+        }
+
+        if (state.tutorialStep < 5) {
+          state.tutorialStep++;
+          save();
+          renderGrid();
+        }
+      });
+    }
+
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', function() {
+        // Kapitel 1 als Final markieren → freischaltet alle anderen
+        if (state.progress.chapters[ch1Id]) {
+          state.progress.chapters[ch1Id].outline = true;
+          state.progress.chapters[ch1Id].draft = true;
+          state.progress.chapters[ch1Id].review = true;
+          state.progress.chapters[ch1Id].edit = true;
+          state.progress.chapters[ch1Id].final = true;
+        }
+        state.tutorialCompleted = true;
+        state.tutorialStep = 1; // Zur\u00fccksetzen f\u00fcr eventuellen Neuedit
+        save();
+        renderDashboard();
+      });
+    }
+
+    // Schritt 1: Outline-Input validierung
+    var outlineInput = document.getElementById('m06-tut-outline-input');
+    if (outlineInput) {
+      outlineInput.addEventListener('input', function() {
+        if (state.progress.chapters[ch1Id]) {
+          state.progress.chapters[ch1Id].outlineText = this.value;
+          save();
+        }
+      });
+    }
+
+    // Schritt 2: Prompt generieren (auto)
+    // (keine besonderen Events n\u00f6tig, wird inline gezeigt)
+
+    // Schritt 3: VPS-Send
+    var vpsSendBtn = document.getElementById('m06-tut-vps-send');
+    if (vpsSendBtn) {
+      vpsSendBtn.addEventListener('click', function() {
+        var ip = (document.getElementById('m06-tut-vps-ip') || {}).value || '';
+        var token = (document.getElementById('m06-tut-vps-token') || {}).value || '';
+        if (!ip || !token) {
+          alert('Bitte IP und Token eingeben!');
+          return;
+        }
+        state.connection.tailscaleIp = ip;
+        state.connection.syncToken = token;
+        save();
+        // Test Connection und Send
+        testConnection();
+      });
+    }
+
+    // Schritt 3: Copy Prompt
+    var copyPromptBtn = document.getElementById('m06-tut-copy-prompt');
+    if (copyPromptBtn) {
+      copyPromptBtn.addEventListener('click', function() {
+        var prompt = buildOutlineJson(ch1Id);
+        copyText(prompt, copyPromptBtn);
+      });
+    }
+
+    // Schritt 4: Checklisten togglen
+    var checkItems = document.querySelectorAll('.m06-tut-check-item');
+    for (var ci = 0; ci < checkItems.length; ci++) {
+      checkItems[ci].addEventListener('click', function() {
+        this.classList.toggle('checked');
+      });
+    }
   }
 
   function bindGridEvents() {
@@ -2535,6 +2969,11 @@
 
   // Add chapter
   function addChapter() {
+    // B46: Neue Kapitel nur wenn Kapitel 1 Final ist
+    if (!isChapter1Final()) {
+      alert('Bitte schlie\u00dfe zuerst das Tutorial (Kapitel 1) ab!');
+      return;
+    }
     var newId = state.config.chapters.length + 1;
     state.config.chapters.push({ id: newId, name: '' });
     state.progress.chapters[newId] = { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
@@ -3074,6 +3513,14 @@
     }
     state.meta.created = state.meta.created || new Date().toISOString();
     save();
+  }
+
+  // B46: Ensure all chapters have progress entries initialized
+  for (var initI = 0; initI < state.config.chapters.length; initI++) {
+    var initCid = state.config.chapters[initI].id;
+    if (!state.progress.chapters[initCid]) {
+      state.progress.chapters[initCid] = { outline: false, draft: false, review: false, edit: false, final: false, notes: '', outlineText: '', cost: 0 };
+    }
   }
 
   if (state.mode === 'dashboard' && state.config.chapters.length > 0) {
