@@ -2540,14 +2540,14 @@
           'Mindestens 20 Zeichen, damit es weitergeht.' +
         '</div>';
     } else if (state.tutorialStep === 2) {
-      var prompt = buildOutlineJson(cid);
+      var promptText = buildChapterPromptText(cid);
       html += '<div class="m06-tut-title">Schritt 2: Prompt generieren</div>' +
         '<div class="m06-tut-desc">' +
-          'Hier ist der Prompt, den deine KI zum Schreiben bekommt:' +
+          'Aus deiner Outline und deinen Setup-Einstellungen (Stil, Zielgruppe) wird ein fertiger Auftrag f\u00fcr die KI:' +
         '</div>' +
-        '<div class="m06-prompt-preview">' + escHtml(prompt) + '</div>' +
+        '<div class="m06-prompt-preview" style="max-height:250px;">' + escHtml(promptText) + '</div>' +
         '<div class="m06-tut-desc" style="font-size:0.8rem;color:var(--text-dim);">' +
-          'Dieser Prompt basiert auf deiner Outline und den Einstellungen oben.' +
+          'Diesen Prompt bekommt deine KI. Stil und Zielgruppe kommen aus deinem Setup \u2013 du kannst sie jederzeit \u00fcber den "Setup"-Button oben anpassen.' +
         '</div>';
     } else if (state.tutorialStep === 3) {
       html += '<div class="m06-tut-title">Schritt 3: An die KI senden</div>' +
@@ -3046,9 +3046,9 @@
   }
 
   // ══════════ CHAPTER PROMPT GENERATOR ══════════
-  function generateChapterPrompt(cid) {
+  function buildChapterPromptText(cid) {
     var chapter = state.config.chapters.find(function(ch) { return ch.id === cid; });
-    if (!chapter) return;
+    if (!chapter) return '';
     var cp = state.progress.chapters[cid] || {};
     var chName = chapter.name || ('Kapitel ' + cid);
     var outlineText = cp.outlineText || '';
@@ -3058,10 +3058,10 @@
     p += 'Kapitel ' + cid + ': ' + chName + '\n';
     p += 'Zielgruppe: ' + (state.config.audience || 'Einsteiger') + '\n\n';
 
-    if (state.agentTeam.name) {
+    if (state.agentTeam.tone) {
       var toneDesc = TONE_MAP[state.agentTeam.tone] || '';
       if (state.agentTeam.tone === 'custom') toneDesc = state.agentTeam.customTone || '';
-      p += '== STIL ==\n\n' + toneDesc + '\n\n';
+      if (toneDesc) p += '== STIL ==\n\n' + toneDesc + '\n\n';
     }
 
     p += '== ANWEISUNGEN ==\n\n';
@@ -3093,6 +3093,14 @@
     }
 
     p += '== LOS GEHTS ==\n\nSchreibe jetzt Kapitel ' + cid + '. Beginne mit einem starken Einstieg.';
+    return p;
+  }
+
+  function generateChapterPrompt(cid) {
+    var chapter = state.config.chapters.find(function(ch) { return ch.id === cid; });
+    if (!chapter) return;
+    var chName = chapter.name || ('Kapitel ' + cid);
+    var p = buildChapterPromptText(cid);
 
     document.getElementById('m06-prompt-modal-title').textContent = 'Prompt: Kapitel ' + cid + ' \u2013 ' + chName;
     document.getElementById('m06-prompt-output').textContent = p;
