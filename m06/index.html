@@ -2599,6 +2599,7 @@
           '</div>' +
           '<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;line-height:1.4;">' +
             'Die Tailscale IP und den Sync Token bekommst du bei der VPS-Einrichtung (siehe Kapitel \u00fcber das Agent-Setup in deinem Buch). Wenn du noch keinen VPS hast, nutze einfach die Option oben.' +
+            '<br><a href="#" onclick="if(typeof loadModule===\'function\')loadModule(\'m03\');return false;" style="color:var(--amber);text-decoration:underline;font-size:0.8rem;">\u2192 Daten zentral unter Meine Daten (M03) verwalten</a>' +
           '</div>' +
         '</div>';
     } else if (state.tutorialStep === 4) {
@@ -2831,6 +2832,12 @@
 
     // Schritt 2: Prompt generieren (auto)
     // (keine besonderen Events n\u00f6tig, wird inline gezeigt)
+
+    // Schritt 3: VPS-Felder vorausfuellen aus aa-settings
+    var tutIpField = document.getElementById('m06-tut-vps-ip');
+    var tutTokenField = document.getElementById('m06-tut-vps-token');
+    if (tutIpField && !tutIpField.value && state.connection.tailscaleIp) tutIpField.value = state.connection.tailscaleIp;
+    if (tutTokenField && !tutTokenField.value && state.connection.syncToken) tutTokenField.value = state.connection.syncToken;
 
     // Schritt 3: VPS-Send
     var vpsSendBtn = document.getElementById('m06-tut-vps-send');
