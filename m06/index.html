@@ -2552,27 +2552,34 @@
     } else if (state.tutorialStep === 3) {
       html += '<div class="m06-tut-title">Schritt 3: An die KI senden</div>' +
         '<div class="m06-tut-desc">' +
-          'W\u00e4hle eine Option:' +
+          'Jetzt geht dein Prompt an die KI. W\u00e4hle wie:' +
         '</div>' +
         '<div class="m06-tut-option-box">' +
-          '<h4>\ud83d\ude80 Mit VPS (empfohlen)</h4>' +
-          '<p>Verbinde dich mit deinem VPS und sende den Prompt direkt.</p>' +
+          '<h4>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+            ' Manuell kopieren</h4>' +
+          '<p>Kopiere den fertigen Prompt und f\u00fcge ihn in <strong>claude.ai</strong>, <strong>ChatGPT</strong> oder eine andere KI ein.</p>' +
+          '<button id="m06-tut-copy-prompt" class="m06-btn m06-btn-primary" style="width:100%;padding:0.5rem;">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+            'Prompt kopieren' +
+          '</button>' +
+        '</div>' +
+        '<div class="m06-tut-option-box">' +
+          '<h4>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>' +
+            ' Direkt an VPS senden</h4>' +
+          '<p>Sende den Prompt direkt an deinen KI-Agenten auf dem VPS \u2013 ohne Kopieren.</p>' +
           '<div style="display:grid;gap:0.5rem;">' +
             '<input id="m06-tut-vps-ip" type="text" placeholder="Tailscale IP (z.B. 100.x.x.x)" style="padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:0.85rem;">' +
             '<input id="m06-tut-vps-token" type="password" placeholder="Sync Token" style="padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text);font-size:0.85rem;">' +
-            '<button id="m06-tut-vps-send" class="m06-btn m06-btn-primary" style="padding:0.5rem;">' +
+            '<button id="m06-tut-vps-send" class="m06-btn m06-btn-secondary" style="padding:0.5rem;">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>' +
               'An VPS senden' +
             '</button>' +
           '</div>' +
-        '</div>' +
-        '<div class="m06-tut-option-box">' +
-          '<h4>\ud83d\udccb Ohne VPS</h4>' +
-          '<p>Kopiere den Prompt und sende ihn manuell.</p>' +
-          '<button id="m06-tut-copy-prompt" class="m06-btn m06-btn-secondary" style="width:100%;padding:0.5rem;">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;display:inline-block;margin-right:0.25rem;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-            'Prompt kopieren' +
-          '</button>' +
+          '<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;line-height:1.4;">' +
+            'Die Tailscale IP und den Sync Token bekommst du bei der VPS-Einrichtung (siehe Kapitel \u00fcber das Agent-Setup in deinem Buch). Wenn du noch keinen VPS hast, nutze einfach die Option oben.' +
+          '</div>' +
         '</div>';
     } else if (state.tutorialStep === 4) {
       html += '<div class="m06-tut-title">Schritt 4: Qualit\u00e4t pr\u00fcfen</div>' +
