@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup-Guide – OpenClaw Buch Dashboard</title>
+  <meta name="description" content="Personalisierte Terminal-Befehle fuer dein OpenClaw-Setup. Kopieren, ausfuehren, fertig – kein Tippen, kein Raten.">
+  <meta property="og:title" content="Setup-Guide – OpenClaw Buch Dashboard">
+  <meta property="og:description" content="Personalisierte Terminal-Befehle fuer dein OpenClaw-Setup. Kopieren, ausfuehren, fertig.">
+  <meta property="og:image" content="https://openclaw-buch.de/og-image.png">
+  <meta property="og:url" content="https://openclaw-buch.de/setup-guide/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://openclaw-buch.de/setup-guide/">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #12121a;
+      --amber: #f59e0b;
+      --text: #e0e0e0;
+      --text-dim: #888;
+      --border: rgba(245,158,11,0.2);
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --red: #ef4444;
+      --radius: 14px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .setup-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Header */
+    .setup-header {
+      margin-bottom: 2rem;
+    }
+
+    .setup-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--amber);
+    }
+
+    .setup-header p {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+    }
+
+    /* Warning Banner */
+    .setup-banner {
+      background-color: rgba(245, 158, 11, 0.1);
+      border: 2px solid var(--amber);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .setup-banner.hidden {
+      display: none;
+    }
+
+    .setup-banner-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      color: var(--amber);
+      margin-top: 2px;
+    }
+
+    .setup-banner-content {
+      flex: 1;
+    }
+
+    .setup-banner-text {
+      color: var(--amber);
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+
+    .setup-banner-button {
+      background-color: var(--amber);
+      color: var(--bg);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .setup-banner-button:hover {
+      opacity: 0.9;
+    }
+
+    /* Accordion */
+    .setup-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .setup-section {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .setup-section-header {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    .setup-section-header:hover {
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+
+    .setup-section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .setup-section-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      color: var(--amber);
+    }
+
+    .setup-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .setup-section-count {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      background-color: rgba(245, 158, 11, 0.1);
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+    }
+
+    .setup-section-toggle {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      color: var(--text-dim);
+      transition: transform 0.2s;
+    }
+
+    .setup-section.open .setup-section-toggle {
+      transform: rotate(180deg);
+    }
+
+    .setup-section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 1.5rem;
+    }
+
+    .setup-section.open .setup-section-content {
+      max-height: 5000px;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    /* Code Block */
+    .setup-code-block {
+      background-color: #1a1a2e;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      position: relative;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .setup-code-block code {
+      display: block;
+      white-space: pre;
+      color: var(--text);
+    }
+
+    .setup-code-copy {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background-color: var(--blue);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .setup-code-copy:hover {
+      background-color: #2563eb;
+    }
+
+    .setup-code-copy.copied {
+      background-color: var(--green);
+    }
+
+    .setup-code-copy svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Variable highlighting */
+    .setup-var-safe {
+      background-color: rgba(59, 130, 246, 0.2);
+      padding: 0 4px;
+      border-radius: 3px;
+      color: #93c5fd;
+    }
+
+    .setup-var-sensitive {
+      background-color: rgba(239, 68, 68, 0.2);
+      padding: 0 4px;
+      border-radius: 3px;
+      color: #fca5a5;
+    }
+
+    .setup-var-missing {
+      background-color: rgba(245, 158, 11, 0.2);
+      padding: 0 4px;
+      border-radius: 3px;
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    /* Snippet Title */
+    .setup-snippet-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .setup-snippet-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--amber);
+    }
+
+    /* Info Box */
+    .setup-info-box {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid var(--blue);
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: #93c5fd;
+    }
+
+    /* Action Pills */
+    .setup-action-pills {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .setup-action-pill {
+      display: inline-block;
+      background-color: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .setup-action-pill:hover {
+      background-color: rgba(59, 130, 246, 0.25);
+    }
+
+    /* Progress Bar */
+    .setup-progress {
+      margin-top: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .setup-progress-text {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .setup-progress-bar {
+      height: 8px;
+      background-color: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .setup-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--amber));
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    /* Section Content Text */
+    .setup-section-content > p {
+      color: var(--text-dim);
+      margin: 1rem 0;
+      line-height: 1.7;
+    }
+
+    .setup-section-content > p a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .setup-section-content > p a:hover {
+      color: #93c5fd;
+    }
+
+    /* Checkbox */
+    .setup-checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setup-checkbox-group:last-child {
+      border-bottom: none;
+    }
+
+    .setup-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--amber);
+    }
+
+    .setup-checkbox:checked + label {
+      color: var(--text-dim);
+      text-decoration: line-through;
+    }
+
+    .setup-checkbox + label {
+      flex: 1;
+      cursor: pointer;
+      color: var(--text);
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .setup-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .setup-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .setup-section-header {
+        padding: 1rem;
+      }
+
+      .setup-code-block {
+        font-size: 0.85rem;
+        padding: 0.75rem;
+      }
+
+      .setup-banner {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (!window.__shellLoaded) {
+      window.location.href = '/?module=setup-guide';
+    }
+  </script>
+
+  <div class="setup-container">
+    <!-- Header -->
+    <div class="setup-header">
+      <h1>Setup-Guide</h1>
+      <p>Personalisierte Terminal-Befehle – Kopieren, ausführen, fertig.</p>
+    </div>
+
+    <!-- Warning Banner -->
+    <div class="setup-banner" id="setupBanner">
+      <svg class="setup-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"></path>
+        <path d="M12 6v6"></path>
+        <path d="M12 16h.01"></path>
+      </svg>
+      <div class="setup-banner-content">
+        <div class="setup-banner-text">Trag deine Daten zuerst unter „Meine Daten" ein, damit die Befehle personalisiert werden.</div>
+        <button class="setup-banner-button" onclick="loadMeineDaten()">Meine Daten einrichten →</button>
+      </div>
+    </div>
+
+    <!-- Accordion Sections -->
+    <div class="setup-accordion">
+      <!-- Kapitel 2: Server-Setup -->
+      <div class="setup-section" data-chapter="2">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+              <path d="M2 17h20"></path>
+              <path d="M6 20h12"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 2: Server-Setup (Installation)</div>
+            <div class="setup-section-count">6 Schritte</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Verbinde dich mit deinem Server und richte OpenClaw ein.</p>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            1. SSH verbinden
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-1">ssh root@${SERVER_IP}</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            2. System aktualisieren
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-2">apt update && apt upgrade -y</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            3. Docker installieren
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-3">curl -fsSL https://get.docker.com | sh</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            4. OpenClaw starten
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-4">docker run -d --name ${CONTAINER_NAME} --restart unless-stopped -p 8443:8443 -v /docker/${CONTAINER_NAME}/data:/data ghcr.io/openclaw/openclaw:latest</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            5. Gateway prüfen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-5">docker logs ${CONTAINER_NAME} --tail 50</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            6. API-Key setzen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-2-6">docker exec ${CONTAINER_NAME} openclaw config set anthropic.apiKey "${API_KEY}"</code>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap2-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap2-1">Kapitel 2 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kapitel 3: Docker-Befehle -->
+      <div class="setup-section" data-chapter="3">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 4h12v16H6z"></path>
+              <path d="M9 8h6M9 12h6M9 16h6"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 3: Docker-Befehle</div>
+            <div class="setup-section-count">6 Befehle</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Wichtige Docker-Befehle zum Verwalten deiner OpenClaw-Container.</p>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            1. Container-Status
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-1">docker ps</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            2. Logs anzeigen (Live)
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-2">docker logs ${CONTAINER_NAME} -f</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            3. Container neustarten
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-3">docker restart ${CONTAINER_NAME}</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            4. In Container einsteigen (Bash)
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-4">docker exec -it ${CONTAINER_NAME} bash</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            5. Docker Compose starten
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-5">docker compose up -d</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            6. Docker Compose stoppen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-3-6">docker compose down</code>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap3-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap3-1">Kapitel 3 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kapitel 5: Tailscale & Multi-Channel -->
+      <div class="setup-section" data-chapter="5">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+              <path d="M12 6v6m3-3H9"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 5: Tailscale & Multi-Channel</div>
+            <div class="setup-section-count">5 Schritte</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Verbinde deinen Server über Tailscale und konfiguriere Telegram-Integration.</p>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            1. Tailscale installieren
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-1">curl -fsSL https://tailscale.com/install.sh | sh</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            2. Tailscale starten
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-2">tailscale up --hostname=${HOSTNAME}</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            3. Tailscale Status prüfen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-3">tailscale status</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            4. Telegram-Bot konfigurieren
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-4">docker exec ${CONTAINER_NAME} openclaw config set telegram.botToken "${TELEGRAM_TOKEN}"</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            5. Telegram erlaubte User
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-5">docker exec ${CONTAINER_NAME} openclaw config set telegram.allowFrom '["${TELEGRAM_ID}"]'</code>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap5-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap5-1">Kapitel 5 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kapitel 6: Security -->
+      <div class="setup-section" data-chapter="6">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 6: Security</div>
+            <div class="setup-section-count">4 Schritte</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Sichere deine OpenClaw-Installation mit Firewall und Authentifizierung.</p>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            1. Firewall einrichten
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-6-1">ufw allow 22/tcp && ufw allow 41641/udp && ufw enable</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            2. Gateway-Token setzen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-6-2">docker exec ${CONTAINER_NAME} openclaw config set gateway.token "${GATEWAY_TOKEN}"</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            3. Bind-Modus prüfen
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-6-3">docker exec ${CONTAINER_NAME} openclaw config get gateway.bind</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            4. CORS-Whitelist
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-6-4">docker exec ${CONTAINER_NAME} openclaw config set gateway.cors '["https://openclaw-buch.de"]'</code>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap6-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap6-1">Kapitel 6 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kapitel 9: Workspace-Dateien -->
+      <div class="setup-section" data-chapter="9">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+              <polyline points="13 2 13 9 20 9"></polyline>
+            </svg>
+            <div class="setup-section-title">Kapitel 9: Workspace-Dateien</div>
+            <div class="setup-section-count">2 Befehle</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Die Workspace-Dateien (SOUL.md, AGENTS.md, BOOT.md) generierst du am besten mit dem Workspace Wizard.</p>
+
+          <div class="setup-action-pills">
+            <button class="setup-action-pill" onclick="loadWorkspaceWizard()">Workspace Wizard öffnen →</button>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            1. Workspace synchronisieren (rsync)
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-9-1">rsync -avz ~/mein-buch/.openclaw/workspace/ root@${TAILSCALE_IP}:/docker/${CONTAINER_NAME}/data/.openclaw/workspace/</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            2. Permissions reparieren
+          </div>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-9-2">ssh root@${TAILSCALE_IP} 'chown -R 1000:1000 /docker/${CONTAINER_NAME}/data/.openclaw/workspace/'</code>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap9-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap9-1">Kapitel 9 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kapitel 13: Komplett-Setup Checklist -->
+      <div class="setup-section" data-chapter="13">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 13: Komplett-Setup Checklist</div>
+            <div class="setup-section-count">Alle Schritte</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+          <p style="margin-top: 1rem;">Vollständige Setup-Checkliste zum Abhaken während der Installation.</p>
+
+          <div style="margin: 2rem 0;">
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-1" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-1">System aktualisieren (apt update && apt upgrade)</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-2" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-2">Docker installieren</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-3" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-3">OpenClaw Container starten</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-4" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-4">API-Key konfigurieren</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-5" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-5">Tailscale installieren und verbinden</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-6" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-6">Firewall konfigurieren (UFW)</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-7" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-7">Gateway-Token setzen</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-8" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-8">Telegram-Integration konfigurieren</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-9" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-9">Workspace-Dateien generieren</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-10" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-10">Workspace synchronisieren</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-11" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-11">Container Logs überprüfen</label>
+            </div>
+            <div class="setup-checkbox-group">
+              <input type="checkbox" id="check-kap13-12" class="setup-checkbox" onchange="updateProgress()">
+              <label for="check-kap13-12">Dashboard im Browser testen</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="setup-progress">
+      <div class="setup-progress-text" id="progressText">0 von 0 Schritte abgeschlossen</div>
+      <div class="setup-progress-bar">
+        <div class="setup-progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === UTILITIES ===
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getSetting(key) {
+      try {
+        return localStorage.getItem('aa-settings.' + key) || '';
+      } catch {
+        return '';
+      }
+    }
+
+    function saveSetting(key, value) {
+      try {
+        localStorage.setItem('aa-setup.' + key, value);
+      } catch {}
+    }
+
+    function getSavedState(key) {
+      try {
+        return localStorage.getItem('aa-setup.' + key) === 'true';
+      } catch {
+        return false;
+      }
+    }
+
+    // === INTERPOLATION ===
+
+    function interpolate(template) {
+      const vars = {
+        'SERVER_IP': { value: getSetting('serverIp'), type: 'safe' },
+        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), type: 'safe' },
+        'HOSTNAME': { value: getSetting('tailscaleHostname'), type: 'safe' },
+        'API_KEY': { value: getSetting('apiKey'), type: 'sensitive' },
+        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), type: 'sensitive' },
+        'SYNC_TOKEN': { value: getSetting('syncToken'), type: 'sensitive' },
+        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), type: 'sensitive' },
+        'TELEGRAM_ID': { value: getSetting('telegramId'), type: 'safe' },
+        'CONTAINER_NAME': { value: getSetting('containerName'), type: 'safe' },
+      };
+
+      let result = template;
+      for (const [key, info] of Object.entries(vars)) {
+        const placeholder = '${' + key + '}';
+        if (result.includes(placeholder)) {
+          if (info.value) {
+            const cls = info.type === 'sensitive' ? 'setup-var-sensitive' : 'setup-var-safe';
+            result = result.replaceAll(placeholder, '<span class="' + cls + '">' + escapeHtml(info.value) + '</span>');
+          } else {
+            result = result.replaceAll(placeholder, '<span class="setup-var-missing">&lt;' + key + '&gt;</span>');
+          }
+        }
+      }
+      return result;
+    }
+
+    function getPlainText(template) {
+      const vars = {
+        'SERVER_IP': getSetting('serverIp'),
+        'TAILSCALE_IP': getSetting('tailscaleIp'),
+        'HOSTNAME': getSetting('tailscaleHostname'),
+        'API_KEY': getSetting('apiKey'),
+        'GATEWAY_TOKEN': getSetting('gatewayToken'),
+        'SYNC_TOKEN': getSetting('syncToken'),
+        'TELEGRAM_TOKEN': getSetting('telegramToken'),
+        'TELEGRAM_ID': getSetting('telegramId'),
+        'CONTAINER_NAME': getSetting('containerName'),
+      };
+
+      let result = template;
+      for (const [key, value] of Object.entries(vars)) {
+        const placeholder = '${' + key + '}';
+        result = result.replaceAll(placeholder, value || '');
+      }
+      return result;
+    }
+
+    // === RENDERING ===
+
+    function renderCodeBlocks() {
+      document.querySelectorAll('[id^="code-"]').forEach(el => {
+        const template = el.textContent;
+        el.innerHTML = interpolate(template);
+      });
+    }
+
+    function renderCodeBlock(el) {
+      const template = el.textContent;
+      el.innerHTML = interpolate(template);
+    }
+
+    // === BANNER ===
+
+    function updateBanner() {
+      const banner = document.getElementById('setupBanner');
+      const serverIp = getSetting('serverIp');
+      if (serverIp && serverIp.trim()) {
+        banner.classList.add('hidden');
+      } else {
+        banner.classList.remove('hidden');
+      }
+    }
+
+    function loadMeineDaten() {
+      if (window.loadModule) {
+        window.loadModule('meine-daten');
+      } else {
+        window.location.href = '../meine-daten/';
+      }
+    }
+
+    function loadWorkspaceWizard() {
+      if (window.loadModule) {
+        window.loadModule('workspace-wizard');
+      }
+    }
+
+    // === ACCORDION ===
+
+    function toggleSection(header) {
+      const section = header.closest('.setup-section');
+      section.classList.toggle('open');
+    }
+
+    // === PROGRESS ===
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.setup-checkbox');
+      const checked = document.querySelectorAll('.setup-checkbox:checked').length;
+      const total = checkboxes.length;
+
+      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressText').textContent = checked + ' von ' + total + ' Schritte abgeschlossen';
+
+      // Save state
+      checkboxes.forEach((cb, i) => {
+        saveSetting('checkbox-' + i, cb.checked);
+      });
+    }
+
+    function restoreProgress() {
+      const checkboxes = document.querySelectorAll('.setup-checkbox');
+      checkboxes.forEach((cb, i) => {
+        const saved = getSavedState('checkbox-' + i);
+        cb.checked = saved;
+      });
+      updateProgress();
+    }
+
+    // === COPY ===
+
+    function copyCode(btn) {
+      const codeEl = btn.nextElementSibling;
+      const plainText = getPlainText(codeEl.textContent);
+
+      navigator.clipboard.writeText(plainText).then(() => {
+        const icon = btn.querySelector('svg');
+        const originalSvg = icon.outerHTML;
+
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = originalSvg;
+        }, 1500);
+      });
+    }
+
+    // === INIT ===
+
+    function init() {
+      renderCodeBlocks();
+      updateBanner();
+      restoreProgress();
+
+      // Listen for storage changes
+      window.addEventListener('storage', () => {
+        renderCodeBlocks();
+        updateBanner();
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

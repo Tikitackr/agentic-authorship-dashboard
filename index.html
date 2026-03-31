@@ -6,16 +6,16 @@
   <title>OpenClaw Buch – Dashboard für deine KI-Buchproduktion</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Das interaktive Begleit-Dashboard zum OpenClaw-Buch. 12 Module: Pipeline-Tracker, KI-Prompt-Generator, Kostenrechner, Workspace-Wizard und mehr. Dein Sachbuch mit KI-Agenten schreiben, lektorieren und veröffentlichen.">
+  <meta name="description" content="Das interaktive Begleit-Dashboard zum OpenClaw-Buch. 13 Module: Setup-Guide, KI-Prompt-Generator, Kostenrechner, Workspace-Wizard und mehr. Dein Sachbuch mit KI-Agenten schreiben, lektorieren und veröffentlichen.">
   <meta name="keywords" content="OpenClaw Buch, Buch schreiben mit KI, KI-Agenten Buchproduktion, Amazon KDP KI, Sachbuch mit KI, Self-Publishing KI, Dashboard Buchproduktion">
   <meta name="author" content="Thomas Iburg">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://openclaw-buch.de">
 
-  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="OpenClaw Buch – Dashboard für deine KI-Buchproduktion">
-  <meta property="og:description" content="12 Module für deine KI-gestützte Buchproduktion: Pipeline-Tracker, Prompt-Generator, Kostenrechner und mehr. Dein Sachbuch mit KI-Agenten schreiben und auf Amazon veröffentlichen.">
+  <meta property="og:description" content="13 Module für deine KI-gestützte Buchproduktion: Setup-Guide, Prompt-Generator, Kostenrechner und mehr. Dein Sachbuch mit KI-Agenten schreiben und auf Amazon veröffentlichen.">
   <meta property="og:url" content="https://openclaw-buch.de">
   <meta property="og:image" content="https://openclaw-buch.de/og-image.png">
   <meta property="og:image:width" content="1200">
@@ -27,9 +27,10 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="OpenClaw Buch – Dashboard für deine KI-Buchproduktion">
-  <meta name="twitter:description" content="12 Module für deine KI-gestützte Buchproduktion. Pipeline-Tracker, Prompt-Generator, Kostenrechner – dein Sachbuch mit KI-Agenten schreiben.">
+  <meta name="twitter:description" content="13 Module für deine KI-gestützte Buchproduktion. Setup-Guide, Prompt-Generator, Kostenrechner – dein Sachbuch mit KI-Agenten schreiben.">
   <meta name="twitter:image" content="https://openclaw-buch.de/og-image.png">
   <meta name="twitter:image:alt" content="OpenClaw Buch – Dashboard für deine KI-Buchproduktion">
+
   <style>
     :root {
       --bg: #0a0a0f;
@@ -61,7 +62,7 @@
       line-height: 1.5;
     }
 
-    /* ── Header ── */
+    /* Header */
     .header {
       padding: 2rem 1.5rem 1rem;
       max-width: 1100px;
@@ -101,38 +102,7 @@
       margin-left: 3.3rem;
     }
 
-    /* ── Status Bar ── */
-    .status-bar {
-      max-width: 1100px;
-      margin: 1.5rem auto 0;
-      padding: 0 1.5rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .status-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .status-pill .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-    }
-
-    .status-pill strong { color: var(--text); font-weight: 600; }
-
-    /* ── Section Dividers ── */
+    /* Section Dividers */
     .section-label {
       max-width: 1100px;
       margin: 2rem auto 0.75rem;
@@ -144,7 +114,7 @@
       font-weight: 600;
     }
 
-    /* ── Module Grid ── */
+    /* Module Grid */
     .grid {
       max-width: 1100px;
       margin: 0 auto;
@@ -180,15 +150,7 @@
     .card-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-    }
-
-    .card-id {
-      font-size: 0.65rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--amber);
-      font-weight: 600;
+      justify-content: flex-end;
     }
 
     .card-badge {
@@ -203,6 +165,7 @@
     .badge-ready { background: rgba(34, 197, 94, 0.15); color: var(--green); }
     .badge-dev { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
     .badge-new { background: var(--amber-dim); color: var(--amber); }
+    .badge-soon { background: rgba(136, 136, 136, 0.15); color: var(--text-dim); }
 
     .card-icon {
       width: 36px;
@@ -216,7 +179,6 @@
 
     .card-icon svg { width: 20px; height: 20px; }
 
-    /* Icon-Farben passend zum alten Dashboard */
     .icon-blue    { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
     .icon-green   { background: rgba(34, 197, 94, 0.15); color: var(--green); }
     .icon-cyan    { background: rgba(34, 211, 238, 0.15); color: var(--cyan); }
@@ -238,7 +200,7 @@
       flex-grow: 1;
     }
 
-    /* ── Content Container ── */
+    /* Content Container */
     #content-area {
       display: none;
       max-width: 1100px;
@@ -270,7 +232,7 @@
 
     .back-btn svg { width: 14px; height: 14px; }
 
-    /* ── Footer ── */
+    /* Footer */
     .footer {
       max-width: 1100px;
       margin: 3rem auto 2rem;
@@ -284,12 +246,11 @@
     .footer a { color: var(--amber); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
 
-    /* ── Responsive ── */
+    /* Responsive */
     @media (max-width: 640px) {
       .header { padding: 1.5rem 1rem 0.75rem; }
       .header h1 { font-size: 1.2rem; }
       .subtitle { margin-left: 0; margin-top: 0.5rem; }
-      .status-bar { padding: 0 1rem; }
       .section-label { padding: 0 1rem; }
       .grid { padding: 0 1rem; grid-template-columns: 1fr; }
       .header-top { flex-wrap: wrap; }
@@ -310,87 +271,51 @@
     <p class="subtitle">Dein Cockpit f&uuml;r OpenClaw &mdash; nicht der Autopilot</p>
   </header>
 
-  <!-- Status Bar -->
-  <div class="status-bar" id="statusBar">
-    <div class="status-pill">
-      <span class="dot"></span>
-      Buch: <strong id="bookProgress">100%</strong>
-    </div>
-    <div class="status-pill">
-      Tasks: <strong id="taskCount">&ndash;</strong>
-    </div>
-    <div class="status-pill">
-      Module: <strong>12 / 12</strong> aktiv
-    </div>
-  </div>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Gruppe 1: Dein Buch (5 Module)             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section-label" data-home>Dein Buch</div>
+  <div class="grid" data-home>
 
-  <!-- Projekt-Module (M1-M6) -->
-  <div class="section-label">Projekt &amp; Verwaltung</div>
-  <div class="grid">
-
-    <a class="card" href="m01/">
+    <!-- Dein Fahrplan -->
+    <a class="card" data-module="fahrplan">
       <div class="card-header">
-        <span class="card-id">M01</span>
-        <span class="card-badge badge-ready">Bereit</span>
+        <span class="card-badge badge-new">Neu</span>
       </div>
       <div class="card-icon icon-blue">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
       </div>
-      <h2>Projekt&uuml;bersicht</h2>
-      <p>Status auf einen Blick: Kapitel-Fortschritt, offene Punkte, n&auml;chste Schritte.</p>
+      <h2>Dein Fahrplan</h2>
+      <p>Wo stehst du im Buch? Was kommt als n&auml;chstes? Dein Fortschritt auf einen Blick.</p>
     </a>
 
-    <a class="card" href="m02/">
+    <!-- Meine Daten -->
+    <a class="card" data-module="meine-daten">
       <div class="card-header">
-        <span class="card-id">M02</span>
-        <span class="card-badge badge-ready">Bereit</span>
-      </div>
-      <div class="card-icon icon-green">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      </div>
-      <h2>Task-Tracking</h2>
-      <p>Alle Aufgaben verwalten. Filtern, priorisieren, abhaken. Kompakt und schnell.</p>
-    </a>
-
-    <a class="card" href="m03/">
-      <div class="card-header">
-        <span class="card-id">M03</span>
         <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-amber">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
       <h2>Meine Daten</h2>
-      <p>Verbindungsdaten, Name, Browser-Einstellungen. Alle Module lesen von hier.</p>
+      <p>Server-IP, API-Key, Tailscale &ndash; einmal eintragen, alle Module personalisiert.</p>
     </a>
 
-    <a class="card" href="m04/">
+    <!-- Setup-Guide -->
+    <a class="card" data-module="setup-guide">
       <div class="card-header">
-        <span class="card-id">M04</span>
-        <span class="card-badge badge-ready">Bereit</span>
+        <span class="card-badge badge-new">Neu</span>
       </div>
-      <div class="card-icon icon-purple">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <div class="card-icon icon-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
       </div>
-      <h2>Content-Pipeline</h2>
-      <p>Kapitel durch die Pipeline verfolgen: Entwurf &rarr; Review &rarr; Fix &rarr; Final.</p>
+      <h2>Setup-Guide</h2>
+      <p>Personalisierte Terminal-Befehle f&uuml;r dein OpenClaw-Setup. Kopieren, einf&uuml;gen, fertig.</p>
     </a>
 
-    <a class="card" href="m05/">
+    <!-- Buch-Dashboard -->
+    <a class="card" data-module="buch-dashboard">
       <div class="card-header">
-        <span class="card-id">M05</span>
-        <span class="card-badge badge-ready">Bereit</span>
-      </div>
-      <div class="card-icon icon-pink">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      </div>
-      <h2>Publishing / KDP</h2>
-      <p>Amazon KDP Workflow: ISBN, Preis, Metadaten, Upload-Status, Checkliste.</p>
-    </a>
-
-    <a class="card" href="m06/">
-      <div class="card-header">
-        <span class="card-id">M06</span>
         <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-amber">
@@ -400,28 +325,42 @@
       <p>Buchidee, Kapitelstruktur, Prompt-Generator. Von der Idee zum fertigen Buch.</p>
     </a>
 
+    <!-- Publishing / KDP -->
+    <a class="card" data-module="publishing">
+      <div class="card-header">
+        <span class="card-badge badge-ready">Bereit</span>
+      </div>
+      <div class="card-icon icon-pink">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
+      <h2>Publishing / KDP</h2>
+      <p>Dein Buch auf Amazon: KDP-Checkliste, Royalty-Rechner, Upload-Schritte.</p>
+    </a>
+
   </div>
 
-  <!-- Leser-Tools (M7-M12) -->
-  <div class="section-label">Leser-Werkzeuge</div>
-  <div class="grid">
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Gruppe 2: OpenClaw-Werkzeuge (8 Module)    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section-label" data-home>OpenClaw-Werkzeuge</div>
+  <div class="grid" data-home>
 
-    <a class="card" href="m07/">
+    <!-- Workspace Wizard -->
+    <a class="card" data-module="workspace-wizard">
       <div class="card-header">
-        <span class="card-id">M07</span>
-        <span class="card-badge badge-new">Neu</span>
+        <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-cyan">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"></path><path d="m14 7 3 3"></path><path d="M5 6v4"></path><path d="M19 14v4"></path><path d="M10 2v2"></path><path d="M7 8H3"></path><path d="M21 16h-4"></path><path d="M11 3H9"></path></svg>
       </div>
       <h2>Workspace Wizard</h2>
-      <p>8 Fragen beantworten &rarr; alle Workspace-Dateien generiert. SOUL.md, AGENTS.md, TOOLS.md &mdash; fertig.</p>
+      <p>8 Fragen beantworten &rarr; alle Workspace-Dateien generiert. SOUL.md, AGENTS.md &mdash; fertig.</p>
     </a>
 
-    <a class="card" href="m08/">
+    <!-- Config Builder -->
+    <a class="card" data-module="config-builder">
       <div class="card-header">
-        <span class="card-id">M08</span>
-        <span class="card-badge badge-new">Neu</span>
+        <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-blue">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -430,10 +369,10 @@
       <p>openclaw.json visuell zusammenklicken. Modelle, Channels, Heartbeat &mdash; kein JSON tippen.</p>
     </a>
 
-    <a class="card" href="m09/">
+    <!-- Cost Calculator -->
+    <a class="card" data-module="cost-calculator">
       <div class="card-header">
-        <span class="card-id">M09</span>
-        <span class="card-badge badge-new">Neu</span>
+        <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-green">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -442,45 +381,69 @@
       <p>Provider vergleichen, monatliche Kosten kalkulieren, Spar-Tipps entdecken.</p>
     </a>
 
-    <a class="card" href="m10/">
+    <!-- SOUL.md Gallery -->
+    <a class="card" data-module="soul-gallery">
       <div class="card-header">
-        <span class="card-id">M10</span>
         <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-purple">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>
       </div>
       <h2>SOUL.md Gallery</h2>
-      <p>20 fertige Templates in 6 Kategorien. Durchstoebern, ansehen, kopieren. Vom Lobster-Coach bis zum API-Architekten.</p>
+      <p>20 fertige Templates in 6 Kategorien. Durchst&ouml;bern, ansehen, kopieren.</p>
     </a>
 
-    <a class="card" href="m11/">
+    <!-- CLI-Referenz -->
+    <a class="card" data-module="cli-referenz">
       <div class="card-header">
-        <span class="card-id">M11</span>
         <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-blue">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
       </div>
-      <h2>CLI Referenz</h2>
-      <p>50+ CLI-Befehle, 20 Slash-Commands, 34 Code-Snippets, 10 Troubleshooting-Fixes. Alles durchsuchbar.</p>
+      <h2>CLI-Referenz</h2>
+      <p>50+ CLI-Befehle, 20 Slash-Commands, 34 Code-Snippets. Alles durchsuchbar.</p>
     </a>
 
-    <a class="card" href="m12/">
+    <!-- System Status -->
+    <a class="card" data-module="system-status">
       <div class="card-header">
-        <span class="card-id">M12</span>
-        <span class="card-badge badge-new">Neu</span>
+        <span class="card-badge badge-ready">Bereit</span>
       </div>
       <div class="card-icon icon-red">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
       </div>
-      <h2>Status Dashboard</h2>
+      <h2>System Status</h2>
       <p>Gateway live &uuml;berwachen: CPU, RAM, Channel-Status, Kosten. Demo-Modus inklusive.</p>
+    </a>
+
+    <!-- Skill Explorer (Platzhalter) -->
+    <a class="card" data-module="skill-explorer">
+      <div class="card-header">
+        <span class="card-badge badge-soon">Bald</span>
+      </div>
+      <div class="card-icon icon-cyan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+      <h2>Skill Explorer</h2>
+      <p>Skills entdecken, installieren und eigene bauen. 40+ Skills nach Kategorie.</p>
+    </a>
+
+    <!-- Template Packs (Platzhalter) -->
+    <a class="card" data-module="template-packs">
+      <div class="card-header">
+        <span class="card-badge badge-soon">Bald</span>
+      </div>
+      <div class="card-icon icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+      </div>
+      <h2>Template Packs</h2>
+      <p>Fertige Starter-Bundles: SOUL.md + AGENTS.md + Config &ndash; sofort einsetzbar.</p>
     </a>
 
   </div>
 
-  <!-- Content Area -->
+  <!-- Content Area (fuer Module per fetch) -->
   <div id="content-area"></div>
 
   <!-- Footer -->
@@ -497,7 +460,10 @@
   <script src="shared/cowan.js"></script>
 
   <script>
-    // ── Shared Storage Helper ──
+    // Shell ist geladen – Module pruefen dieses Flag fuer Standalone-Redirect
+    window.__shellLoaded = true;
+
+    // ── Storage Helper ──
     const storage = {
       get(key) {
         try { return JSON.parse(localStorage.getItem(key)); }
@@ -517,104 +483,108 @@
       }
     };
 
-    // ── Status Bar Updates ──
-    function updateStatus() {
-      const progress = storage.get('overview:bookProgress');
-      if (progress !== null) {
-        document.getElementById('bookProgress').textContent = progress + '%';
-      }
-      const tasks = storage.get('tasks:items');
-      if (tasks && Array.isArray(tasks)) {
-        const open = tasks.filter(t => t.status !== 'done').length;
-        document.getElementById('taskCount').textContent = open + ' offen';
-      }
-    }
-
     // ── SVG fuer Zurueck-Button ──
     const chevronLeftSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
 
     // ── Shell-in-Shell: Modul-Navigation per fetch() ──
     const contentArea = document.getElementById('content-area');
-    const homeElements = [
-      ...document.querySelectorAll('.section-label'),
-      ...document.querySelectorAll('.grid'),
-    ];
+    const homeElements = document.querySelectorAll('[data-home], .header, .footer');
 
     function showHome() {
-      homeElements.forEach(el => el.style.display = '');
+      homeElements.forEach(function(el) { el.style.display = ''; });
       contentArea.style.display = 'none';
       contentArea.innerHTML = '';
-      document.querySelector('.footer').style.display = '';
       storage.set('shell:lastModule', 'shell');
       history.pushState({ module: null }, '', window.location.pathname);
     }
 
-    function loadModule(moduleId) {
-      const url = moduleId + '/index.html';
-      fetch(url).then(r => {
+    // Globale Funktion – Module koennen loadModule('xyz') aufrufen
+    window.loadModule = function loadModule(moduleId) {
+      var url = moduleId + '/index.html';
+      fetch(url).then(function(r) {
         if (!r.ok) throw new Error('Modul nicht gefunden');
         return r.text();
-      }).then(html => {
-        homeElements.forEach(el => el.style.display = 'none');
-        document.querySelector('.footer').style.display = 'none';
+      }).then(function(html) {
+        homeElements.forEach(function(el) { el.style.display = 'none'; });
 
         contentArea.style.display = 'block';
         contentArea.innerHTML = '';
 
-        const backBtn = document.createElement('button');
+        // Zurueck-Button
+        var backBtn = document.createElement('button');
         backBtn.className = 'back-btn';
-        backBtn.innerHTML = chevronLeftSvg + ' Zurueck zur Uebersicht';
+        backBtn.innerHTML = chevronLeftSvg + ' Zur&uuml;ck zur &Uuml;bersicht';
         backBtn.onclick = showHome;
         contentArea.appendChild(backBtn);
 
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = html;
+        // Falls Modul ein vollstaendiges HTML-Dokument ist: Body extrahieren
+        var bodyContent = html;
+        if (html.indexOf('<!DOCTYPE') !== -1 || html.indexOf('<html') !== -1) {
+          var parser = new DOMParser();
+          var doc = parser.parseFromString(html, 'text/html');
+          // Nur Body-Inhalt nehmen (ohne Redirect-Script)
+          var body = doc.body;
+          bodyContent = '';
+          Array.from(body.children).forEach(function(child) {
+            bodyContent += child.outerHTML;
+          });
+        }
 
-        const scripts = wrapper.querySelectorAll('script');
-        const fragment = document.createDocumentFragment();
-        Array.from(wrapper.children).forEach(child => {
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = bodyContent;
+
+        // Scripts separat behandeln (innerHTML fuehrt Scripts nicht aus)
+        var scripts = wrapper.querySelectorAll('script');
+        var fragment = document.createDocumentFragment();
+        Array.from(wrapper.children).forEach(function(child) {
           if (child.tagName !== 'SCRIPT') fragment.appendChild(child.cloneNode(true));
         });
         contentArea.appendChild(fragment);
 
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement('script');
+        scripts.forEach(function(oldScript) {
+          // Redirect-Script ueberspringen (enthaelt __shellLoaded)
+          if (oldScript.textContent && oldScript.textContent.indexOf('__shellLoaded') !== -1) return;
+          var newScript = document.createElement('script');
           if (oldScript.src) { newScript.src = oldScript.src; }
           else { newScript.textContent = oldScript.textContent; }
           contentArea.appendChild(newScript);
         });
 
         storage.set('shell:lastModule', moduleId);
-        history.pushState({ module: moduleId }, '', '#' + moduleId);
+        history.pushState({ module: moduleId }, '', '?module=' + moduleId);
         window.scrollTo(0, 0);
-      }).catch(err => {
+      }).catch(function(err) {
         contentArea.style.display = 'block';
-        contentArea.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)"><p style="font-size:1.2rem;margin-bottom:0.5rem">Modul <strong style="color:var(--amber)">' + moduleId.toUpperCase() + '</strong> ist noch in Entwicklung.</p><button class="back-btn" onclick="showHome()">' + chevronLeftSvg + ' Zurueck</button></div>';
-        homeElements.forEach(el => el.style.display = 'none');
-        document.querySelector('.footer').style.display = 'none';
+        contentArea.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)"><p style="font-size:1.2rem;margin-bottom:0.5rem">Modul <strong style="color:var(--amber)">' + moduleId + '</strong> ist noch in Entwicklung.</p><button class="back-btn" onclick="showHome()">' + chevronLeftSvg + ' Zur&uuml;ck</button></div>';
+        homeElements.forEach(function(el) { el.style.display = 'none'; });
       });
-    }
+    };
 
-    document.querySelectorAll('.card[href]').forEach(card => {
+    // ── Card-Klick-Handler ──
+    document.querySelectorAll('.card[data-module]').forEach(function(card) {
       card.addEventListener('click', function(e) {
         e.preventDefault();
-        const href = this.getAttribute('href').replace(/\/$/, '');
-        loadModule(href);
+        loadModule(this.getAttribute('data-module'));
       });
     });
 
+    // ── Browser-History ──
     window.addEventListener('popstate', function(e) {
       if (e.state && e.state.module) { loadModule(e.state.module); }
       else { showHome(); }
     });
 
-    if (window.location.hash) {
-      const mod = window.location.hash.slice(1);
+    // ── Initial: ?module= oder #hash auswerten ──
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var mod = params.get('module');
+      if (!mod && window.location.hash) {
+        mod = window.location.hash.slice(1);
+      }
       if (mod) loadModule(mod);
-    }
+    })();
 
     storage.set('shell:lastModule', 'shell');
-    updateStatus();
   </script>
 
 </body>

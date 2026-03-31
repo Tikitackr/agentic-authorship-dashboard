@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buch mit KI schreiben – OpenClaw Buch Dashboard</title>
+  <meta name="description" content="Dein eigenes Buch mit KI-Agenten planen und produzieren. Wizard, Kapitel-Tracker und Prompt-Generator für OpenClaw und Claude.">
+  <meta property="og:title" content="Buch mit KI schreiben – OpenClaw Buch Dashboard">
+  <meta property="og:description" content="Dein eigenes Buch mit KI-Agenten planen und produzieren. Wizard, Kapitel-Tracker und Prompt-Generator für OpenClaw und Claude.">
+  <meta property="og:image" content="https://openclaw-buch.de/og-image.png">
+  <meta property="og:url" content="https://openclaw-buch.de/buch-dashboard/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://openclaw-buch.de/buch-dashboard/">
+</head>
+<body>
+  <script>
+    if (!window.__shellLoaded) {
+      window.location.href = '/?module=buch-dashboard';
+    }
+  </script>
 <!-- M06: Dein Buch-Dashboard — Agentic Authorship Dashboard -->
 <style>
   /* Fallback: CSS-Variablen fuer Standalone-Ansicht (Shell ueberschreibt diese) */
@@ -1779,7 +1800,7 @@
       <div class="m06-conn-desc">
         Damit dein Dashboard Outlines direkt an deinen OpenClaw-Agent senden kann,
         brauchen wir zwei Angaben. Beides findest du in deinem Cowan-Setup (Kapitel&nbsp;13).
-        <br><span style="font-size:0.78rem;color:var(--text-dim);margin-top:0.3rem;display:inline-block;">Tipp: Daten zentral unter <a href="#" onclick="if(typeof loadModule==='function')loadModule('m03');else window.location.href='../m03/';return false;" style="color:var(--amber);text-decoration:underline;">Meine Daten (M03)</a> verwalten &ndash; alle Module lesen von dort.</span>
+        <br><span style="font-size:0.78rem;color:var(--text-dim);margin-top:0.3rem;display:inline-block;">Tipp: Daten zentral unter <a href="#" onclick="if(typeof loadModule==='function')loadModule('meine-daten');else window.location.href='../meine-daten/';return false;" style="color:var(--amber);text-decoration:underline;">Meine Daten</a> verwalten &ndash; alle Module lesen von dort.</span>
       </div>
       <div class="m06-conn-fields">
         <div class="m06-conn-field">
@@ -2599,7 +2620,7 @@
           '</div>' +
           '<div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;line-height:1.4;">' +
             'Die Tailscale IP und den Sync Token bekommst du bei der VPS-Einrichtung (siehe Kapitel \u00fcber das Agent-Setup in deinem Buch). Wenn du noch keinen VPS hast, nutze einfach die Option oben.' +
-            '<br><a href="#" onclick="if(typeof loadModule===\'function\')loadModule(\'m03\');return false;" style="color:var(--amber);text-decoration:underline;font-size:0.8rem;">\u2192 Daten zentral unter Meine Daten (M03) verwalten</a>' +
+            '<br><a href="#" onclick="if(typeof loadModule===\'function\')loadModule(\'m03\');return false;" style="color:var(--amber);text-decoration:underline;font-size:0.8rem;">\u2192 Daten zentral unter Meine Daten verwalten</a>' +
           '</div>' +
         '</div>';
     } else if (state.tutorialStep === 4) {
@@ -3595,3 +3616,6 @@
 
 })();
 </script>
+
+</body>
+</html>
