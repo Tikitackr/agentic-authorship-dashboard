@@ -1,6 +1,6 @@
 /* ==========================================================
-   Cowan Widget – Vanilla JS (Agentic Authorship Dashboard)
-   KI-Wissensassistent fuer "Agentic Authorship"
+   Cowan Widget – Vanilla JS (OpenClaw Buch Dashboard)
+   KI-Wissensassistent fuer das OpenClaw Buch
    Floating-Widget, laeuft in der Shell (index.html)
    ========================================================== */
 
@@ -33,7 +33,7 @@
 
   var WELCOME_MSG = {
     role: 'assistant',
-    content: 'Hallo! Ich bin **Cowan**, dein Buch-Assistent fuer "Agentic Authorship". Stelle mir eine Frage zum Buch, zu OpenClaw oder Claude – ich helfe dir gerne weiter!',
+    content: 'Hallo! Ich bin **Cowan**, dein Buch-Assistent. Stelle mir eine Frage zum Buch, zu OpenClaw oder Claude \u2013 ich helfe dir gerne weiter!',
     isWelcome: true,
     sourceIds: [],
   };
@@ -138,7 +138,7 @@
       chapterSection = '\n\n## Aktueller Kontext des Lesers\nDer Leser arbeitet an Kapitel ' + ch.number + ': ' + ch.title + ' (Teil ' + ch.part + ').\nFortschritt: ' + pr.done + '/' + pr.total + (done.length ? ' (' + done.join(', ') + ' erledigt)' : '') + '.' + (open.length ? '\nNaechster Schritt: ' + open[0] + '.' : '');
     }
 
-    return 'Du bist Cowan - Die Buch-Instanz, der KI-Wissensassistent fuer das Buch "Agentic Authorship: Mit Claude und OpenClaw zur automatisierten Buchfabrik".\n\n## Deine Aufgabe\nDu hilfst Lesern, Fragen zum Buch, zu OpenClaw, zur Multi-Agent-Pipeline, zur Claude-API und zur KI-gestuetzten Bucherstellung zu beantworten.\nDu basierst deine Antworten ausschliesslich auf der bereitgestellten Wissensbasis.\n\n## Wissensbasis\n\n' + chunkSection + chapterSection + '\n\n## Antwortregeln\n1. Beantworte Fragen NUR basierend auf den Wissensbausteinen\n2. Zitiere verwendete Quellen am Ende deiner Antwort in exakt diesem Format:\n   ---QUELLEN---\n   chunk-id-hier\n   ---QUELLEN-ENDE---\n3. Wenn die Wissensbasis keine Antwort enthaelt, sage das ehrlich\n4. Antworte immer auf Deutsch\n5. Halte Antworten praxisnah und konkret\n6. Gib IMMER den ---QUELLEN--- Block am Ende an';
+    return 'Du bist Cowan - Die Buch-Instanz, der KI-Wissensassistent fuer das OpenClaw Buch (KI-gestuetzte Buchproduktion mit Claude und OpenClaw).\n\n## Deine Aufgabe\nDu hilfst Lesern, Fragen zum Buch, zu OpenClaw, zur Multi-Agent-Pipeline, zur Claude-API und zur KI-gestuetzten Bucherstellung zu beantworten.\nDu basierst deine Antworten ausschliesslich auf der bereitgestellten Wissensbasis.\n\n## Wissensbasis\n\n' + chunkSection + chapterSection + '\n\n## Antwortregeln\n1. Beantworte Fragen NUR basierend auf den Wissensbausteinen\n2. Zitiere verwendete Quellen am Ende deiner Antwort in exakt diesem Format:\n   ---QUELLEN---\n   chunk-id-hier\n   ---QUELLEN-ENDE---\n3. Wenn die Wissensbasis keine Antwort enthaelt, sage das ehrlich\n4. Antworte immer auf Deutsch\n5. Halte Antworten praxisnah und konkret\n6. Gib IMMER den ---QUELLEN--- Block am Ende an';
   }
 
   function formatCost(cost) {

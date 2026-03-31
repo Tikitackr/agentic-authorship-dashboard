@@ -1,4 +1,4 @@
-<!-- M08: Config Builder — Agentic Authorship Dashboard -->
+<!-- M08: Config Builder — OpenClaw Buch Dashboard -->
 <style>
   .m08 { max-width: 100%; }
 
@@ -873,7 +873,7 @@
     var validationEl = document.getElementById('m08-validation');
 
     // Render JSON5 with syntax highlighting
-    var comment = '<span class="m08-comment">// openclaw.json — generiert mit dem Agentic Authorship Dashboard</span>\n';
+    var comment = '<span class="m08-comment">// openclaw.json — generiert mit dem OpenClaw Buch Dashboard</span>\n';
     comment += '<span class="m08-comment">// Basis: OpenClaw v2026.3.23</span>\n';
     previewEl.innerHTML = comment + toJSON5(config);
 
@@ -899,7 +899,7 @@
   document.getElementById('m08-copy-btn').addEventListener('click', function() {
     var config = buildConfig();
     var json = JSON.stringify(config, null, 2);
-    var comment = '// openclaw.json — generiert mit dem Agentic Authorship Dashboard\n// Basis: OpenClaw v2026.3.23\n';
+    var comment = '// openclaw.json — generiert mit dem OpenClaw Buch Dashboard\n// Basis: OpenClaw v2026.3.23\n';
     var btn = this;
     copyText(comment + json, btn);
   });

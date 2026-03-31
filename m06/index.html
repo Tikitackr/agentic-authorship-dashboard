@@ -2100,7 +2100,7 @@
     var toneDesc = TONE_MAP[state.agentTeam.tone] || '';
     if (state.agentTeam.tone === 'custom') toneDesc = state.agentTeam.customTone || 'Eigener Stil.';
 
-    state.agentTeam.soul = '# SOUL.md \u2014 ' + name + '\n\n> Generiert mit dem Agentic Authorship Dashboard\n\n---\n\n## Wer bin ich?\n\nIch bin **' + name + '**.\n\n## Meine Zielgruppe\n\n' + audience + '\n\n## Mein Stil\n\n' + toneDesc + '\n\n## Leitprinzip\n\nIch bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
+    state.agentTeam.soul = '# SOUL.md \u2014 ' + name + '\n\n> Generiert mit dem OpenClaw Buch Dashboard\n\n---\n\n## Wer bin ich?\n\nIch bin **' + name + '**.\n\n## Meine Zielgruppe\n\n' + audience + '\n\n## Mein Stil\n\n' + toneDesc + '\n\n## Leitprinzip\n\nIch bin Werkzeug, nicht Ersatz. Mein Ziel: Den Menschen befaehigen, nicht abhaengig machen.\n';
 
     var activeRoles = [];
     for (var i = 0; i < ROLES.length; i++) { if (state.agentTeam.selectedRoles[ROLES[i].id]) activeRoles.push(ROLES[i]); }
