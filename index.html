@@ -517,15 +517,18 @@
         backBtn.onclick = showHome;
         contentArea.appendChild(backBtn);
 
-        // Falls Modul ein vollstaendiges HTML-Dokument ist: Body extrahieren
+        // Falls Modul ein vollstaendiges HTML-Dokument ist: Head-Styles + Body extrahieren
         var bodyContent = html;
         if (html.indexOf('<!DOCTYPE') !== -1 || html.indexOf('<html') !== -1) {
           var parser = new DOMParser();
           var doc = parser.parseFromString(html, 'text/html');
-          // Nur Body-Inhalt nehmen (ohne Redirect-Script)
-          var body = doc.body;
           bodyContent = '';
-          Array.from(body.children).forEach(function(child) {
+          // Styles aus dem Head holen (sonst gehen sie verloren)
+          doc.head.querySelectorAll('style').forEach(function(style) {
+            bodyContent += style.outerHTML;
+          });
+          // Body-Inhalt nehmen
+          Array.from(doc.body.children).forEach(function(child) {
             bodyContent += child.outerHTML;
           });
         }
