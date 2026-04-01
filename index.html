@@ -496,6 +496,49 @@
       contentArea.innerHTML = '';
       storage.set('shell:lastModule', 'shell');
       history.pushState({ module: null }, '', window.location.pathname);
+      syncPushDashboardState(null);
+    }
+
+    // ── Sync: Dashboard-State an VPS pushen ──
+    var MODULE_LABELS = {
+      'fahrplan': 'Dein Fahrplan', 'setup-guide': 'Setup-Guide', 'meine-daten': 'Meine Daten',
+      'buch-dashboard': 'Buch-Dashboard', 'publishing': 'Publishing', 'workspace-wizard': 'Workspace Wizard',
+      'config-builder': 'Config Builder', 'cost-calculator': 'Kostenrechner', 'soul-gallery': 'SOUL Gallery',
+      'cli-referenz': 'CLI-Referenz', 'system-status': 'System-Status', 'skill-explorer': 'Skill Explorer',
+      'template-packs': 'Template Packs'
+    };
+
+    function syncPushDashboardState(moduleId) {
+      try {
+        var ip = storage.get('aa-settings.tailscaleIp');
+        var port = storage.get('aa-settings.syncPort') || '3456';
+        var token = storage.get('aa-settings.syncToken');
+        if (!ip || !token) return;
+        var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/dashboard-state.json';
+        var payload = {
+          lastUpdate: new Date().toISOString(),
+          device: 'dashboard',
+          module: moduleId || 'home',
+          moduleLabel: MODULE_LABELS[moduleId] || 'Startseite',
+          progress: null
+        };
+        // Kapitel-Fortschritt mitlesen falls vorhanden
+        try {
+          var ch = storage.get('content:currentChapter');
+          var pr = storage.get('content:chapterProgress');
+          if (ch || pr) {
+            payload.progress = {
+              currentChapter: ch ? JSON.parse(ch) : null,
+              chapterProgress: pr ? JSON.parse(pr) : null
+            };
+          }
+        } catch(e) {}
+        fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(payload)
+        }).catch(function() { /* Stiller Fehler – Sync ist optional */ });
+      } catch(e) {}
     }
 
     // Globale Funktion – Module koennen loadModule('xyz') aufrufen
@@ -556,6 +599,7 @@
         storage.set('shell:lastModule', moduleId);
         history.pushState({ module: moduleId }, '', '?module=' + moduleId);
         window.scrollTo(0, 0);
+        syncPushDashboardState(moduleId);
       }).catch(function(err) {
         contentArea.style.display = 'block';
         contentArea.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)"><p style="font-size:1.2rem;margin-bottom:0.5rem">Modul <strong style="color:var(--amber)">' + moduleId + '</strong> ist noch in Entwicklung.</p><button class="back-btn" onclick="showHome()">' + chevronLeftSvg + ' Zur&uuml;ck</button></div>';

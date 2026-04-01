@@ -9,6 +9,11 @@
    - ?cowan=open URL-Parameter (fuer QR-Code AA-COWAN)
    - Sync-Status im Header (gruener/grauer Punkt)
    - Public API erweitert (setContext, syncStatus)
+
+   v2.1.0 (01.04.2026 – Session 175):
+   - Fix: Sync-URL aus tailscaleIp + syncPort gebaut (statt nicht-existierendem aa-settings.syncUrl)
+   - Sync-Read: Modul-Kontext aus Server-Response uebernehmen (Cross-Device)
+   - Shell: pushDashboardState bei Modul-Wechsel + showHome (bidirektionaler Sync)
    ========================================================== */
 
 (function() {
@@ -240,8 +245,11 @@
   /* ── Sync: Verbindungsdaten aus Meine-Daten laden ── */
   function loadSyncSettings() {
     try {
-      syncUrl = localStorage.getItem('aa-settings.syncUrl') || '';
       syncToken = localStorage.getItem('aa-settings.syncToken') || '';
+      /* URL aus tailscaleIp + syncPort zusammenbauen (wie Meine-Daten sie speichert) */
+      var ip = localStorage.getItem('aa-settings.tailscaleIp') || '';
+      var port = localStorage.getItem('aa-settings.syncPort') || '3456';
+      syncUrl = ip ? ('http://' + ip.replace(/\/+$/, '') + ':' + port) : '';
     } catch(e) {}
   }
 
@@ -284,6 +292,11 @@
     }).then(function(data) {
       if (!data) return;
       syncConnected = true; syncError = null;
+      /* Modul-Kontext aus Sync uebernehmen (Cross-Device) */
+      if (data.module && data.module !== currentModuleId) {
+        currentModuleId = data.module;
+        currentModuleLabel = data.moduleLabel || MODULE_LABELS[data.module] || data.module;
+      }
       /* Kapitel-Fortschritt uebernehmen wenn vorhanden */
       if (data.progress) {
         try {
