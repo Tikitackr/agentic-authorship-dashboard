@@ -14,6 +14,14 @@
    - Fix: Sync-URL aus tailscaleIp + syncPort gebaut (statt nicht-existierendem aa-settings.syncUrl)
    - Sync-Read: Modul-Kontext aus Server-Response uebernehmen (Cross-Device)
    - Shell: pushDashboardState bei Modul-Wechsel + showHome (bidirektionaler Sync)
+
+   v3.0.0 (01.04.2026 – Session 176):
+   - Home-Screen mit 4 Kacheln (Verbunden, Wissen, Handy, Frage stellen)
+   - QR-Code Overlay: Handy verbinden per QR-Scan (API-Key base64 in URL)
+   - Companion-Mode: ?companion=true URL-Parameter, reduzierte UI, Vollbild auf iPhone
+   - View-System: home | chat | qr (statt nur chat)
+   - Zurueck-Button im Header (Chat/QR → Home)
+   - Benoetigt shared/qr.js (QR-Code-Generator, kein CDN)
    ========================================================== */
 
 (function() {
@@ -46,6 +54,11 @@
   var syncPollTimer = null;
   var currentModuleId = '';  // z.B. 'fahrplan', 'setup-guide'
   var currentModuleLabel = '';  // z.B. 'Dein Fahrplan', 'Setup-Guide'
+
+  /* ── Companion-Mode & Views ── */
+  var currentView = 'home';  // home | chat | qr
+  var isCompanionMode = false;
+  var companionParams = null;
 
   var MODULE_LABELS = {
     'fahrplan': 'Dein Fahrplan',
@@ -551,17 +564,46 @@
 
     panel.style.display = isOpen ? 'flex' : 'none';
 
-    /* FAB Button */
+    /* FAB Button – im Companion-Mode kein FAB (Vollbild) */
     var fab = $('#cw-fab');
-    if (fab) fab.style.display = isOpen ? 'none' : 'flex';
+    if (fab) fab.style.display = (isOpen || isCompanionMode) ? 'none' : 'flex';
 
     if (!isOpen) return;
 
     renderHeader();
-    renderMessages();
-    renderInput();
-    renderChunkBrowser();
-    scrollChat();
+
+    /* View-basiertes Rendering */
+    var homeEl = $('#cw-home');
+    var msgsEl = $('#cw-messages');
+    var inputEl = $('#cw-input-area');
+    var qrEl = $('#cw-qr-overlay');
+    var chunkEl = $('#cw-chunk-overlay');
+
+    if (currentView === 'home') {
+      if (homeEl) homeEl.style.display = 'flex';
+      if (msgsEl) msgsEl.style.display = 'none';
+      if (inputEl) inputEl.style.display = 'block';
+      if (qrEl) qrEl.style.display = 'none';
+      if (chunkEl) chunkEl.style.display = 'none';
+      renderHome();
+      renderInput();
+    } else if (currentView === 'chat') {
+      if (homeEl) homeEl.style.display = 'none';
+      if (msgsEl) msgsEl.style.display = 'flex';
+      if (inputEl) inputEl.style.display = 'block';
+      if (qrEl) qrEl.style.display = 'none';
+      renderMessages();
+      renderInput();
+      renderChunkBrowser();
+      scrollChat();
+    } else if (currentView === 'qr') {
+      if (homeEl) homeEl.style.display = 'none';
+      if (msgsEl) msgsEl.style.display = 'none';
+      if (inputEl) inputEl.style.display = 'none';
+      if (qrEl) qrEl.style.display = 'flex';
+      if (chunkEl) chunkEl.style.display = 'none';
+      renderQR();
+    }
   }
 
   function renderHeader() {
@@ -584,22 +626,40 @@
 
     /* Sub-Zeile: Modell + Chunks + optional Modul-Kontext */
     var subText = modelLabel + ' · ' + chunks.length + ' Chunks' + costStr;
-    if (currentModuleLabel) subText = currentModuleLabel + ' · ' + subText;
+    if (isCompanionMode) {
+      subText = 'Companion' + (currentModuleLabel ? ' · ' + currentModuleLabel : '') + ' · ' + modelLabel + costStr;
+    } else if (currentModuleLabel) {
+      subText = currentModuleLabel + ' · ' + subText;
+    }
+
+    /* Titel mit Sync-Dot */
+    var titleText = isCompanionMode ? 'Cowan · Verbunden' : 'Cowan';
 
     header.innerHTML = '';
     header.appendChild(el('div', { className: 'cw-header-left' }, [
-      el('div', { className: 'cw-header-icon', html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' }),
+      /* Zurueck-Button im Chat/QR-View (nicht im Home, nicht im Companion) */
+      (currentView !== 'home' && !isCompanionMode) ?
+        el('button', { className: 'cw-btn-icon cw-btn-back', title: 'Zurueck', onClick: function() { showChunkBrowser = false; currentView = 'home'; render(); }, html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>' }) :
+        el('div', { className: 'cw-header-icon', html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' }),
       el('div', { className: 'cw-header-info' }, [
-        el('span', { className: 'cw-header-title', html: 'Cowan' + syncDot }),
+        el('span', { className: 'cw-header-title', html: titleText + syncDot }),
         el('span', { className: 'cw-header-sub' }, subText),
       ]),
     ]));
-    header.appendChild(el('div', { className: 'cw-header-right' }, [
-      el('button', { className: 'cw-btn-icon', title: 'Wissen durchstoebern', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>', onClick: function() { showChunkBrowser = !showChunkBrowser; render(); } }),
-      el('button', { className: 'cw-btn-icon', title: 'Export', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>', onClick: exportAsText }),
-      el('button', { className: 'cw-btn-icon', title: 'Neu starten', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>', onClick: function() { if (msgCount > 0 || confirm('Chat zuruecksetzen?')) resetConversation(); } }),
-      el('button', { className: 'cw-btn-icon cw-btn-close', title: 'Schliessen', onClick: function() { isOpen = false; render(); } }, '\u2715'),
-    ]));
+
+    /* Header-Buttons: Im Companion-Mode reduziert */
+    var rightButtons = [];
+    if (!isCompanionMode && currentView === 'chat') {
+      rightButtons.push(el('button', { className: 'cw-btn-icon', title: 'Wissen durchstoebern', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>', onClick: function() { showChunkBrowser = !showChunkBrowser; render(); } }));
+    }
+    if (currentView === 'chat') {
+      rightButtons.push(el('button', { className: 'cw-btn-icon', title: 'Export', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>', onClick: exportAsText }));
+      rightButtons.push(el('button', { className: 'cw-btn-icon', title: 'Neu starten', html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>', onClick: function() { if (msgCount > 0 || confirm('Chat zuruecksetzen?')) resetConversation(); } }));
+    }
+    if (!isCompanionMode) {
+      rightButtons.push(el('button', { className: 'cw-btn-icon cw-btn-close', title: 'Schliessen', onClick: function() { isOpen = false; render(); } }, '\u2715'));
+    }
+    header.appendChild(el('div', { className: 'cw-header-right' }, rightButtons));
   }
 
   function renderStatusLine() {
@@ -742,6 +802,139 @@
     area.appendChild(modelRow);
   }
 
+  /* ── Home-Screen: 4 Kacheln (Verbunden, Wissen, Handy, Frage stellen) ── */
+  function renderHome() {
+    var home = $('#cw-home');
+    if (!home) return;
+    home.innerHTML = '';
+
+    var hasKey = apiKey && (apiKeyStatus === 'valid' || apiKeyStatus === 'uncertain');
+    var hasSync = !!(syncUrl && syncToken);
+    var chunkCount = chunks.length;
+
+    /* Titel */
+    home.appendChild(el('div', { className: 'cw-home-title' }, 'Dein Buch-Begleiter'));
+
+    /* 2x2 Grid */
+    var grid = el('div', { className: 'cw-home-grid' });
+
+    /* Kachel 1: Verbunden / API-Key */
+    var keyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (hasKey ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    var keyTile = el('div', {
+      className: 'cw-tile' + (hasKey ? ' cw-tile-active' : ''),
+      onClick: function() { currentView = 'chat'; render(); },
+    }, [
+      el('div', { className: 'cw-tile-icon', html: hasKey ? keyIcon : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>' }),
+      el('div', { className: 'cw-tile-label' + (hasKey ? ' cw-tile-label-ok' : '') }, hasKey ? 'Verbunden' : 'API-Key'),
+      el('div', { className: 'cw-tile-sub' }, hasKey ? 'Key aendern' : 'Eingeben'),
+    ]);
+    /* Modell-Auswahl unter der Key-Kachel */
+    if (hasKey) {
+      var modelSelect = el('select', { className: 'cw-tile-select', onChange: function(e) {
+        selectedModel = e.target.value;
+        try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
+        render();
+      }});
+      Object.keys(PRICING).forEach(function(mid) {
+        var opt = el('option', { value: mid }, PRICING[mid].label);
+        if (mid === selectedModel) opt.selected = true;
+        modelSelect.appendChild(opt);
+      });
+      keyTile.appendChild(modelSelect);
+    }
+    grid.appendChild(keyTile);
+
+    /* Kachel 2: Wissen / Chunks */
+    var wissIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (chunkCount > 0 ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>';
+    grid.appendChild(el('div', {
+      className: 'cw-tile' + (chunkCount > 0 ? ' cw-tile-active' : ''),
+      onClick: function() { if (chunkCount > 0) { currentView = 'chat'; showChunkBrowser = true; render(); } },
+    }, [
+      el('div', { className: 'cw-tile-icon', html: wissIcon }),
+      el('div', { className: 'cw-tile-label' + (chunkCount > 0 ? ' cw-tile-label-ok' : '') }, 'Wissen'),
+      el('div', { className: 'cw-tile-sub' }, chunkCount > 0 ? chunkCount + ' Chunks' : 'Laden...'),
+    ]));
+
+    /* Kachel 3: Handy / QR-Code */
+    var handyReady = hasKey && hasSync;
+    var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (handyReady ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+    grid.appendChild(el('div', {
+      className: 'cw-tile' + (handyReady ? '' : ' cw-tile-disabled'),
+      onClick: function() {
+        if (!hasKey) { alert('Bitte zuerst API-Key eingeben.'); return; }
+        if (!hasSync) { alert('Bitte zuerst Sync in Meine Daten einrichten (Tailscale-IP + Sync-Token).'); return; }
+        currentView = 'qr'; render();
+      },
+    }, [
+      el('div', { className: 'cw-tile-icon', html: handyIcon }),
+      el('div', { className: 'cw-tile-label' }, 'Handy'),
+      el('div', { className: 'cw-tile-sub' }, handyReady ? 'QR-Code scannen' : 'Sync noetig'),
+    ]));
+
+    /* Kachel 4: Frage stellen */
+    var frageReady = hasKey && chunkCount > 0;
+    var frageIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (frageReady ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+    grid.appendChild(el('div', {
+      className: 'cw-tile' + (frageReady ? ' cw-tile-active' : ''),
+      onClick: function() { currentView = 'chat'; render(); },
+    }, [
+      el('div', { className: 'cw-tile-icon', html: frageIcon }),
+      el('div', { className: 'cw-tile-label' + (frageReady ? ' cw-tile-label-ok' : '') }, 'Frage stellen'),
+      el('div', { className: 'cw-tile-sub' }, frageReady ? 'Bereit' : 'Key fehlt'),
+    ]));
+
+    home.appendChild(grid);
+  }
+
+  /* ── QR-Code Overlay: Handy verbinden ── */
+  function renderQR() {
+    var overlay = $('#cw-qr-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
+
+    /* QR-URL zusammenbauen */
+    var encodedKey = '';
+    try { encodedKey = btoa(apiKey); } catch(e) {}
+
+    var qrUrl = 'https://openclaw-buch.de/?cowan=open&companion=true';
+    if (encodedKey) qrUrl += '&apikey=' + encodeURIComponent(encodedKey);
+    if (syncUrl) {
+      /* syncUrl ist z.B. "http://100.99.167.112:3456" – wir brauchen nur ip:port */
+      var syncPart = syncUrl.replace(/^https?:\/\//, '');
+      qrUrl += '&sync=' + encodeURIComponent(syncPart);
+    }
+    if (syncToken) qrUrl += '&synctoken=' + encodeURIComponent(syncToken);
+
+    /* QR-Code generieren */
+    var qrSvg = '';
+    if (window.QR && window.QR.toSVG) {
+      qrSvg = window.QR.toSVG(qrUrl, { size: 240, margin: 2, fgColor: '#1e293b', bgColor: '#ffffff' });
+    } else {
+      qrSvg = '<div style="padding:40px;text-align:center;color:#888">QR-Generator nicht geladen.<br>Lade qr.js vor cowan.js.</div>';
+    }
+
+    var card = el('div', { className: 'cw-qr-card' }, [
+      /* Header */
+      el('div', { className: 'cw-qr-header' }, [
+        el('span', { className: 'cw-qr-title', html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Handy verbinden' }),
+        el('button', { className: 'cw-btn-icon cw-btn-close', onClick: function() { currentView = 'home'; render(); } }, '\u2715'),
+      ]),
+      /* QR-Code */
+      el('div', { className: 'cw-qr-image', html: qrSvg }),
+      /* Anleitung */
+      el('div', { className: 'cw-qr-instruction' }, [
+        el('strong', null, 'Scanne mit deinem iPhone'),
+        el('p', null, 'Kamera-App oeffnen, QR-Code scannen \u2013 Cowan startet im Companion-Modus.'),
+      ]),
+      /* URL Vorschau */
+      el('div', { className: 'cw-qr-url' }, qrUrl.length > 60 ? qrUrl.substring(0, 57) + '...' : qrUrl),
+      /* Sync-Status */
+      el('div', { className: 'cw-qr-status' }, syncConnected ? 'Sync aktiv \u2013 nach dem Scannen verbindet sich der Companion automatisch.' : 'Sync wird verbunden...'),
+    ]);
+
+    overlay.appendChild(card);
+  }
+
   function renderChunkBrowser() {
     var overlay = $('#cw-chunk-overlay');
     if (!overlay) return;
@@ -779,20 +972,62 @@
 
   /* ── Widget ins DOM einbauen ── */
   function mount() {
+    /* Companion-Mode Erkennung (URL-Parameter) */
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('companion') === 'true') {
+        isCompanionMode = true;
+        companionParams = {
+          sync: urlParams.get('sync') || '',
+          synctoken: urlParams.get('synctoken') || '',
+          apikey: urlParams.get('apikey') || '',
+        };
+        /* API-Key aus QR-Code (base64) uebernehmen */
+        if (companionParams.apikey) {
+          try {
+            var decoded = atob(decodeURIComponent(companionParams.apikey));
+            if (decoded && decoded.indexOf('sk-ant-') === 0) {
+              apiKey = decoded;
+              apiKeyStatus = 'valid';
+              try { localStorage.setItem('shell:apiKey', decoded); } catch(ex) {}
+            }
+          } catch(e) { /* base64 decode fehlgeschlagen */ }
+        }
+        /* Sync-Daten aus URL uebernehmen */
+        if (companionParams.sync) {
+          var sp = decodeURIComponent(companionParams.sync);
+          syncUrl = 'http://' + sp;
+          /* Falls Port fehlt, Standard 3456 */
+          if (sp.indexOf(':') === -1) syncUrl += ':3456';
+        }
+        if (companionParams.synctoken) {
+          syncToken = decodeURIComponent(companionParams.synctoken);
+        }
+        /* Companion: direkt Chat, kein Home-Screen */
+        currentView = 'chat';
+        isOpen = true;
+      }
+    } catch(e) {}
+
     /* CSS */
     var style = document.createElement('style');
     style.textContent = getCss();
     document.head.appendChild(style);
 
-    /* FAB (Floating Action Button) – OpenClaw Hummer mit Glow */
-    var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() { isOpen = true; render(); setTimeout(scrollChat, 100); } });
-    fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
-    document.body.appendChild(fab);
+    /* FAB (Floating Action Button) – nicht im Companion-Mode */
+    if (!isCompanionMode) {
+      var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() { isOpen = true; render(); setTimeout(scrollChat, 100); } });
+      fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
+      document.body.appendChild(fab);
+    }
 
-    /* Panel */
-    var panel = el('div', { id: 'cw-panel', className: 'cw-panel', style: { display: 'none' } }, [
+    /* Panel – mit Home-Screen und QR-Overlay */
+    var panelClass = 'cw-panel' + (isCompanionMode ? ' cw-companion' : '');
+    var panel = el('div', { id: 'cw-panel', className: panelClass, style: { display: 'none' } }, [
       el('div', { id: 'cw-header', className: 'cw-header' }),
+      el('div', { id: 'cw-home', className: 'cw-home', style: { display: 'none' } }),
       el('div', { id: 'cw-messages', className: 'cw-messages' }),
+      el('div', { id: 'cw-qr-overlay', className: 'cw-qr-overlay', style: { display: 'none' } }),
       el('div', { id: 'cw-chunk-overlay', className: 'cw-chunk-overlay', style: { display: 'none' } }),
       el('div', { id: 'cw-input-area', className: 'cw-input-area' }),
     ]);
@@ -801,15 +1036,26 @@
     loadState();
     loadChunks();
     updateModuleContext();
-    startSyncPolling();
+
+    /* Sync: Im Companion-Mode ggf. aus URL-Params starten, sonst aus localStorage */
+    if (isCompanionMode && syncUrl && syncToken) {
+      /* Sync-Settings schon aus URL gesetzt, Polling direkt starten */
+      startSyncPolling();
+      /* Connected-Event an Server senden */
+      syncWriteEvent({ type: 'companion-connected', details: 'iPhone Companion verbunden' });
+    } else {
+      startSyncPolling();
+    }
 
     /* ?cowan=open URL-Parameter: Widget sofort oeffnen (fuer QR-Code AA-COWAN) */
-    try {
-      var urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('cowan') === 'open') {
-        isOpen = true;
-      }
-    } catch(e) {}
+    if (!isCompanionMode) {
+      try {
+        var urlP = new URLSearchParams(window.location.search);
+        if (urlP.get('cowan') === 'open') {
+          isOpen = true;
+        }
+      } catch(e) {}
+    }
 
     render();
   }
@@ -917,10 +1163,53 @@
       '.cw-chunk-nav:disabled { opacity:0.3; cursor:not-allowed; }',
       '.cw-chunk-nav:hover:not(:disabled) { background:rgba(245,158,11,0.2); }',
 
+      /* Home-Screen */
+      '.cw-home { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:16px; overflow-y:auto; }',
+      '.cw-home-title { font-size:16px; font-weight:600; color:#94a3b8; letter-spacing:0.5px; }',
+      '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
+
+      /* Tiles */
+      '.cw-tile { background:#1e293b; border:1px solid rgba(34,197,94,0.2); border-radius:16px; padding:20px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:all .2s; text-align:center; }',
+      '.cw-tile:hover { border-color:rgba(34,197,94,0.5); background:#253347; }',
+      '.cw-tile-active { border-color:rgba(34,197,94,0.35); }',
+      '.cw-tile-active:hover { border-color:rgba(34,197,94,0.6); }',
+      '.cw-tile-disabled { opacity:0.5; cursor:default; border-color:rgba(100,116,139,0.2); }',
+      '.cw-tile-disabled:hover { border-color:rgba(100,116,139,0.2); background:#1e293b; }',
+      '.cw-tile-icon { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(34,197,94,0.08); }',
+      '.cw-tile-label { font-size:15px; font-weight:700; color:#f1f5f9; }',
+      '.cw-tile-label-ok { color:#22c55e; }',
+      '.cw-tile-sub { font-size:12px; color:#888; }',
+      '.cw-tile-select { background:#0f172a; color:#f1f5f9; border:1px solid #334155; border-radius:8px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; margin-top:4px; }',
+
+      /* Back button */
+      '.cw-btn-back { margin-right:2px; }',
+
+      /* QR Overlay */
+      '.cw-qr-overlay { position:absolute; inset:0; background:rgba(10,10,15,0.97); z-index:10; display:flex; align-items:center; justify-content:center; padding:16px; top:52px; }',
+      '.cw-qr-card { background:#f8fafc; border-radius:18px; padding:24px; max-height:100%; overflow-y:auto; width:100%; max-width:340px; text-align:center; }',
+      '.cw-qr-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }',
+      '.cw-qr-title { font-size:17px; font-weight:700; color:#1e293b; }',
+      '.cw-qr-header .cw-btn-icon { color:#64748b; }',
+      '.cw-qr-header .cw-btn-icon:hover { color:#1e293b; background:rgba(0,0,0,0.06); }',
+      '.cw-qr-image { margin:0 auto 16px; display:flex; justify-content:center; }',
+      '.cw-qr-image svg { max-width:100%; height:auto; border-radius:12px; }',
+      '.cw-qr-instruction { margin-bottom:12px; }',
+      '.cw-qr-instruction strong { font-size:15px; color:#1e293b; display:block; margin-bottom:4px; }',
+      '.cw-qr-instruction p { font-size:13px; color:#64748b; margin:0; line-height:1.5; }',
+      '.cw-qr-url { font-size:11px; color:#94a3b8; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; word-break:break-all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }',
+      '.cw-qr-status { font-size:12px; color:#22c55e; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:8px 10px; }',
+
+      /* Companion-Mode: Vollbild auf Mobile */
+      '.cw-companion { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; border:none; }',
+      '.cw-companion .cw-header { border-bottom-color:rgba(34,197,94,0.25); }',
+      '.cw-companion .cw-header-title { color:#22c55e; }',
+
       /* Mobile */
       '@media (max-width:480px) {',
       '  .cw-panel { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; }',
       '  .cw-fab { bottom:16px; right:16px; width:50px; height:50px; font-size:24px; }',
+      '  .cw-home-grid { max-width:100%; }',
+      '  .cw-tile { padding:16px 10px; }',
       '}',
     ].join('\n');
   }
@@ -954,6 +1243,13 @@
       stopSyncPolling();
       startSyncPolling();
     },
+    /* View wechseln (home, chat, qr) */
+    showView: function(view) {
+      currentView = view || 'home';
+      render();
+    },
+    /* Companion-Status abfragen */
+    isCompanion: function() { return isCompanionMode; },
   };
 
 })();
