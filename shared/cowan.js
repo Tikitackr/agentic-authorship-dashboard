@@ -786,7 +786,7 @@
 
     /* FAB (Floating Action Button) – OpenClaw Hummer mit Glow */
     var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() { isOpen = true; render(); setTimeout(scrollChat, 100); } });
-    fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="34" height="34" style="pointer-events:none">';
+    fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
     document.body.appendChild(fab);
 
     /* Panel */
@@ -818,9 +818,9 @@
   function getCss() {
     return [
       /* FAB – OpenClaw Hummer mit Glow */
-      '.cw-fab { position:fixed; bottom:24px; right:24px; width:62px; height:62px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid var(--amber,#f59e0b); cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(245,158,11,0.35),0 0 40px rgba(245,158,11,0.15); z-index:9999; transition:transform .2s,box-shadow .2s; animation:cw-glow 3s ease-in-out infinite; }',
-      '.cw-fab:hover { transform:scale(1.08); box-shadow:0 0 25px rgba(245,158,11,0.5),0 0 50px rgba(245,158,11,0.25); }',
-      '@keyframes cw-glow { 0%,100% { box-shadow:0 0 20px rgba(245,158,11,0.35),0 0 40px rgba(245,158,11,0.15); } 50% { box-shadow:0 0 28px rgba(245,158,11,0.5),0 0 56px rgba(245,158,11,0.25); } }',
+      '.cw-fab { position:fixed; bottom:24px; right:24px; width:70px; height:70px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid var(--amber,#f59e0b); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:9999; transition:transform .2s; animation:cw-glow 3.5s ease-in-out infinite; }',
+      '.cw-fab:hover { transform:scale(1.1); }',
+      '@keyframes cw-glow { 0%,100% { box-shadow:0 0 8px rgba(245,158,11,0.1),0 0 20px rgba(245,158,11,0.05); } 50% { box-shadow:0 0 24px rgba(245,158,11,0.6),0 0 48px rgba(245,158,11,0.3),0 0 72px rgba(245,158,11,0.1); } }',
 
       /* Panel */
       '.cw-panel { position:fixed; bottom:24px; right:24px; width:400px; max-width:calc(100vw - 32px); height:600px; max-height:calc(100vh - 48px); background:#0f172a; border:1px solid rgba(245,158,11,0.25); border-radius:16px; display:flex; flex-direction:column; overflow:hidden; z-index:9999; box-shadow:0 12px 48px rgba(0,0,0,0.5); }',
