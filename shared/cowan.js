@@ -784,9 +784,9 @@
     style.textContent = getCss();
     document.head.appendChild(style);
 
-    /* FAB (Floating Action Button) – Monogramm "C" statt Emoji */
+    /* FAB (Floating Action Button) – OpenClaw Hummer mit Glow */
     var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() { isOpen = true; render(); setTimeout(scrollChat, 100); } });
-    fab.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+    fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="34" height="34" style="pointer-events:none">';
     document.body.appendChild(fab);
 
     /* Panel */
@@ -817,9 +817,10 @@
   /* ── CSS ── */
   function getCss() {
     return [
-      /* FAB */
-      '.cw-fab { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; background:var(--amber,#f59e0b); border:none; cursor:pointer; font-size:28px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(245,158,11,0.4); z-index:9999; transition:transform .2s,box-shadow .2s; }',
-      '.cw-fab:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(245,158,11,0.6); }',
+      /* FAB – OpenClaw Hummer mit Glow */
+      '.cw-fab { position:fixed; bottom:24px; right:24px; width:62px; height:62px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid var(--amber,#f59e0b); cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(245,158,11,0.35),0 0 40px rgba(245,158,11,0.15); z-index:9999; transition:transform .2s,box-shadow .2s; animation:cw-glow 3s ease-in-out infinite; }',
+      '.cw-fab:hover { transform:scale(1.08); box-shadow:0 0 25px rgba(245,158,11,0.5),0 0 50px rgba(245,158,11,0.25); }',
+      '@keyframes cw-glow { 0%,100% { box-shadow:0 0 20px rgba(245,158,11,0.35),0 0 40px rgba(245,158,11,0.15); } 50% { box-shadow:0 0 28px rgba(245,158,11,0.5),0 0 56px rgba(245,158,11,0.25); } }',
 
       /* Panel */
       '.cw-panel { position:fixed; bottom:24px; right:24px; width:400px; max-width:calc(100vw - 32px); height:600px; max-height:calc(100vh - 48px); background:#0f172a; border:1px solid rgba(245,158,11,0.25); border-radius:16px; display:flex; flex-direction:column; overflow:hidden; z-index:9999; box-shadow:0 12px 48px rgba(0,0,0,0.5); }',
