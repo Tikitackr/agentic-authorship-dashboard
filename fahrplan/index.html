@@ -16,13 +16,16 @@
     :root {
       --bg: #0a0a0f;
       --bg-card: #12121a;
+      --bg-card-hover: #1a1a28;
       --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.15);
       --text: #e0e0e0;
       --text-dim: #888;
       --border: rgba(245, 158, 11, 0.2);
       --green: #22c55e;
       --blue: #3b82f6;
       --red: #ef4444;
+      --purple: #a78bfa;
       --radius: 14px;
     }
 
@@ -155,8 +158,29 @@
     .fahrplan-chapters {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0;
       margin-bottom: 3rem;
+    }
+
+    .fahrplan-chapter-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .fahrplan-chapter-card:hover {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .fahrplan-chapter-card.expanded {
+      border-color: var(--amber);
+    }
+
+    .fahrplan-chapter-card.completed {
+      opacity: 0.7;
     }
 
     .fahrplan-chapter-row {
@@ -164,19 +188,12 @@
       align-items: center;
       gap: 1rem;
       padding: 1.25rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: all 0.2s ease;
+      cursor: pointer;
+      transition: background 0.2s ease;
     }
 
     .fahrplan-chapter-row:hover {
       background: rgba(245, 158, 11, 0.05);
-      border-color: rgba(245, 158, 11, 0.4);
-    }
-
-    .fahrplan-chapter-row.completed {
-      opacity: 0.7;
     }
 
     .fahrplan-chapter-checkbox {
@@ -232,6 +249,179 @@
     .fahrplan-module-pill:hover {
       background: rgba(59, 130, 246, 0.25);
       border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .fahrplan-chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .fahrplan-chapter-card.expanded .fahrplan-chevron {
+      transform: rotate(180deg);
+      color: var(--amber);
+    }
+
+    /* ============ Chapter Detail (aufklappbar) ============ */
+    .fahrplan-chapter-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .fahrplan-chapter-card.expanded .fahrplan-chapter-detail {
+      max-height: 2000px;
+    }
+
+    .fahrplan-chapter-detail-inner {
+      padding: 0 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============ Onboarding (Vorwort-spezifisch) ============ */
+    .fahrplan-onboarding {
+      padding-top: 1.5rem;
+    }
+
+    .fahrplan-onboarding h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--amber);
+    }
+
+    .fahrplan-onboarding p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    .fahrplan-companions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .fahrplan-companion-card {
+      padding: 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .fahrplan-companion-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 0.75rem;
+      color: var(--amber);
+    }
+
+    .fahrplan-companion-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .fahrplan-companion-card p {
+      font-size: 0.85rem;
+      margin-bottom: 0;
+    }
+
+    .fahrplan-howto {
+      background: rgba(245, 158, 11, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .fahrplan-howto h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--amber);
+    }
+
+    .fahrplan-howto-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .fahrplan-howto-num {
+      background: var(--amber-dim);
+      color: var(--amber);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .fahrplan-sync-hint {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .fahrplan-sync-hint strong {
+      color: var(--blue);
+    }
+
+    .fahrplan-next-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--amber), #f97316);
+      border: none;
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .fahrplan-next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    /* ============ Generic chapter detail ============ */
+    .fahrplan-detail-generic {
+      padding-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .fahrplan-detail-generic p {
+      margin-bottom: 0.75rem;
+    }
+
+    .fahrplan-detail-modules {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
     }
 
     /* ============ Tech Stack Section ============ */
@@ -356,13 +546,18 @@
       }
 
       .fahrplan-chapter-row {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-wrap: wrap;
         padding: 1rem;
       }
 
       .fahrplan-chapter-links {
         justify-content: flex-start;
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .fahrplan-companions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -379,9 +574,9 @@
     <section class="fahrplan-welcome">
       <h1>Willkommen bei deinem OpenClaw-Buchprojekt</h1>
       <p>Dein interaktiver Begleiter durch das komplette OpenClaw-Buch. Verfolge deinen Fortschritt, entdecke neue Kapitel und greife auf alle wichtigen Tools zu.</p>
-      <p>Alles, was du brauchst, um dein eigenes Agentic-Authorship-Projekt zu starten – Schritt für Schritt, von der Idee bis zur Veröffentlichung.</p>
+      <p>Alles, was du brauchst, um dein eigenes Agentic-Authorship-Projekt zu starten – Schritt fuer Schritt, von der Idee bis zur Veroeffentlichung.</p>
       <button class="fahrplan-welcome-cta" onclick="fahrplan.handleQuickAccess('meine-daten')">
-        Leg los → Meine Daten einrichten
+        Leg los &rarr; Meine Daten einrichten
       </button>
     </section>
 
@@ -430,7 +625,7 @@
       <button class="fahrplan-quick-btn" onclick="fahrplan.handleQuickAccess('setup-guide')">
         <svg class="fahrplan-quick-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L2 7l10 5 10-5-10-5z"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>
-        Setup-Guide öffnen
+        Setup-Guide oeffnen
       </button>
       <button class="fahrplan-quick-btn" onclick="fahrplan.handleQuickAccess('buch-dashboard')">
         <svg class="fahrplan-quick-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -446,94 +641,238 @@
   </div>
 
   <script>
-    // var statt const – Shell kann Modul mehrfach laden
     var fahrplan = {
       chapters: [
-        { num: 'Vorwort', title: 'Vorwort', desc: 'Der Anfang: Warum dieses Buch?', links: [] },
-        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Ökosystem', links: ['fahrplan'] },
-        { num: '2', title: 'Installation & Setup', desc: 'Schritt-für-Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'] },
-        { num: '3', title: 'Docker für OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'] },
+        { num: 'Vorwort', title: 'Vorwort', desc: 'Warum du dieses Buch nicht alleine lesen wirst', links: [], detail: 'onboarding' },
+        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [] },
+        { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'] },
+        { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'] },
         { num: '4', title: 'Agent-Konzepte', desc: 'Verstehe die theoretischen Grundlagen', links: [] },
-        { num: '5', title: 'Multi-Channel Setup', desc: 'Verbinde mehrere Kanäle und Plattformen', links: ['setup-guide'] },
-        { num: '6', title: 'Security Best Practices', desc: 'Schütze dein System richtig', links: ['setup-guide'] },
-        { num: '7', title: 'Troubleshooting & FAQ', desc: 'Lösungen für häufige Probleme', links: ['cli-referenz'] },
+        { num: '5', title: 'Multi-Channel Setup', desc: 'Verbinde mehrere Kanaele und Plattformen', links: ['setup-guide'] },
+        { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'] },
+        { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz'] },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
         { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
-        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollständige Workflow', links: ['buch-dashboard'] },
+        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollstaendige Workflow', links: ['buch-dashboard'] },
         { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Personalisierung und Konfiguration', links: ['meine-daten', 'system-status'] },
-        { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: [] },
+        { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: ['publishing'] },
         { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide', links: ['buch-dashboard', 'setup-guide'] },
-        { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Veröffentlichung erfolgreich sein', links: [] }
+        { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Veroeffentlichung erfolgreich sein', links: ['publishing'] }
       ],
 
       techStack: [
-        { name: 'OpenClaw', chapter: '1–3', id: 'openclaw' },
-        { name: 'Hostinger VPS', chapter: '2–3', id: 'vps' },
+        { name: 'OpenClaw', chapter: '1\u20133', id: 'openclaw' },
+        { name: 'Hostinger VPS', chapter: '2\u20133', id: 'vps' },
         { name: 'Docker', chapter: '3, 5', id: 'docker' },
         { name: 'Tailscale', chapter: '2, 6', id: 'tailscale' },
         { name: 'Claude API Key', chapter: '1, 9', id: 'api-key' },
         { name: 'Telegram Bot', chapter: '5, 10', id: 'telegram' }
       ],
 
-      init() {
+      expandedChapter: null,
+
+      init: function() {
         this.renderChapters();
         this.renderTechStack();
         this.updateProgress();
+        this.handleDeepLink();
       },
 
-      renderChapters() {
-        const container = document.getElementById('fahrplan-chapters');
-        container.innerHTML = this.chapters.map((ch, idx) => {
-          const storageKey = `aa-progress.kap-${ch.num}`;
-          const isCompleted = localStorage.getItem(storageKey) === 'true';
-          const modulesHtml = ch.links.map(link => {
-            const cleanLink = link.replace(/[^a-z0-9-]/g, '');
-            return `<a class="fahrplan-module-pill" onclick="fahrplan.handleQuickAccess('${cleanLink}'); event.stopPropagation();">${cleanLink}</a>`;
-          }).join('');
+      getOnboardingHtml: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>So funktioniert dein Begleitsystem</h3>' +
+          '<p>Dieses Buch funktioniert anders als ein normales Technik-Buch. Du hast drei Begleiter, die zusammenspielen:</p>' +
 
-          return `
-            <div class="fahrplan-chapter-row ${isCompleted ? 'completed' : ''}">
-              <input
-                type="checkbox"
-                class="fahrplan-chapter-checkbox"
-                ${isCompleted ? 'checked' : ''}
-                onchange="fahrplan.toggleChapter('${ch.num}', this.checked)"
-              />
-              <div class="fahrplan-chapter-number">Kap. ${ch.num}</div>
-              <div class="fahrplan-chapter-content">
-                <div class="fahrplan-chapter-title">${ch.title}</div>
-                <div class="fahrplan-chapter-description">${ch.desc}</div>
-              </div>
-              <div class="fahrplan-chapter-links">${modulesHtml}</div>
-            </div>
-          `;
-        }).join('');
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>' +
+                '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' +
+              '</svg>' +
+              '<h4>Das Buch</h4>' +
+              '<p>Theorie, Praxis und die echte Geschichte dahinter. Jedes Kapitel bringt dir einen Baustein bei.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="3" y="3" width="18" height="18" rx="2"/>' +
+                '<path d="M3 9h18"/><path d="M9 21V9"/>' +
+              '</svg>' +
+              '<h4>Das Dashboard</h4>' +
+              '<p>Deine Werkzeugkiste im Browser. Personalisierte Befehle, Kostenrechner, Fortschritt &ndash; alles unter <strong>openclaw-buch.de</strong>.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>' +
+                '<path d="M12 18h.01"/>' +
+              '</svg>' +
+              '<h4>Cowan</h4>' +
+              '<p>Dein Assistent auf dem Handy. Fragen stellen, Fehler klaeren, Fortschritt melden &ndash; direkt neben dem Buch.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-howto">' +
+            '<h4>So nutzt du den Fahrplan</h4>' +
+            '<div class="fahrplan-howto-step">' +
+              '<span class="fahrplan-howto-num">1</span>' +
+              '<span>Klicke auf ein Kapitel, um Details und passende Dashboard-Werkzeuge zu sehen.</span>' +
+            '</div>' +
+            '<div class="fahrplan-howto-step">' +
+              '<span class="fahrplan-howto-num">2</span>' +
+              '<span>Hake Kapitel ab, wenn du sie gelesen hast. Dein Fortschritt wird oben im Balken sichtbar.</span>' +
+            '</div>' +
+            '<div class="fahrplan-howto-step">' +
+              '<span class="fahrplan-howto-num">3</span>' +
+              '<span>Die blauen Pills neben jedem Kapitel bringen dich direkt zum passenden Dashboard-Modul.</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Automatisches Abhaken:</strong> Sobald du in Kapitel 2 deinen Server einrichtest, verbindet sich Cowan ueber den Sync-Server mit dem Dashboard. Ab dann meldet Cowan deinen Lesefortschritt automatisch hierher &ndash; du musst nicht mehr manuell abhaken.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.scrollToChapter(\'1\')">Weiter zu Kapitel 1 &rarr;</button>' +
+        '</div>';
       },
 
-      renderTechStack() {
-        const container = document.getElementById('fahrplan-tech-stack');
-        container.innerHTML = this.techStack.map(tech => {
-          const status = this.getTechStatus(tech.id);
-          const badgeClass = status.done ? 'done' : 'pending';
-          const badgeText = status.done ? 'Eingerichtet' : 'Noch offen';
+      renderChapters: function() {
+        var container = document.getElementById('fahrplan-chapters');
+        var html = '';
+        for (var i = 0; i < this.chapters.length; i++) {
+          var ch = this.chapters[i];
+          var storageKey = 'aa-progress.kap-' + ch.num;
+          var isCompleted = localStorage.getItem(storageKey) === 'true';
+          var isExpanded = this.expandedChapter === ch.num;
+          var cardClass = 'fahrplan-chapter-card' +
+            (isCompleted ? ' completed' : '') +
+            (isExpanded ? ' expanded' : '');
 
-          return `
-            <div class="fahrplan-tech-item">
-              <svg class="fahrplan-tech-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                ${this.getTechIcon(tech.id)}
-              </svg>
-              <div class="fahrplan-tech-name">${tech.name}</div>
-              <div class="fahrplan-tech-chapter">Im Buch: Kapitel ${tech.chapter}</div>
-              <span class="fahrplan-status-badge ${badgeClass}">${badgeText}</span>
-            </div>
-          `;
-        }).join('');
+          var modulesHtml = '';
+          for (var j = 0; j < ch.links.length; j++) {
+            var link = ch.links[j].replace(/[^a-z0-9-]/g, '');
+            modulesHtml += '<a class="fahrplan-module-pill" onclick="fahrplan.handleQuickAccess(\'' + link + '\'); event.stopPropagation();">' + link + '</a>';
+          }
+
+          var detailHtml = '';
+          if (ch.detail === 'onboarding') {
+            detailHtml = this.getOnboardingHtml();
+          } else if (ch.links.length > 0) {
+            detailHtml = '<div class="fahrplan-detail-generic">' +
+              '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
+              '<div class="fahrplan-detail-modules">' + modulesHtml + '</div>' +
+            '</div>';
+          }
+
+          html += '<div class="' + cardClass + '" data-chapter="' + ch.num + '" id="fahrplan-card-' + ch.num + '">' +
+            '<div class="fahrplan-chapter-row" onclick="fahrplan.toggleExpand(\'' + ch.num + '\')">' +
+              '<input type="checkbox" class="fahrplan-chapter-checkbox" ' +
+                (isCompleted ? 'checked' : '') +
+                ' onchange="fahrplan.toggleChapter(\'' + ch.num + '\', this.checked); event.stopPropagation();" onclick="event.stopPropagation();" />' +
+              '<div class="fahrplan-chapter-number">Kap. ' + ch.num + '</div>' +
+              '<div class="fahrplan-chapter-content">' +
+                '<div class="fahrplan-chapter-title">' + ch.title + '</div>' +
+                '<div class="fahrplan-chapter-description">' + ch.desc + '</div>' +
+              '</div>' +
+              '<div class="fahrplan-chapter-links">' + modulesHtml + '</div>' +
+              '<svg class="fahrplan-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="6 9 12 15 18 9"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="fahrplan-chapter-detail">' +
+              '<div class="fahrplan-chapter-detail-inner">' +
+                detailHtml +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }
+        container.innerHTML = html;
       },
 
-      getTechIcon(id) {
-        const icons = {
+      toggleExpand: function(num) {
+        if (this.expandedChapter === num) {
+          this.expandedChapter = null;
+        } else {
+          this.expandedChapter = num;
+        }
+        this.renderChapters();
+
+        if (this.expandedChapter) {
+          var el = document.getElementById('fahrplan-card-' + this.expandedChapter);
+          if (el) {
+            setTimeout(function() {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        }
+      },
+
+      scrollToChapter: function(num) {
+        this.expandedChapter = num;
+        this.renderChapters();
+        var el = document.getElementById('fahrplan-card-' + num);
+        if (el) {
+          setTimeout(function() {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      },
+
+      handleDeepLink: function() {
+        var params = new URLSearchParams(window.location.search);
+        var kap = params.get('kap');
+        if (!kap) {
+          // Shell laedt mit ?module=fahrplan&kap=vorwort – Shell-Parameter pruefen
+          var shellParams = new URLSearchParams(window.location.search);
+          kap = shellParams.get('kap');
+        }
+        if (kap) {
+          this.expandedChapter = kap.charAt(0).toUpperCase() + kap.slice(1);
+          // Auch lowercase pruefen (z.B. "1", "2", "13.2")
+          var found = false;
+          for (var i = 0; i < this.chapters.length; i++) {
+            if (this.chapters[i].num.toLowerCase() === kap.toLowerCase()) {
+              this.expandedChapter = this.chapters[i].num;
+              found = true;
+              break;
+            }
+          }
+          if (found) {
+            this.renderChapters();
+            var self = this;
+            setTimeout(function() {
+              var el = document.getElementById('fahrplan-card-' + self.expandedChapter);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 300);
+          }
+        }
+      },
+
+      renderTechStack: function() {
+        var container = document.getElementById('fahrplan-tech-stack');
+        var html = '';
+        for (var i = 0; i < this.techStack.length; i++) {
+          var tech = this.techStack[i];
+          var status = this.getTechStatus(tech.id);
+          var badgeClass = status.done ? 'done' : 'pending';
+          var badgeText = status.done ? 'Eingerichtet' : 'Noch offen';
+
+          html += '<div class="fahrplan-tech-item">' +
+            '<svg class="fahrplan-tech-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+              this.getTechIcon(tech.id) +
+            '</svg>' +
+            '<div class="fahrplan-tech-name">' + tech.name + '</div>' +
+            '<div class="fahrplan-tech-chapter">Im Buch: Kapitel ' + tech.chapter + '</div>' +
+            '<span class="fahrplan-status-badge ' + badgeClass + '">' + badgeText + '</span>' +
+          '</div>';
+        }
+        container.innerHTML = html;
+      },
+
+      getTechIcon: function(id) {
+        var icons = {
           'openclaw': '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 11l3 3 5-5"/>',
           'vps': '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 17h20M6 20h12"/>',
           'docker': '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><circle cx="12" cy="12" r="7"/>',
@@ -544,41 +883,53 @@
         return icons[id] || '<circle cx="12" cy="12" r="1"/><path d="M12 2v20M2 12h20"/>';
       },
 
-      getTechStatus(id) {
-        const statusMap = {
-          'api-key': () => ({ done: !!localStorage.getItem('aa-settings.api-key') }),
-          'vps': () => ({ done: !!localStorage.getItem('aa-settings.server-ip') }),
-          'openclaw': () => ({ done: !!localStorage.getItem('aa-settings.openclaw-path') }),
-          'docker': () => ({ done: !!localStorage.getItem('aa-settings.docker-enabled') }),
-          'tailscale': () => ({ done: !!localStorage.getItem('aa-settings.tailscale-auth') }),
-          'telegram': () => ({ done: !!localStorage.getItem('aa-settings.telegram-token') })
+      getTechStatus: function(id) {
+        var statusMap = {
+          'api-key': function() { return { done: !!localStorage.getItem('aa-settings.api-key') }; },
+          'vps': function() { return { done: !!localStorage.getItem('aa-settings.server-ip') }; },
+          'openclaw': function() { return { done: !!localStorage.getItem('aa-settings.openclaw-path') }; },
+          'docker': function() { return { done: !!localStorage.getItem('aa-settings.docker-enabled') }; },
+          'tailscale': function() { return { done: !!localStorage.getItem('aa-settings.tailscale-auth') }; },
+          'telegram': function() { return { done: !!localStorage.getItem('aa-settings.telegram-token') }; }
         };
         return (statusMap[id] ? statusMap[id]() : { done: false });
       },
 
-      toggleChapter(num, checked) {
-        const storageKey = `aa-progress.kap-${num}`;
+      toggleChapter: function(num, checked) {
+        var storageKey = 'aa-progress.kap-' + num;
         localStorage.setItem(storageKey, checked ? 'true' : 'false');
         this.updateProgress();
+        // Update card class without full re-render
+        var card = document.querySelector('[data-chapter="' + num + '"]');
+        if (card) {
+          if (checked) {
+            card.classList.add('completed');
+          } else {
+            card.classList.remove('completed');
+          }
+        }
       },
 
-      updateProgress() {
-        const completed = this.chapters.filter(ch =>
-          localStorage.getItem(`aa-progress.kap-${ch.num}`) === 'true'
-        ).length;
-        const total = this.chapters.length;
-        const percentage = (completed / total) * 100;
+      updateProgress: function() {
+        var completed = 0;
+        for (var i = 0; i < this.chapters.length; i++) {
+          if (localStorage.getItem('aa-progress.kap-' + this.chapters[i].num) === 'true') {
+            completed++;
+          }
+        }
+        var total = this.chapters.length;
+        var percentage = (completed / total) * 100;
 
         document.getElementById('fahrplan-progress-text').textContent =
-          `${completed} von ${total} Kapiteln abgeschlossen`;
-        document.getElementById('fahrplan-progress-bar').style.width = `${percentage}%`;
+          completed + ' von ' + total + ' Kapiteln abgeschlossen';
+        document.getElementById('fahrplan-progress-bar').style.width = percentage + '%';
       },
 
-      handleQuickAccess(module) {
+      handleQuickAccess: function(module) {
         if (typeof loadModule === 'function') {
           loadModule(module);
         } else {
-          window.location.href = `/?module=${module}`;
+          window.location.href = '/?module=' + module;
         }
       }
     };
