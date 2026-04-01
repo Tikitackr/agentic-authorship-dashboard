@@ -32,6 +32,14 @@
    - QR-Overlay: Dark-Glass statt Light-Theme (konsistent)
    - Buttons: Amber-Gradient, Glow-Shadows, Spring-Animationen
    - Geraete-neutral: "iPhone" → "Handy" ueberall
+
+   v3.1.1 (02.04.2026 – Session 178):
+   - Design-Fixes nach Thomas-Review:
+   - Tile-Borders: Amber → subtiles Weiss (rgba(255,255,255,0.18) hover)
+   - Farbkonsistenz: Gruen (#22c55e) → Amber (#f59e0b) bei allen Tile-Icons
+   - Kachelhoehen: min-height:160px fuer gleichmaessiges Grid
+   - Quick-Action Chips: Amber-Border → Glass-Look (weiss/grau statt orange)
+   - cw-tile-label-ok von Gruen auf Amber umgestellt
    ========================================================== */
 
 (function() {
@@ -832,10 +840,10 @@
     var keyTile = el('div', { className: 'cw-tile' + (hasKey ? ' cw-tile-active' : '') });
     /* Icon: Schloss (offen wenn Key da, zu wenn nicht) */
     var lockIcon = hasKey
-      ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+      ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
       : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
     keyTile.appendChild(el('div', { className: 'cw-tile-icon', html: lockIcon }));
-    keyTile.appendChild(el('div', { className: 'cw-tile-label' + (hasKey ? ' cw-tile-label-ok' : '') }, hasKey ? 'Verbunden' : 'API-Key'));
+    keyTile.appendChild(el('div', { className: 'cw-tile-label' }, hasKey ? 'Verbunden' : 'API-Key'));
 
     if (hasKey) {
       /* Verbunden-State: "Key aendern" Link + Modell-Dropdown */
@@ -904,13 +912,13 @@
     grid.appendChild(keyTile);
 
     /* ── Kachel 2: Wissen / Chunks ── */
-    var wissIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (chunkCount > 0 ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>';
+    var wissIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (chunkCount > 0 ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>';
     grid.appendChild(el('div', {
       className: 'cw-tile' + (chunkCount > 0 ? ' cw-tile-active' : ''),
       onClick: function() { if (chunkCount > 0) { currentView = 'chat'; showChunkBrowser = true; render(); } },
     }, [
       el('div', { className: 'cw-tile-icon', html: wissIcon }),
-      el('div', { className: 'cw-tile-label' + (chunkCount > 0 ? ' cw-tile-label-ok' : '') }, 'Wissen'),
+      el('div', { className: 'cw-tile-label' }, 'Wissen'),
       el('div', { className: 'cw-tile-sub' }, chunkCount > 0 ? chunkCount + ' Chunks' : 'Laden...'),
     ]));
 
@@ -933,13 +941,13 @@
 
     /* ── Kachel 4: Frage stellen ── */
     var frageReady = hasKey && chunkCount > 0;
-    var frageIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (frageReady ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+    var frageIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (frageReady ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
     grid.appendChild(el('div', {
       className: 'cw-tile' + (frageReady ? ' cw-tile-active' : ' cw-tile-disabled'),
       onClick: function() { if (frageReady) { currentView = 'chat'; render(); } },
     }, [
       el('div', { className: 'cw-tile-icon', html: frageIcon }),
-      el('div', { className: 'cw-tile-label' + (frageReady ? ' cw-tile-label-ok' : '') }, 'Frage stellen'),
+      el('div', { className: 'cw-tile-label' }, 'Frage stellen'),
       el('div', { className: 'cw-tile-sub' }, frageReady ? 'Bereit' : 'Erst API-Key'),
     ]));
 
@@ -1226,8 +1234,8 @@
 
       /* Examples – Glass Pills */
       '.cw-examples { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }',
-      '.cw-example-btn { background:rgba(30,41,59,0.55); border:1px solid rgba(217,119,6,0.15); color:#f59e0b; border-radius:14px; padding:6px 14px; font-size:12px; cursor:pointer; transition:all .2s cubic-bezier(0.4,0,0.2,1); font-family:inherit; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }',
-      '.cw-example-btn:hover { background:rgba(217,119,6,0.12); border-color:rgba(217,119,6,0.35); transform:translateY(-1px); }',
+      '.cw-example-btn { background:rgba(30,41,59,0.55); border:1px solid rgba(148,163,184,0.12); color:#cbd5e1; border-radius:14px; padding:6px 14px; font-size:12px; cursor:pointer; transition:all .2s cubic-bezier(0.4,0,0.2,1); font-family:inherit; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }',
+      '.cw-example-btn:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); color:#f1f5f9; transform:translateY(-1px); }',
       '.cw-example-btn:active { transform:scale(0.97); }',
 
       /* Model Selection */
@@ -1259,16 +1267,16 @@
       '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
 
       /* Tiles – Glass Cards */
-      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:22px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s,background-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); }',
-      '.cw-tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(217,119,6,0.12),inset 0 1px 0 rgba(255,255,255,0.05); border-color:rgba(217,119,6,0.3); }',
+      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:22px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s,background-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); min-height:160px; justify-content:center; }',
+      '.cw-tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }',
       '.cw-tile:active { transform:scale(0.96); }',
-      '.cw-tile-active { border-color:rgba(217,119,6,0.25); }',
-      '.cw-tile-active:hover { border-color:rgba(217,119,6,0.5); }',
+      '.cw-tile-active { border-color:rgba(255,255,255,0.15); }',
+      '.cw-tile-active:hover { border-color:rgba(255,255,255,0.22); }',
       '.cw-tile-disabled { opacity:0.45; cursor:default; border-color:rgba(100,116,139,0.1); }',
       '.cw-tile-disabled:hover { border-color:rgba(100,116,139,0.1); background:rgba(30,41,59,0.55); transform:none; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); }',
       '.cw-tile-icon { width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; background:rgba(217,119,6,0.1); }',
       '.cw-tile-label { font-size:15px; font-weight:700; color:#f1f5f9; letter-spacing:-0.2px; }',
-      '.cw-tile-label-ok { color:#22c55e; }',
+      '.cw-tile-label-ok { color:#f59e0b; }',
       '.cw-tile-sub { font-size:12px; color:#94a3b8; }',
       '.cw-tile-select { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; margin-top:4px; }',
       '.cw-tile-link { font-size:12px; color:#94a3b8; cursor:pointer; text-decoration:underline; transition:color .15s; }',
