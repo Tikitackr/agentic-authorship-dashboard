@@ -2,6 +2,13 @@
    Cowan Widget – Vanilla JS (OpenClaw Buch Dashboard)
    KI-Wissensassistent fuer das OpenClaw Buch
    Floating-Widget, laeuft in der Shell (index.html)
+
+   v2.0.0 (01.04.2026 – Session 174):
+   - Sync-Grundfunktion: Cowan ↔ VPS Sync-Server (optional)
+   - Kapitel-Kontext: zeigt aktives Modul im Header
+   - ?cowan=open URL-Parameter (fuer QR-Code AA-COWAN)
+   - Sync-Status im Header (gruener/grauer Punkt)
+   - Public API erweitert (setContext, syncStatus)
    ========================================================== */
 
 (function() {
@@ -25,6 +32,31 @@
   var isOpen = false;
   var showChunkBrowser = false;
   var chunkBrowserIndex = 0;
+
+  /* ── Sync & Kontext State ── */
+  var syncConnected = false;
+  var syncError = null;
+  var syncUrl = '';
+  var syncToken = '';
+  var syncPollTimer = null;
+  var currentModuleId = '';  // z.B. 'fahrplan', 'setup-guide'
+  var currentModuleLabel = '';  // z.B. 'Dein Fahrplan', 'Setup-Guide'
+
+  var MODULE_LABELS = {
+    'fahrplan': 'Dein Fahrplan',
+    'setup-guide': 'Setup-Guide',
+    'meine-daten': 'Meine Daten',
+    'buch-dashboard': 'Buch-Dashboard',
+    'publishing': 'Publishing',
+    'workspace-wizard': 'Workspace Wizard',
+    'config-builder': 'Config Builder',
+    'cost-calculator': 'Kostenrechner',
+    'soul-gallery': 'SOUL Gallery',
+    'cli-referenz': 'CLI-Referenz',
+    'system-status': 'System-Status',
+    'skill-explorer': 'Skill Explorer',
+    'template-packs': 'Template Packs',
+  };
 
   var PRICING = {
     'claude-haiku-4-5-20251001': { input: 1.0 / 1e6, output: 5.0 / 1e6, label: 'Haiku 4.5' },
@@ -138,7 +170,13 @@
       chapterSection = '\n\n## Aktueller Kontext des Lesers\nDer Leser arbeitet an Kapitel ' + ch.number + ': ' + ch.title + ' (Teil ' + ch.part + ').\nFortschritt: ' + pr.done + '/' + pr.total + (done.length ? ' (' + done.join(', ') + ' erledigt)' : '') + '.' + (open.length ? '\nNaechster Schritt: ' + open[0] + '.' : '');
     }
 
-    return 'Du bist Cowan - Die Buch-Instanz, der KI-Wissensassistent fuer das OpenClaw Buch (KI-gestuetzte Buchproduktion mit Claude und OpenClaw).\n\n## Deine Aufgabe\nDu hilfst Lesern, Fragen zum Buch, zu OpenClaw, zur Multi-Agent-Pipeline, zur Claude-API und zur KI-gestuetzten Bucherstellung zu beantworten.\nDu basierst deine Antworten ausschliesslich auf der bereitgestellten Wissensbasis.\n\n## Wissensbasis\n\n' + chunkSection + chapterSection + '\n\n## Antwortregeln\n1. Beantworte Fragen NUR basierend auf den Wissensbausteinen\n2. Zitiere verwendete Quellen am Ende deiner Antwort in exakt diesem Format:\n   ---QUELLEN---\n   chunk-id-hier\n   ---QUELLEN-ENDE---\n3. Wenn die Wissensbasis keine Antwort enthaelt, sage das ehrlich\n4. Antworte immer auf Deutsch\n5. Halte Antworten praxisnah und konkret\n6. Gib IMMER den ---QUELLEN--- Block am Ende an';
+    /* Modul-Kontext: wo ist der Leser gerade im Dashboard? */
+    var moduleSection = '';
+    if (currentModuleId) {
+      moduleSection = '\n\n## Dashboard-Kontext\nDer Leser hat gerade das Modul "' + (currentModuleLabel || currentModuleId) + '" geoeffnet. Wenn sich die Frage auf dieses Modul bezieht, gehe darauf ein.';
+    }
+
+    return 'Du bist Cowan - Die Buch-Instanz, der KI-Wissensassistent fuer das OpenClaw Buch (KI-gestuetzte Buchproduktion mit Claude und OpenClaw).\n\n## Deine Aufgabe\nDu hilfst Lesern, Fragen zum Buch, zu OpenClaw, zur Multi-Agent-Pipeline, zur Claude-API und zur KI-gestuetzten Bucherstellung zu beantworten.\nDu basierst deine Antworten ausschliesslich auf der bereitgestellten Wissensbasis.\n\n## Wissensbasis\n\n' + chunkSection + chapterSection + moduleSection + '\n\n## Antwortregeln\n1. Beantworte Fragen NUR basierend auf den Wissensbausteinen\n2. Zitiere verwendete Quellen am Ende deiner Antwort in exakt diesem Format:\n   ---QUELLEN---\n   chunk-id-hier\n   ---QUELLEN-ENDE---\n3. Wenn die Wissensbasis keine Antwort enthaelt, sage das ehrlich\n4. Antworte immer auf Deutsch\n5. Halte Antworten praxisnah und konkret\n6. Gib IMMER den ---QUELLEN--- Block am Ende an';
   }
 
   function formatCost(cost) {
@@ -186,6 +224,95 @@
     }).catch(function(err) {
       console.warn('Cowan: chunks.json nicht geladen', err);
     });
+  }
+
+  /* ── Kontext: Aktives Modul erkennen ── */
+  function updateModuleContext() {
+    try {
+      var mod = localStorage.getItem('shell:lastModule') || '';
+      if (mod !== currentModuleId) {
+        currentModuleId = mod;
+        currentModuleLabel = MODULE_LABELS[mod] || mod || '';
+      }
+    } catch(e) {}
+  }
+
+  /* ── Sync: Verbindungsdaten aus Meine-Daten laden ── */
+  function loadSyncSettings() {
+    try {
+      syncUrl = localStorage.getItem('aa-settings.syncUrl') || '';
+      syncToken = localStorage.getItem('aa-settings.syncToken') || '';
+    } catch(e) {}
+  }
+
+  /* ── Sync: Event an Server schreiben ── */
+  function syncWriteEvent(event) {
+    if (!syncUrl || !syncToken) return;
+    var payload = {
+      lastUpdate: new Date().toISOString(),
+      device: 'dashboard-cowan',
+      event: event,
+      context: {
+        module: currentModuleId,
+        questionsAsked: messages.filter(function(m) { return m.role === 'user'; }).length,
+      },
+    };
+    fetch(syncUrl + '/cowan-events.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + syncToken },
+      body: JSON.stringify(payload),
+    }).then(function(res) {
+      if (res.ok) { syncConnected = true; syncError = null; }
+      else if (res.status === 401) { syncError = 'Token falsch'; syncConnected = false; }
+      else { syncError = 'Server ' + res.status; }
+      renderHeader();
+    }).catch(function() {
+      syncError = 'Offline'; syncConnected = false;
+      renderHeader();
+    });
+  }
+
+  /* ── Sync: Dashboard-State vom Server lesen ── */
+  function syncReadState() {
+    if (!syncUrl || !syncToken) return;
+    fetch(syncUrl + '/dashboard-state.json', {
+      headers: { 'Authorization': 'Bearer ' + syncToken },
+    }).then(function(res) {
+      if (res.ok) return res.json();
+      if (res.status === 404) return null;
+      throw new Error('Status ' + res.status);
+    }).then(function(data) {
+      if (!data) return;
+      syncConnected = true; syncError = null;
+      /* Kapitel-Fortschritt uebernehmen wenn vorhanden */
+      if (data.progress) {
+        try {
+          localStorage.setItem('content:currentChapter', JSON.stringify(data.progress.currentChapter || null));
+          localStorage.setItem('content:chapterProgress', JSON.stringify(data.progress || null));
+        } catch(e) {}
+      }
+      renderHeader();
+    }).catch(function() {
+      /* Stiller Fehler – Sync ist optional */
+    });
+  }
+
+  /* ── Sync: Polling starten (alle 10s) ── */
+  function startSyncPolling() {
+    loadSyncSettings();
+    if (!syncUrl || !syncToken) return;
+    /* Sofort einmal lesen */
+    syncReadState();
+    /* Dann alle 10 Sekunden */
+    if (syncPollTimer) clearInterval(syncPollTimer);
+    syncPollTimer = setInterval(function() {
+      syncReadState();
+    }, 10000);
+  }
+
+  /* ── Sync: Polling stoppen ── */
+  function stopSyncPolling() {
+    if (syncPollTimer) { clearInterval(syncPollTimer); syncPollTimer = null; }
   }
 
   /* ── API-Key Validierung ── */
@@ -308,6 +435,9 @@
         messages.push({ role: 'assistant', content: typingWords[0] || '', sourceIds: [], isTyping: true });
         render();
         startTyping();
+
+        /* Sync: Frage-Event an Server melden */
+        syncWriteEvent({ type: 'question', module: currentModuleId, sources: parsed.sourceIds });
       });
     }).catch(function(err) {
       clearTimeout(timeout);
@@ -428,12 +558,27 @@
     var costStr = totalCost > 0 ? ' · $' + formatCost(totalCost) : '';
     var msgCount = messages.filter(function(m) { return !m.isWelcome; }).length;
 
+    /* Modul-Kontext aktualisieren */
+    updateModuleContext();
+
+    /* Sync-Status-Punkt: gruen = verbunden, grau = nicht verbunden, rot = Fehler */
+    var syncDot = '';
+    if (syncUrl) {
+      var dotColor = syncError ? '#ef4444' : (syncConnected ? '#22c55e' : '#666');
+      var dotTitle = syncError || (syncConnected ? 'Sync verbunden' : 'Sync getrennt');
+      syncDot = '<span class="cw-sync-dot" style="background:' + dotColor + '" title="' + dotTitle + '"></span>';
+    }
+
+    /* Sub-Zeile: Modell + Chunks + optional Modul-Kontext */
+    var subText = modelLabel + ' · ' + chunks.length + ' Chunks' + costStr;
+    if (currentModuleLabel) subText = currentModuleLabel + ' · ' + subText;
+
     header.innerHTML = '';
     header.appendChild(el('div', { className: 'cw-header-left' }, [
       el('div', { className: 'cw-header-icon', html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' }),
       el('div', { className: 'cw-header-info' }, [
-        el('span', { className: 'cw-header-title' }, 'Cowan'),
-        el('span', { className: 'cw-header-sub' }, modelLabel + ' · ' + chunks.length + ' Chunks' + costStr),
+        el('span', { className: 'cw-header-title', html: 'Cowan' + syncDot }),
+        el('span', { className: 'cw-header-sub' }, subText),
       ]),
     ]));
     header.appendChild(el('div', { className: 'cw-header-right' }, [
@@ -642,6 +787,17 @@
 
     loadState();
     loadChunks();
+    updateModuleContext();
+    startSyncPolling();
+
+    /* ?cowan=open URL-Parameter: Widget sofort oeffnen (fuer QR-Code AA-COWAN) */
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('cowan') === 'open') {
+        isOpen = true;
+      }
+    } catch(e) {}
+
     render();
   }
 
@@ -666,6 +822,7 @@
       '.cw-btn-icon { background:none; border:none; color:#888; cursor:pointer; font-size:16px; padding:4px 6px; border-radius:6px; transition:background .15s,color .15s; }',
       '.cw-btn-icon:hover { background:rgba(245,158,11,0.12); color:#f59e0b; }',
       '.cw-btn-close { font-size:14px; }',
+      '.cw-sync-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-left:6px; vertical-align:middle; }',
 
       /* Messages */
       '.cw-messages { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; }',
@@ -768,6 +925,21 @@
     toggle: function() { isOpen = !isOpen; render(); if (isOpen) setTimeout(scrollChat, 100); },
     reset: resetConversation,
     isOpen: function() { return isOpen; },
+    /* Kontext von aussen setzen (z.B. Shell oder Modul) */
+    setContext: function(moduleId) {
+      currentModuleId = moduleId || '';
+      currentModuleLabel = MODULE_LABELS[moduleId] || moduleId || '';
+      renderHeader();
+    },
+    /* Sync-Status abfragen */
+    syncStatus: function() {
+      return { connected: syncConnected, error: syncError, url: syncUrl ? true : false };
+    },
+    /* Sync manuell neu verbinden (z.B. nach Meine-Daten-Aenderung) */
+    reconnectSync: function() {
+      stopSyncPolling();
+      startSyncPolling();
+    },
   };
 
 })();
