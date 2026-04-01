@@ -818,19 +818,28 @@
     /* 2x2 Grid */
     var grid = el('div', { className: 'cw-home-grid' });
 
-    /* Kachel 1: Verbunden / API-Key */
-    var keyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (hasKey ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-    var keyTile = el('div', {
-      className: 'cw-tile' + (hasKey ? ' cw-tile-active' : ''),
-      onClick: function() { currentView = 'chat'; render(); },
-    }, [
-      el('div', { className: 'cw-tile-icon', html: hasKey ? keyIcon : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>' }),
-      el('div', { className: 'cw-tile-label' + (hasKey ? ' cw-tile-label-ok' : '') }, hasKey ? 'Verbunden' : 'API-Key'),
-      el('div', { className: 'cw-tile-sub' }, hasKey ? 'Key aendern' : 'Eingeben'),
-    ]);
-    /* Modell-Auswahl unter der Key-Kachel */
+    /* ── Kachel 1: API-Key (mit Inline-Eingabe) ── */
+    var keyTile = el('div', { className: 'cw-tile' + (hasKey ? ' cw-tile-active' : '') });
+    /* Icon: Schloss (offen wenn Key da, zu wenn nicht) */
+    var lockIcon = hasKey
+      ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+      : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+    keyTile.appendChild(el('div', { className: 'cw-tile-icon', html: lockIcon }));
+    keyTile.appendChild(el('div', { className: 'cw-tile-label' + (hasKey ? ' cw-tile-label-ok' : '') }, hasKey ? 'Verbunden' : 'API-Key'));
+
     if (hasKey) {
-      var modelSelect = el('select', { className: 'cw-tile-select', onChange: function(e) {
+      /* Verbunden-State: "Key aendern" Link + Modell-Dropdown */
+      keyTile.appendChild(el('div', {
+        className: 'cw-tile-link',
+        onClick: function(e) {
+          e.stopPropagation();
+          /* Key zuruecksetzen → Eingabe zeigen */
+          apiKey = ''; apiKeyStatus = 'none';
+          try { localStorage.removeItem('shell:apiKey'); } catch(ex) {}
+          render();
+        },
+      }, 'Key aendern'));
+      var modelSelect = el('select', { className: 'cw-tile-select', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
         selectedModel = e.target.value;
         try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
         render();
@@ -841,10 +850,50 @@
         modelSelect.appendChild(opt);
       });
       keyTile.appendChild(modelSelect);
+    } else {
+      /* Eingabe-State: Input + OK-Button direkt in der Kachel */
+      var keyRow = el('div', { className: 'cw-tile-key-row' });
+      var keyInput = el('input', {
+        type: 'password',
+        className: 'cw-tile-key-input',
+        placeholder: 'sk-ant-...',
+      });
+      keyInput.addEventListener('click', function(e) { e.stopPropagation(); });
+      keyInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); validateApiKey(keyInput.value.trim()); }
+      });
+      var keyBtn = el('button', {
+        className: 'cw-tile-key-btn',
+        onClick: function(e) { e.stopPropagation(); validateApiKey(keyInput.value.trim()); },
+      }, 'OK');
+      keyRow.appendChild(keyInput);
+      keyRow.appendChild(keyBtn);
+      keyTile.appendChild(keyRow);
+
+      /* Status-Text */
+      if (apiKeyStatus === 'checking') {
+        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
+      } else if (apiKeyStatus === 'invalid') {
+        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Key ungueltig'));
+      } else {
+        keyTile.appendChild(el('div', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
+      }
+
+      /* Modell-Dropdown auch im Eingabe-State */
+      var modelSelect2 = el('select', { className: 'cw-tile-select', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
+        selectedModel = e.target.value;
+        try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
+      }});
+      Object.keys(PRICING).forEach(function(mid) {
+        var opt = el('option', { value: mid }, PRICING[mid].label);
+        if (mid === selectedModel) opt.selected = true;
+        modelSelect2.appendChild(opt);
+      });
+      keyTile.appendChild(modelSelect2);
     }
     grid.appendChild(keyTile);
 
-    /* Kachel 2: Wissen / Chunks */
+    /* ── Kachel 2: Wissen / Chunks ── */
     var wissIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (chunkCount > 0 ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>';
     grid.appendChild(el('div', {
       className: 'cw-tile' + (chunkCount > 0 ? ' cw-tile-active' : ''),
@@ -855,35 +904,50 @@
       el('div', { className: 'cw-tile-sub' }, chunkCount > 0 ? chunkCount + ' Chunks' : 'Laden...'),
     ]));
 
-    /* Kachel 3: Handy / QR-Code */
+    /* ── Kachel 3: Handy / QR-Code ── */
     var handyReady = hasKey && hasSync;
     var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (handyReady ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+    var handySub = handyReady ? 'QR-Code scannen' : (!hasKey ? 'Erst API-Key' : 'Sync noetig');
     grid.appendChild(el('div', {
       className: 'cw-tile' + (handyReady ? '' : ' cw-tile-disabled'),
       onClick: function() {
-        if (!hasKey) { alert('Bitte zuerst API-Key eingeben.'); return; }
+        if (!hasKey) return;
         if (!hasSync) { alert('Bitte zuerst Sync in Meine Daten einrichten (Tailscale-IP + Sync-Token).'); return; }
         currentView = 'qr'; render();
       },
     }, [
       el('div', { className: 'cw-tile-icon', html: handyIcon }),
       el('div', { className: 'cw-tile-label' }, 'Handy'),
-      el('div', { className: 'cw-tile-sub' }, handyReady ? 'QR-Code scannen' : 'Sync noetig'),
+      el('div', { className: 'cw-tile-sub' }, handySub),
     ]));
 
-    /* Kachel 4: Frage stellen */
+    /* ── Kachel 4: Frage stellen ── */
     var frageReady = hasKey && chunkCount > 0;
     var frageIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (frageReady ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
     grid.appendChild(el('div', {
-      className: 'cw-tile' + (frageReady ? ' cw-tile-active' : ''),
-      onClick: function() { currentView = 'chat'; render(); },
+      className: 'cw-tile' + (frageReady ? ' cw-tile-active' : ' cw-tile-disabled'),
+      onClick: function() { if (frageReady) { currentView = 'chat'; render(); } },
     }, [
       el('div', { className: 'cw-tile-icon', html: frageIcon }),
       el('div', { className: 'cw-tile-label' + (frageReady ? ' cw-tile-label-ok' : '') }, 'Frage stellen'),
-      el('div', { className: 'cw-tile-sub' }, frageReady ? 'Bereit' : 'Key fehlt'),
+      el('div', { className: 'cw-tile-sub' }, frageReady ? 'Bereit' : 'Erst API-Key'),
     ]));
 
     home.appendChild(grid);
+
+    /* ── Footer-Link: Key erstellen ── */
+    if (!hasKey) {
+      var footer = el('div', { className: 'cw-home-footer' });
+      var link = el('a', {
+        href: 'https://console.anthropic.com/settings/keys',
+        target: '_blank',
+        rel: 'noopener',
+        className: 'cw-home-link',
+      }, 'Key erstellen bei Anthropic');
+      footer.appendChild(link);
+      footer.appendChild(document.createTextNode(' \u2013 bleibt lokal gespeichert'));
+      home.appendChild(footer);
+    }
   }
 
   /* ── QR-Code Overlay: Handy verbinden ── */
@@ -1180,6 +1244,19 @@
       '.cw-tile-label-ok { color:#22c55e; }',
       '.cw-tile-sub { font-size:12px; color:#888; }',
       '.cw-tile-select { background:#0f172a; color:#f1f5f9; border:1px solid #334155; border-radius:8px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; margin-top:4px; }',
+      '.cw-tile-link { font-size:12px; color:#888; cursor:pointer; text-decoration:underline; transition:color .15s; }',
+      '.cw-tile-link:hover { color:#f59e0b; }',
+      '.cw-tile-key-row { display:flex; gap:4px; width:100%; margin-top:4px; }',
+      '.cw-tile-key-input { flex:1; min-width:0; background:#0f172a; color:#f1f5f9; border:1px solid #334155; border-radius:8px; padding:6px 8px; font-size:12px; font-family:inherit; outline:none; }',
+      '.cw-tile-key-input:focus { border-color:rgba(245,158,11,0.5); }',
+      '.cw-tile-key-input::placeholder { color:#555; }',
+      '.cw-tile-key-btn { background:#f59e0b; color:#000; border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; }',
+      '.cw-tile-key-btn:hover { background:#fbbf24; }',
+      '.cw-tile-sub-checking { color:#f59e0b; }',
+      '.cw-tile-sub-error { color:#ef4444; }',
+      '.cw-home-footer { font-size:12px; color:#888; text-align:center; margin-top:8px; }',
+      '.cw-home-link { color:#f59e0b; text-decoration:underline; }',
+      '.cw-home-link:hover { color:#fbbf24; }',
 
       /* Back button */
       '.cw-btn-back { margin-right:2px; }',
