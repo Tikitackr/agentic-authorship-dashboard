@@ -818,9 +818,9 @@
   function getCss() {
     return [
       /* FAB – OpenClaw Hummer mit Glow */
-      '.cw-fab { position:fixed; bottom:24px; right:24px; width:70px; height:70px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid var(--amber,#f59e0b); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:9999; transition:transform .2s; animation:cw-glow 3.5s ease-in-out infinite; }',
+      '.cw-fab { position:fixed; bottom:24px; right:24px; width:70px; height:70px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid rgba(245,158,11,0.25); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:9999; transition:transform .2s; animation:cw-glow 3.5s ease-in-out infinite; }',
       '.cw-fab:hover { transform:scale(1.1); }',
-      '@keyframes cw-glow { 0%,100% { box-shadow:0 0 8px rgba(245,158,11,0.1),0 0 20px rgba(245,158,11,0.05); } 50% { box-shadow:0 0 24px rgba(245,158,11,0.6),0 0 48px rgba(245,158,11,0.3),0 0 72px rgba(245,158,11,0.1); } }',
+      '@keyframes cw-glow { 0%,100% { border-color:rgba(245,158,11,0.25); box-shadow:0 0 8px rgba(245,158,11,0.08),0 0 20px rgba(245,158,11,0.04); } 50% { border-color:rgba(245,158,11,0.9); box-shadow:0 0 24px rgba(245,158,11,0.6),0 0 48px rgba(245,158,11,0.3),0 0 72px rgba(245,158,11,0.1); } }',
 
       /* Panel */
       '.cw-panel { position:fixed; bottom:24px; right:24px; width:400px; max-width:calc(100vw - 32px); height:600px; max-height:calc(100vh - 48px); background:#0f172a; border:1px solid rgba(245,158,11,0.25); border-radius:16px; display:flex; flex-direction:column; overflow:hidden; z-index:9999; box-shadow:0 12px 48px rgba(0,0,0,0.5); }',
