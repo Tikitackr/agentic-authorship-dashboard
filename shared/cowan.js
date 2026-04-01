@@ -18,7 +18,7 @@
    v3.0.0 (01.04.2026 – Session 176):
    - Home-Screen mit 4 Kacheln (Verbunden, Wissen, Handy, Frage stellen)
    - QR-Code Overlay: Handy verbinden per QR-Scan (API-Key base64 in URL)
-   - Companion-Mode: ?companion=true URL-Parameter, reduzierte UI, Vollbild auf iPhone
+   - Companion-Mode: ?companion=true URL-Parameter, reduzierte UI, Vollbild auf Handy
    - View-System: home | chat | qr (statt nur chat)
    - Zurueck-Button im Header (Chat/QR → Home)
    - Benoetigt shared/qr.js (QR-Code-Generator, kein CDN)
@@ -987,11 +987,9 @@
       el('div', { className: 'cw-qr-image', html: qrSvg }),
       /* Anleitung */
       el('div', { className: 'cw-qr-instruction' }, [
-        el('strong', null, 'Scanne mit deinem iPhone'),
+        el('strong', null, 'Scanne mit deinem Handy'),
         el('p', null, 'Kamera-App oeffnen, QR-Code scannen \u2013 Cowan startet im Companion-Modus.'),
       ]),
-      /* URL Vorschau */
-      el('div', { className: 'cw-qr-url' }, qrUrl.length > 60 ? qrUrl.substring(0, 57) + '...' : qrUrl),
       /* Sync-Status */
       el('div', { className: 'cw-qr-status' }, syncConnected ? 'Sync aktiv \u2013 nach dem Scannen verbindet sich der Companion automatisch.' : 'Sync wird verbunden...'),
     ]);
@@ -1106,7 +1104,7 @@
       /* Sync-Settings schon aus URL gesetzt, Polling direkt starten */
       startSyncPolling();
       /* Connected-Event an Server senden */
-      syncWriteEvent({ type: 'companion-connected', details: 'iPhone Companion verbunden' });
+      syncWriteEvent({ type: 'companion-connected', details: 'Companion verbunden' });
     } else {
       startSyncPolling();
     }
@@ -1273,7 +1271,6 @@
       '.cw-qr-instruction { margin-bottom:12px; }',
       '.cw-qr-instruction strong { font-size:15px; color:#1e293b; display:block; margin-bottom:4px; }',
       '.cw-qr-instruction p { font-size:13px; color:#64748b; margin:0; line-height:1.5; }',
-      '.cw-qr-url { font-size:11px; color:#94a3b8; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; word-break:break-all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }',
       '.cw-qr-status { font-size:12px; color:#22c55e; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:8px 10px; }',
 
       /* Companion-Mode: Vollbild auf Mobile */
