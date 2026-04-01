@@ -497,6 +497,7 @@
       storage.set('shell:lastModule', 'shell');
       history.pushState({ module: null }, '', window.location.pathname);
       syncPushDashboardState(null);
+      if (window.Cowan) Cowan.setContext(null);
     }
 
     // ── Sync: Dashboard-State an VPS pushen ──
@@ -600,6 +601,7 @@
         history.pushState({ module: moduleId }, '', '?module=' + moduleId);
         window.scrollTo(0, 0);
         syncPushDashboardState(moduleId);
+        if (window.Cowan) Cowan.setContext(moduleId);
       }).catch(function(err) {
         contentArea.style.display = 'block';
         contentArea.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)"><p style="font-size:1.2rem;margin-bottom:0.5rem">Modul <strong style="color:var(--amber)">' + moduleId + '</strong> ist noch in Entwicklung.</p><button class="back-btn" onclick="showHome()">' + chevronLeftSvg + ' Zur&uuml;ck</button></div>';
