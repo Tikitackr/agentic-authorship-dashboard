@@ -664,7 +664,7 @@
     resultEl.className = 'm03-test-result info';
     resultEl.textContent = 'Verbindung wird geprueft...';
 
-    var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/api/health';
+    var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/health';
 
     fetch(url, {
       method: 'GET',
