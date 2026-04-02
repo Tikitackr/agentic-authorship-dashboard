@@ -934,17 +934,17 @@
 
     /* ── Kachel 3: Handy / QR-Code ── */
     var handyReady = hasKey && hasSync;
-    var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (handyReady ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+    var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (handyReady ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
     var handySub = handyReady ? 'QR-Code scannen' : (!hasKey ? 'Erst API-Key' : 'Sync noetig');
     grid.appendChild(el('div', {
-      className: 'cw-tile' + (handyReady ? ' cw-tile-active' : ' cw-tile-disabled'),
+      className: 'cw-tile' + (handyReady ? '' : ' cw-tile-disabled'),
       onClick: function() {
         if (!hasKey) return;
         if (!hasSync) { alert('Bitte zuerst Sync in Meine Daten einrichten (Tailscale-IP + Sync-Token).'); return; }
         currentView = 'qr'; render();
       },
     }, [
-      el('div', { className: 'cw-tile-icon' + (handyReady ? ' cw-tile-icon-ok' : ''), html: handyIcon }),
+      el('div', { className: 'cw-tile-icon', html: handyIcon }),
       el('div', { className: 'cw-tile-label' }, 'Handy'),
       el('div', { className: 'cw-tile-sub' }, handySub),
     ]));
