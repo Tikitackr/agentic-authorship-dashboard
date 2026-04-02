@@ -46,6 +46,11 @@
    - FIX: Sidebar ueberlagert jetzt (kein body margin-right mehr, nur z-index)
    - FIX: Welcome/Intro aus Home-Screen entfernt, jetzt in Wissen-Kachel (neue View 'wissen')
    - Wissen-Kachel oeffnet erst Intro-Card mit Cowan-Beschreibung, dann Chunk-Browser
+
+   v3.2.3 (02.04.2026 – Session 179):
+   - FIX: Kachel-Breiten (max-width:92% statt 340px, Kacheln nutzen volle Breite)
+   - Sidebar breiter (440px statt 380px)
+   - Bueroklammer/Bild-Button auch im Key-Eingabe-Zustand sichtbar
    ========================================================== */
 
 (function() {
@@ -774,13 +779,15 @@
 
     /* API-Key Eingabe wenn nicht gesetzt */
     if (!apiKey || apiKeyStatus === 'none' || apiKeyStatus === 'invalid') {
+      var fileInputKey = el('input', { type: 'file', accept: 'image/*', style: { display: 'none' }, id: 'cw-file-input', onChange: handleImageSelect });
+      var imgBtnKey = el('button', { className: 'cw-btn-icon cw-img-btn', title: 'Bild senden', html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>', onClick: function() { $('#cw-file-input').click(); } });
       var keyInput = el('input', {
         type: 'password',
         className: 'cw-key-input',
         placeholder: 'Claude API-Key eingeben (sk-ant-...)',
       });
       var keyBtn = el('button', { className: 'cw-key-btn', onClick: function() { validateApiKey(keyInput.value.trim()); } }, 'Verbinden');
-      var keyRow = el('div', { className: 'cw-key-row' }, [keyInput, keyBtn]);
+      var keyRow = el('div', { className: 'cw-key-row' }, [fileInputKey, imgBtnKey, keyInput, keyBtn]);
       area.appendChild(keyRow);
       if (apiKeyStatus === 'invalid') {
         area.appendChild(el('div', { className: 'cw-key-error' }, 'Ungueltiger API-Key. Bitte pruefen.'));
@@ -1365,7 +1372,7 @@
       /* Home-Screen */
       '.cw-home { flex:1; display:flex; flex-direction:column; align-items:center; padding:20px; gap:18px; overflow-y:auto; }',
       '.cw-home-title { font-size:17px; font-weight:700; color:#94a3b8; letter-spacing:-0.3px; }',
-      '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
+      '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:92%; }',
 
       /* Tiles – Glass Cards (feste Hoehe, alle gleich) */
       '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; min-height:155px; }',
@@ -1434,7 +1441,7 @@
       '.cw-qr-status { font-size:12px; color:#22c55e; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.15); border-radius:10px; padding:8px 12px; }',
 
       /* Sidebar-Mode: Volle Hoehe rechts angedockt, Slide-Animation */
-      '.cw-sidebar { top:0; right:0; bottom:0; width:380px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); display:flex !important; transform:translateX(100%); transition:transform .3s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-sidebar { top:0; right:0; bottom:0; width:440px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); display:flex !important; transform:translateX(100%); transition:transform .3s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-sidebar.cw-sidebar-open { transform:translateX(0); }',
 
       /* Companion-Mode: Vollbild auf Mobile */
