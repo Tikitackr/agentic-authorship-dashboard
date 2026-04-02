@@ -1281,7 +1281,7 @@
       '.cw-link { color:#f59e0b; text-decoration:underline; }',
 
       /* Input Area – Glass */
-      '.cw-input-area { border-top:1px solid rgba(148,163,184,0.1); padding:10px 14px; background:rgba(15,23,42,0.6); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); flex-shrink:0; }',
+      '.cw-input-area { border-top:1px solid rgba(148,163,184,0.1); padding:14px 14px; background:rgba(15,23,42,0.6); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); flex-shrink:0; }',
       '.cw-input-row { display:flex; align-items:flex-end; gap:8px; }',
       '.cw-input { flex:1; background:rgba(30,41,59,0.55); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:14px; padding:10px 14px; font-size:14px; font-family:inherit; resize:none; outline:none; min-height:40px; max-height:120px; line-height:1.4; transition:border-color .2s,box-shadow .2s; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }',
       '.cw-input:focus { border-color:rgba(217,119,6,0.5); box-shadow:0 0 0 2px rgba(217,119,6,0.1); }',
@@ -1316,7 +1316,7 @@
       '.cw-example-btn:active { transform:scale(0.97); }',
 
       /* Model Selection */
-      '.cw-model-row { display:flex; gap:4px; margin-top:8px; }',
+      '.cw-model-row { display:flex; gap:4px; margin-bottom:8px; }',
       '.cw-model-btn { background:none; border:1px solid #334155; color:#888; border-radius:8px; padding:3px 10px; font-size:11px; cursor:pointer; font-family:inherit; transition:all .15s; }',
       '.cw-model-btn.active { border-color:var(--amber,#f59e0b); color:var(--amber,#f59e0b); background:rgba(245,158,11,0.08); }',
       '.cw-model-btn:hover { border-color:rgba(245,158,11,0.4); }',
