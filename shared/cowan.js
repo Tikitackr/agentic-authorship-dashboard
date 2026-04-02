@@ -89,7 +89,7 @@
   var currentModuleLabel = '';  // z.B. 'Dein Fahrplan', 'Setup-Guide'
 
   /* ── Companion-Mode, Sidebar & Views ── */
-  var currentView = 'home';  // home | chat | qr
+  var currentView = 'home';  // home | chat | wissen | chunks | qr
   var isCompanionMode = false;
   var isSidebarMode = false;  // true wenn im Dashboard (Shell geladen)
   var companionParams = null;
@@ -629,41 +629,34 @@
     var homeEl = $('#cw-home');
     var msgsEl = $('#cw-messages');
     var inputEl = $('#cw-input-area');
-    var qrEl = $('#cw-qr-overlay');
-    var chunkEl = $('#cw-chunk-overlay');
+    /* Overlays nicht mehr gebraucht – alles rendert im Arbeitsbereich */
+
+    /* Alle Views nutzen den gleichen Arbeitsbereich – Header + Footer bleiben immer */
+    if (inputEl) inputEl.style.display = 'block';
 
     if (currentView === 'home') {
       if (homeEl) homeEl.style.display = 'flex';
       if (msgsEl) msgsEl.style.display = 'none';
-      if (inputEl) inputEl.style.display = 'block';
-      if (qrEl) qrEl.style.display = 'none';
-      if (chunkEl) chunkEl.style.display = 'none';
       renderHome();
-      renderInput();
     } else if (currentView === 'chat') {
       if (homeEl) homeEl.style.display = 'none';
       if (msgsEl) msgsEl.style.display = 'flex';
-      if (inputEl) inputEl.style.display = 'block';
-      if (qrEl) qrEl.style.display = 'none';
       renderMessages();
-      renderInput();
-      renderChunkBrowser();
       scrollChat();
     } else if (currentView === 'wissen') {
-      if (homeEl) homeEl.style.display = 'none';
+      if (homeEl) homeEl.style.display = 'flex';
       if (msgsEl) msgsEl.style.display = 'none';
-      if (inputEl) inputEl.style.display = 'none';
-      if (qrEl) qrEl.style.display = 'none';
-      if (chunkEl) chunkEl.style.display = 'flex';
       renderWissen();
-    } else if (currentView === 'qr') {
-      if (homeEl) homeEl.style.display = 'none';
+    } else if (currentView === 'chunks') {
+      if (homeEl) homeEl.style.display = 'flex';
       if (msgsEl) msgsEl.style.display = 'none';
-      if (inputEl) inputEl.style.display = 'none';
-      if (qrEl) qrEl.style.display = 'flex';
-      if (chunkEl) chunkEl.style.display = 'none';
+      renderChunkBrowser();
+    } else if (currentView === 'qr') {
+      if (homeEl) homeEl.style.display = 'flex';
+      if (msgsEl) msgsEl.style.display = 'none';
       renderQR();
     }
+    renderInput();
   }
 
   function renderHeader() {
@@ -699,7 +692,7 @@
     header.appendChild(el('div', { className: 'cw-header-left' }, [
       /* Zurueck-Button im Chat/QR-View (nicht im Home, nicht im Companion) */
       (currentView !== 'home' && !isCompanionMode) ?
-        el('button', { className: 'cw-btn-icon cw-btn-back', title: 'Zurueck', onClick: function() { showChunkBrowser = false; currentView = 'home'; render(); }, html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>' }) :
+        el('button', { className: 'cw-btn-icon cw-btn-back', title: 'Zurueck', onClick: function() { showChunkBrowser = false; currentView = (currentView === 'chunks' ? 'wissen' : 'home'); render(); }, html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>' }) :
         el('div', { className: 'cw-header-icon', html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' }),
       el('div', { className: 'cw-header-info' }, [
         el('span', { className: 'cw-header-title', html: titleText + syncDot }),
@@ -980,9 +973,9 @@
 
   /* ── QR-Code Overlay: Handy verbinden ── */
   function renderQR() {
-    var overlay = $('#cw-qr-overlay');
-    if (!overlay) return;
-    overlay.innerHTML = '';
+    var home = $('#cw-home');
+    if (!home) return;
+    home.innerHTML = '';
 
     /* QR-URL zusammenbauen */
     var encodedKey = '';
@@ -1022,22 +1015,20 @@
       el('div', { className: 'cw-qr-status' }, syncConnected ? 'Sync aktiv \u2013 nach dem Scannen verbindet sich der Companion automatisch.' : 'Sync wird verbunden...'),
     ]);
 
-    overlay.appendChild(card);
+    home.appendChild(card);
   }
 
   function renderChunkBrowser() {
-    var overlay = $('#cw-chunk-overlay');
-    if (!overlay) return;
-    if (!showChunkBrowser || !chunks.length) { overlay.style.display = 'none'; return; }
-    overlay.style.display = 'flex';
-    overlay.innerHTML = '';
+    var home = $('#cw-home');
+    if (!home) return;
+    if (!chunks.length) return;
+    home.innerHTML = '';
 
     var chunk = chunks[chunkBrowserIndex];
     var card = el('div', { className: 'cw-chunk-card' }, [
       el('div', { className: 'cw-chunk-header' }, [
         el('span', { className: 'cw-chunk-badge' }, chunk.category),
         el('span', { className: 'cw-chunk-counter' }, (chunkBrowserIndex + 1) + ' / ' + chunks.length),
-        el('button', { className: 'cw-btn-icon cw-btn-close', onClick: function() { showChunkBrowser = false; render(); } }, '\u2715'),
       ]),
       el('h3', { className: 'cw-chunk-title' }, chunk.title),
       el('p', { className: 'cw-chunk-summary' }, chunk.summary),
@@ -1045,7 +1036,7 @@
       el('div', { className: 'cw-chunk-footer' }, [
         el('button', {
           className: 'cw-chunk-nav',
-          onClick: function() { if (chunkBrowserIndex > 0) { chunkBrowserIndex--; renderChunkBrowser(); } },
+          onClick: function() { if (chunkBrowserIndex > 0) { chunkBrowserIndex--; render(); } },
           disabled: chunkBrowserIndex === 0 ? 'disabled' : null,
           html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>',
         }),
@@ -1055,31 +1046,24 @@
         el('button', {
           className: 'cw-chunk-nav',
           onClick: function() {
-            if (chunkBrowserIndex < chunks.length - 1) { chunkBrowserIndex++; renderChunkBrowser(); }
-            else { showChunkBrowser = false; render(); }
+            if (chunkBrowserIndex < chunks.length - 1) { chunkBrowserIndex++; render(); }
+            else { currentView = 'wissen'; render(); }
           },
           html: chunkBrowserIndex < chunks.length - 1 ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>' : '\u2715',
         }),
       ]),
     ]);
-    overlay.appendChild(card);
+    home.appendChild(card);
   }
 
   /* ── Wissen-Intro (Welcome-Screen in der Wissen-Kachel) ── */
   function renderWissen() {
-    var overlay = $('#cw-chunk-overlay');
-    if (!overlay) return;
-    overlay.style.display = 'flex';
-    overlay.innerHTML = '';
+    var home = $('#cw-home');
+    if (!home) return;
+    home.innerHTML = '';
 
     var chunkCount = chunks.length;
     var card = el('div', { className: 'cw-wissen-card' });
-
-    /* Header mit Schliessen */
-    var header = el('div', { className: 'cw-wissen-header' });
-    header.appendChild(el('span', { className: 'cw-wissen-badge' }, 'Wissen'));
-    header.appendChild(el('button', { className: 'cw-btn-icon cw-btn-close', onClick: function() { currentView = 'home'; render(); } }, '\u2715'));
-    card.appendChild(header);
 
     /* Hummer-Logo */
     var logoWrap = el('div', { className: 'cw-welcome-logo' });
@@ -1118,11 +1102,11 @@
     /* Button: Chunks durchblaettern */
     var browseBtn = el('button', {
       className: 'cw-wissen-browse-btn',
-      onClick: function() { currentView = 'chat'; showChunkBrowser = true; chunkBrowserIndex = 0; render(); },
+      onClick: function() { currentView = 'chunks'; chunkBrowserIndex = 0; render(); },
     }, chunkCount + ' Chunks durchblaettern \u2192');
     card.appendChild(browseBtn);
 
-    overlay.appendChild(card);
+    home.appendChild(card);
   }
 
   /* ── Widget ins DOM einbauen ── */
@@ -1324,7 +1308,7 @@
 
       /* Chunk Browser – Glass Modal */
       '.cw-chunk-overlay { position:absolute; inset:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; }',
-      '.cw-chunk-card { background:rgba(18,18,26,0.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.1); border-radius:16px; padding:20px; max-height:100%; overflow-y:auto; width:100%; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-chunk-card { background:rgba(18,18,26,0.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.1); border-radius:16px; padding:20px; overflow-y:auto; width:100%; max-width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-chunk-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }',
       '.cw-chunk-badge { background:rgba(217,119,6,0.12); color:#f59e0b; padding:3px 12px; border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }',
       '.cw-chunk-counter { color:#94a3b8; font-size:12px; }',
@@ -1387,7 +1371,7 @@
       '.cw-welcome-security { text-align:left; margin-bottom:14px; background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.15); border-radius:12px; padding:12px 14px; }',
 
       /* Wissen-Intro Card */
-      '.cw-wissen-card { background:rgba(30,41,59,0.7); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:24px 20px; max-height:100%; overflow-y:auto; width:100%; max-width:360px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-wissen-card { background:rgba(30,41,59,0.7); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:24px 20px; overflow-y:auto; width:100%; max-width:92%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-wissen-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }',
       '.cw-wissen-badge { font-size:12px; font-weight:600; color:#22c55e; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); padding:4px 12px; border-radius:20px; }',
       '.cw-wissen-browse-btn { width:100%; margin-top:16px; padding:12px 20px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#0f172a; font-weight:700; font-size:14px; border:none; border-radius:14px; cursor:pointer; transition:transform .15s,box-shadow .15s; box-shadow:0 2px 12px rgba(245,158,11,0.3); }',
