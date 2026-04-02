@@ -51,6 +51,10 @@
    - FIX: Kachel-Breiten (max-width:92% statt 340px, Kacheln nutzen volle Breite)
    - Sidebar breiter (440px statt 380px)
    - Bueroklammer/Bild-Button auch im Key-Eingabe-Zustand sichtbar
+
+   v3.2.4 (02.04.2026 – Session 179):
+   - FIX: Kacheln endgueltig gleich breit (min-width:0 + overflow:hidden auf .cw-tile)
+   - API-Key-Input sprengt Grid nicht mehr (width:0 + flex:1 + text-overflow:ellipsis)
    ========================================================== */
 
 (function() {
@@ -1375,7 +1379,7 @@
       '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:92%; }',
 
       /* Tiles – Glass Cards (feste Hoehe, alle gleich) */
-      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; min-height:155px; }',
+      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; min-height:155px; min-width:0; overflow:hidden; }',
       '.cw-tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }',
       '.cw-tile:active { transform:scale(0.96); }',
       '.cw-tile-active { border-color:rgba(34,197,94,0.3); box-shadow:0 0 12px rgba(34,197,94,0.12),0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); }',
@@ -1387,12 +1391,12 @@
       '.cw-tile-label { font-size:14px; font-weight:700; color:#f1f5f9; letter-spacing:-0.2px; }',
       '.cw-tile-label-ok { color:#22c55e; }',
       '.cw-tile-sub { font-size:11px; color:#94a3b8; }',
-      '.cw-tile-sub-row { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; }',
+      '.cw-tile-sub-row { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-width:0; }',
       '.cw-tile-select-inline { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:8px; padding:2px 8px; font-size:11px; font-family:inherit; cursor:pointer; }',
       '.cw-tile-link { font-size:11px; color:#94a3b8; cursor:pointer; text-decoration:underline; transition:color .15s; }',
       '.cw-tile-link:hover { color:#f59e0b; }',
-      '.cw-tile-key-row { display:flex; gap:4px; width:100%; margin-top:4px; }',
-      '.cw-tile-key-input { flex:1; min-width:0; background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:6px 8px; font-size:12px; font-family:inherit; outline:none; transition:border-color .2s; }',
+      '.cw-tile-key-row { display:flex; gap:4px; width:100%; margin-top:4px; min-width:0; }',
+      '.cw-tile-key-input { flex:1; min-width:0; width:0; background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:6px 8px; font-size:12px; font-family:inherit; outline:none; transition:border-color .2s; overflow:hidden; text-overflow:ellipsis; }',
       '.cw-tile-key-input:focus { border-color:rgba(217,119,6,0.5); }',
       '.cw-tile-key-input::placeholder { color:#475569; }',
       '.cw-tile-key-btn { background:linear-gradient(135deg,#f59e0b,#d97706); color:#000; border:none; border-radius:10px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; box-shadow:0 2px 6px rgba(217,119,6,0.25); transition:transform .15s; }',
