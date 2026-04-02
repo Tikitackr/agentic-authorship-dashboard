@@ -41,6 +41,11 @@
    - Erkennung via window.__shellLoaded, body margin-right 380px wenn offen
    - FAB bleibt sichtbar im Sidebar-Mode (Toggle open/close)
    - Drei Modi: Normal (floating) | Sidebar (Dashboard) | Companion (Handy)
+
+   v3.2.2 (02.04.2026 – Session 178):
+   - FIX: Sidebar ueberlagert jetzt (kein body margin-right mehr, nur z-index)
+   - FIX: Welcome/Intro aus Home-Screen entfernt, jetzt in Wissen-Kachel (neue View 'wissen')
+   - Wissen-Kachel oeffnet erst Intro-Card mit Cowan-Beschreibung, dann Chunk-Browser
    ========================================================== */
 
 (function() {
@@ -582,7 +587,7 @@
     var panel = $('#cw-panel');
     if (!panel) return;
 
-    /* Sidebar-Mode: Slide-Animation + Body-Margin */
+    /* Sidebar-Mode: Slide-Animation (Overlay, kein Body-Margin) */
     if (isSidebarMode) {
       /* Panel bleibt display:flex (via CSS !important), nur Klasse togglen */
       if (isOpen) {
@@ -590,8 +595,6 @@
       } else {
         panel.classList.remove('cw-sidebar-open');
       }
-      document.body.style.transition = 'margin-right .3s cubic-bezier(0.4,0,0.2,1)';
-      document.body.style.marginRight = isOpen ? '380px' : '';
     } else {
       panel.style.display = isOpen ? 'flex' : 'none';
     }
@@ -636,6 +639,13 @@
       renderInput();
       renderChunkBrowser();
       scrollChat();
+    } else if (currentView === 'wissen') {
+      if (homeEl) homeEl.style.display = 'none';
+      if (msgsEl) msgsEl.style.display = 'none';
+      if (inputEl) inputEl.style.display = 'none';
+      if (qrEl) qrEl.style.display = 'none';
+      if (chunkEl) chunkEl.style.display = 'flex';
+      renderWissen();
     } else if (currentView === 'qr') {
       if (homeEl) homeEl.style.display = 'none';
       if (msgsEl) msgsEl.style.display = 'none';
@@ -852,47 +862,8 @@
     var hasSync = !!(syncUrl && syncToken);
     var chunkCount = chunks.length;
 
-    /* ── Welcome-Screen (nur wenn kein API-Key) ── */
-    if (!hasKey) {
-      var welcome = el('div', { className: 'cw-welcome' });
-      /* Hummer-Logo */
-      var logoWrap = el('div', { className: 'cw-welcome-logo' });
-      var hummerPath = (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg';
-      logoWrap.innerHTML = '<img src="' + hummerPath + '" alt="Cowan" width="52" height="52">';
-      welcome.appendChild(logoWrap);
-      welcome.appendChild(el('div', { className: 'cw-welcome-title' }, 'Willkommen bei Cowan'));
-      welcome.appendChild(el('div', { className: 'cw-welcome-sub' }, 'Dein intelligenter Buch-Begleiter'));
-
-      /* Wissen */
-      var wissBlock = el('div', { className: 'cw-welcome-block' });
-      wissBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg><strong class="cw-welcome-heading" style="color:#22c55e">Wissen ist schon da</strong>';
-      wissBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Cowan kennt bereits ' + chunkCount + ' Wissens-Bausteine zu deinem Buch. Du kannst Fragen stellen, Kapitel besprechen und dir Zusammenfassungen geben lassen.'));
-      welcome.appendChild(wissBlock);
-
-      /* API-Key */
-      var keyBlock = el('div', { className: 'cw-welcome-block' });
-      keyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Claude API-Key benoetigt</strong>';
-      var keyText = el('p', { className: 'cw-welcome-text' });
-      keyText.innerHTML = 'Um mit Cowan zu chatten, brauchst du einen API-Key von Anthropic. Den bekommst du kostenlos unter <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" class="cw-link">console.anthropic.com</a>. Gib ihn links in der API-Key-Kachel ein.';
-      keyBlock.appendChild(keyText);
-      welcome.appendChild(keyBlock);
-
-      /* Security-Hinweis */
-      var secBlock = el('div', { className: 'cw-welcome-security' });
-      secBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><strong class="cw-welcome-heading" style="color:#22c55e">Dein Key bleibt sicher</strong>';
-      secBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage). Er wird nie an unsere Server gesendet \u2013 Anfragen gehen direkt von deinem Browser an die Claude API. Niemand ausser dir hat Zugriff.'));
-      welcome.appendChild(secBlock);
-
-      /* Handy */
-      var handyBlock = el('div', { className: 'cw-welcome-block' });
-      handyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Handy als Begleiter</strong>';
-      handyBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Spaeter kannst du dein Handy per QR-Code verbinden und Buchseiten fotografieren, um Fragen zu stellen. Dafuer brauchst du zuerst den API-Key.'));
-      welcome.appendChild(handyBlock);
-
-      home.appendChild(welcome);
-    } else {
-      home.appendChild(el('div', { className: 'cw-home-title' }, 'Dein Buch-Begleiter'));
-    }
+    /* Titel immer anzeigen */
+    home.appendChild(el('div', { className: 'cw-home-title' }, 'Dein Buch-Begleiter'));
 
     /* 2x2 Grid */
     var grid = el('div', { className: 'cw-home-grid' });
@@ -978,7 +949,7 @@
     var wissIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (wissOk ? '#22c55e' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>';
     grid.appendChild(el('div', {
       className: 'cw-tile' + (wissOk ? ' cw-tile-active' : ''),
-      onClick: function() { if (chunkCount > 0) { currentView = 'chat'; showChunkBrowser = true; render(); } },
+      onClick: function() { if (chunkCount > 0) { currentView = 'wissen'; render(); } },
     }, [
       el('div', { className: 'cw-tile-icon' + (wissOk ? ' cw-tile-icon-ok' : ''), html: wissIcon }),
       el('div', { className: 'cw-tile-label' + (wissOk ? ' cw-tile-label-ok' : '') }, 'Wissen'),
@@ -1118,6 +1089,66 @@
     overlay.appendChild(card);
   }
 
+  /* ── Wissen-Intro (Welcome-Screen in der Wissen-Kachel) ── */
+  function renderWissen() {
+    var overlay = $('#cw-chunk-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+    overlay.innerHTML = '';
+
+    var chunkCount = chunks.length;
+    var card = el('div', { className: 'cw-wissen-card' });
+
+    /* Header mit Schliessen */
+    var header = el('div', { className: 'cw-wissen-header' });
+    header.appendChild(el('span', { className: 'cw-wissen-badge' }, 'Wissen'));
+    header.appendChild(el('button', { className: 'cw-btn-icon cw-btn-close', onClick: function() { currentView = 'home'; render(); } }, '\u2715'));
+    card.appendChild(header);
+
+    /* Hummer-Logo */
+    var logoWrap = el('div', { className: 'cw-welcome-logo' });
+    var hummerPath = (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg';
+    logoWrap.innerHTML = '<img src="' + hummerPath + '" alt="Cowan" width="48" height="48">';
+    card.appendChild(logoWrap);
+    card.appendChild(el('div', { className: 'cw-welcome-title' }, 'Willkommen bei Cowan'));
+    card.appendChild(el('div', { className: 'cw-welcome-sub' }, 'Dein intelligenter Buch-Begleiter'));
+
+    /* Wissen */
+    var wissBlock = el('div', { className: 'cw-welcome-block' });
+    wissBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg><strong class="cw-welcome-heading" style="color:#22c55e">Wissen ist schon da</strong>';
+    wissBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Cowan kennt bereits ' + chunkCount + ' Wissens-Bausteine zu deinem Buch. Du kannst Fragen stellen, Kapitel besprechen und dir Zusammenfassungen geben lassen.'));
+    card.appendChild(wissBlock);
+
+    /* API-Key */
+    var keyBlock = el('div', { className: 'cw-welcome-block' });
+    keyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Claude API-Key benoetigt</strong>';
+    var keyText = el('p', { className: 'cw-welcome-text' });
+    keyText.innerHTML = 'Um mit Cowan zu chatten, brauchst du einen API-Key von Anthropic. Den bekommst du kostenlos unter <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" class="cw-link">console.anthropic.com</a>. Gib ihn in der API-Key-Kachel ein.';
+    keyBlock.appendChild(keyText);
+    card.appendChild(keyBlock);
+
+    /* Security */
+    var secBlock = el('div', { className: 'cw-welcome-block' });
+    secBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><strong class="cw-welcome-heading" style="color:#22c55e">Dein Key bleibt sicher</strong>';
+    secBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Dein API-Key wird nur lokal in deinem Browser gespeichert. Er wird nie an unsere Server gesendet \u2013 Anfragen gehen direkt von deinem Browser an die Claude API.'));
+    card.appendChild(secBlock);
+
+    /* Handy */
+    var handyBlock = el('div', { className: 'cw-welcome-block' });
+    handyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Handy als Begleiter</strong>';
+    handyBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Spaeter kannst du dein Handy per QR-Code verbinden und Buchseiten fotografieren, um Fragen zu stellen.'));
+    card.appendChild(handyBlock);
+
+    /* Button: Chunks durchblaettern */
+    var browseBtn = el('button', {
+      className: 'cw-wissen-browse-btn',
+      onClick: function() { currentView = 'chat'; showChunkBrowser = true; chunkBrowserIndex = 0; render(); },
+    }, chunkCount + ' Chunks durchblaettern \u2192');
+    card.appendChild(browseBtn);
+
+    overlay.appendChild(card);
+  }
+
   /* ── Widget ins DOM einbauen ── */
   function mount() {
     /* Companion-Mode Erkennung (URL-Parameter) */
@@ -1171,10 +1202,6 @@
         isOpen = !isOpen;
         render();
         if (isOpen) setTimeout(scrollChat, 100);
-        /* Dashboard-Body Platz machen/freigeben */
-        if (isSidebarMode) {
-          document.body.style.marginRight = isOpen ? '380px' : '';
-        }
       }});
       fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
       document.body.appendChild(fab);
@@ -1380,6 +1407,14 @@
       '.cw-welcome-heading { font-size:14px; font-weight:700; }',
       '.cw-welcome-text { font-size:13px; color:#94a3b8; line-height:1.5; margin:4px 0 0; }',
       '.cw-welcome-security { text-align:left; margin-bottom:14px; background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.15); border-radius:12px; padding:12px 14px; }',
+
+      /* Wissen-Intro Card */
+      '.cw-wissen-card { background:rgba(30,41,59,0.7); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:24px 20px; max-height:100%; overflow-y:auto; width:100%; max-width:360px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-wissen-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }',
+      '.cw-wissen-badge { font-size:12px; font-weight:600; color:#22c55e; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); padding:4px 12px; border-radius:20px; }',
+      '.cw-wissen-browse-btn { width:100%; margin-top:16px; padding:12px 20px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#0f172a; font-weight:700; font-size:14px; border:none; border-radius:14px; cursor:pointer; transition:transform .15s,box-shadow .15s; box-shadow:0 2px 12px rgba(245,158,11,0.3); }',
+      '.cw-wissen-browse-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(245,158,11,0.4); }',
+      '.cw-wissen-browse-btn:active { transform:scale(0.97); }',
 
       /* Back button */
       '.cw-btn-back { margin-right:2px; }',
