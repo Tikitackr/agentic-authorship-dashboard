@@ -485,7 +485,12 @@
       var ip = localStorage.getItem('aa-settings.tailscaleIp');
       var port = localStorage.getItem('aa-settings.syncPort') || '3456';
       syncToken = localStorage.getItem('aa-settings.syncToken');
-      if (ip) syncUrl = 'http://' + ip.replace(/\/+$/, '') + ':' + port;
+      if (ip) {
+        var cleanIp = ip.replace(/\/+$/, '');
+        syncUrl = (cleanIp.indexOf('.ts.net') !== -1)
+          ? 'https://' + cleanIp
+          : 'http://' + cleanIp + ':' + port;
+      }
       // Fallback: alte Shell-Keys
       if (!syncUrl) syncUrl = localStorage.getItem('shell:syncUrl');
       if (!syncToken) syncToken = localStorage.getItem('shell:syncToken');

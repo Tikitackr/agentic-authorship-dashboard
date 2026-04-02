@@ -296,7 +296,14 @@
       /* URL aus tailscaleIp + syncPort zusammenbauen (wie Meine-Daten sie speichert) */
       var ip = localStorage.getItem('aa-settings.tailscaleIp') || '';
       var port = localStorage.getItem('aa-settings.syncPort') || '3456';
-      syncUrl = ip ? ('http://' + ip.replace(/\/+$/, '') + ':' + port) : '';
+      if (ip) {
+        var cleanIp = ip.replace(/\/+$/, '');
+        syncUrl = (cleanIp.indexOf('.ts.net') !== -1)
+          ? 'https://' + cleanIp
+          : 'http://' + cleanIp + ':' + port;
+      } else {
+        syncUrl = '';
+      }
     } catch(e) {}
   }
 
@@ -1130,9 +1137,13 @@
         /* Sync-Daten aus URL uebernehmen */
         if (companionParams.sync) {
           var sp = decodeURIComponent(companionParams.sync);
-          syncUrl = 'http://' + sp;
-          /* Falls Port fehlt, Standard 3456 */
-          if (sp.indexOf(':') === -1) syncUrl += ':3456';
+          if (sp.indexOf('.ts.net') !== -1) {
+            syncUrl = 'https://' + sp.replace(/\/+$/, '');
+          } else {
+            syncUrl = 'http://' + sp;
+            /* Falls Port fehlt, Standard 3456 */
+            if (sp.indexOf(':') === -1) syncUrl += ':3456';
+          }
         }
         if (companionParams.synctoken) {
           syncToken = decodeURIComponent(companionParams.synctoken);

@@ -3325,6 +3325,9 @@
 
   function getSyncUrl() {
     var ip = state.connection.tailscaleIp.replace(/\/+$/, '');
+    if (ip.indexOf('.ts.net') !== -1) {
+      return 'https://' + ip;
+    }
     if (ip.indexOf('http') !== 0) ip = 'http://' + ip;
     var port = state.connection.syncPort || '3456';
     if (ip.indexOf(':') === ip.lastIndexOf(':')) ip += ':' + port;

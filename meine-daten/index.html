@@ -456,9 +456,9 @@
 
     <div class="m03-card">
       <div class="m03-field">
-        <label class="m03-label">Tailscale IP</label>
-        <input class="m03-input mono" id="m03-ip" type="text" placeholder="z.B. 100.99.167.112">
-        <p class="m03-label-hint">Findest du mit <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">tailscale ip -4</code> auf deinem VPS.</p>
+        <label class="m03-label">Tailscale IP oder Hostname</label>
+        <input class="m03-input mono" id="m03-ip" type="text" placeholder="z.B. srv1192770.tail755c12.ts.net">
+        <p class="m03-label-hint">Empfohlen: Tailscale-Hostname (z.B. <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">srv1192770.tail755c12.ts.net</code>) – funktioniert mit Safari + Chrome. Alternativ IP via <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">tailscale ip -4</code> (nur Chrome).</p>
       </div>
       <div class="m03-field">
         <label class="m03-label">Sync Token</label>
@@ -664,7 +664,10 @@
     resultEl.className = 'm03-test-result info';
     resultEl.textContent = 'Verbindung wird geprueft...';
 
-    var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/health';
+    var cleanIp = ip.replace(/\/+$/, '');
+    var url = (cleanIp.indexOf('.ts.net') !== -1)
+      ? 'https://' + cleanIp + '/health'
+      : 'http://' + cleanIp + ':' + port + '/health';
 
     fetch(url, {
       method: 'GET',

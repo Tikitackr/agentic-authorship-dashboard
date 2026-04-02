@@ -516,7 +516,10 @@
         var port = storage.get('aa-settings.syncPort') || '3456';
         var token = storage.get('aa-settings.syncToken');
         if (!ip || !token) return;
-        var url = 'http://' + ip.replace(/\/+$/, '') + ':' + port + '/dashboard-state.json';
+        var cleanIp = ip.replace(/\/+$/, '');
+        var url = (cleanIp.indexOf('.ts.net') !== -1)
+          ? 'https://' + cleanIp + '/dashboard-state.json'
+          : 'http://' + cleanIp + ':' + port + '/dashboard-state.json';
         var payload = {
           lastUpdate: new Date().toISOString(),
           device: 'dashboard',
