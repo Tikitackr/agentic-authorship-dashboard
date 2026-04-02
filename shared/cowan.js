@@ -368,7 +368,7 @@
 
   /* ── Sync: Companion-Events lesen (companion-connected erkennen) ── */
   function syncCheckCompanion() {
-    if (!syncUrl || !syncToken || isCompanionMode) return;
+    if (!syncUrl || !syncToken || isCompanionMode || companionConnected) return;
     fetch(syncUrl + '/cowan-events.json', {
       headers: { 'Authorization': 'Bearer ' + syncToken },
     }).then(function(res) {
@@ -376,18 +376,12 @@
       return null;
     }).then(function(data) {
       if (!data) return;
-      /* Pruefen ob das Event von einem Companion kommt und nicht aelter als 60s ist */
-      var eventTime = data.lastUpdate ? new Date(data.lastUpdate).getTime() : 0;
-      var now = Date.now();
-      var wasConnected = companionConnected;
+      /* Einmal verbunden = bleibt verbunden (kein Timeout) */
       if (data.type === 'companion-connected' || data.device === 'companion') {
-        companionConnected = (now - eventTime) < 60000; /* 60s Timeout */
-        companionLastSeen = eventTime;
-      } else if (eventTime > 0) {
-        companionConnected = (now - eventTime) < 60000;
-        companionLastSeen = eventTime;
+        companionConnected = true;
+        companionLastSeen = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now();
+        render();
       }
-      if (wasConnected !== companionConnected) render();
     }).catch(function() { /* still */ });
   }
 
