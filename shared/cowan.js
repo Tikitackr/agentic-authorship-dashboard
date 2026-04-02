@@ -891,17 +891,6 @@
           render();
         },
       }, 'Key aendern'));
-      var modelSelect = el('select', { className: 'cw-tile-select-inline', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
-        selectedModel = e.target.value;
-        try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
-        render();
-      }});
-      Object.keys(PRICING).forEach(function(mid) {
-        var opt = el('option', { value: mid }, PRICING[mid].label);
-        if (mid === selectedModel) opt.selected = true;
-        modelSelect.appendChild(opt);
-      });
-      connRow.appendChild(modelSelect);
       keyTile.appendChild(connRow);
     } else {
       /* Eingabe-State: Input + OK-Button direkt in der Kachel */
@@ -923,26 +912,14 @@
       keyRow.appendChild(keyBtn);
       keyTile.appendChild(keyRow);
 
-      /* Status + Dropdown auf einer Zeile */
-      var subRow = el('div', { className: 'cw-tile-sub-row' });
+      /* Status-Zeile (ohne Modell-Dropdown – das kommt beim Chat-Input) */
       if (apiKeyStatus === 'checking') {
-        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
+        keyTile.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
       } else if (apiKeyStatus === 'invalid') {
-        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Ungueltig'));
+        keyTile.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Ungueltig'));
       } else {
-        subRow.appendChild(el('span', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
+        keyTile.appendChild(el('span', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
       }
-      var modelSelect2 = el('select', { className: 'cw-tile-select-inline', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
-        selectedModel = e.target.value;
-        try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
-      }});
-      Object.keys(PRICING).forEach(function(mid) {
-        var opt = el('option', { value: mid }, PRICING[mid].label);
-        if (mid === selectedModel) opt.selected = true;
-        modelSelect2.appendChild(opt);
-      });
-      subRow.appendChild(modelSelect2);
-      keyTile.appendChild(subRow);
     }
     grid.appendChild(keyTile);
 
