@@ -846,12 +846,12 @@
     keyTile.appendChild(el('div', { className: 'cw-tile-label' }, hasKey ? 'Verbunden' : 'API-Key'));
 
     if (hasKey) {
-      /* Verbunden-State: "Key aendern" Link + Modell-Dropdown */
-      keyTile.appendChild(el('div', {
+      /* Verbunden-State: "Key aendern" + Modell-Dropdown auf einer Zeile */
+      var connRow = el('div', { className: 'cw-tile-sub-row' });
+      connRow.appendChild(el('span', {
         className: 'cw-tile-link',
         onClick: function(e) {
           e.stopPropagation();
-          /* Key zuruecksetzen → Eingabe zeigen */
           apiKey = ''; apiKeyStatus = 'none';
           try { localStorage.removeItem('shell:apiKey'); } catch(ex) {}
           render();
@@ -867,7 +867,8 @@
         if (mid === selectedModel) opt.selected = true;
         modelSelect.appendChild(opt);
       });
-      keyTile.appendChild(modelSelect);
+      connRow.appendChild(modelSelect);
+      keyTile.appendChild(connRow);
     } else {
       /* Eingabe-State: Input + OK-Button direkt in der Kachel */
       var keyRow = el('div', { className: 'cw-tile-key-row' });
@@ -888,16 +889,15 @@
       keyRow.appendChild(keyBtn);
       keyTile.appendChild(keyRow);
 
-      /* Status-Text */
+      /* Status-Text + Modell-Dropdown auf einer Zeile */
+      var subRow = el('div', { className: 'cw-tile-sub-row' });
       if (apiKeyStatus === 'checking') {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
       } else if (apiKeyStatus === 'invalid') {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Key ungueltig'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Key ungueltig'));
       } else {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
       }
-
-      /* Modell-Dropdown auch im Eingabe-State */
       var modelSelect2 = el('select', { className: 'cw-tile-select', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
         selectedModel = e.target.value;
         try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
@@ -907,7 +907,8 @@
         if (mid === selectedModel) opt.selected = true;
         modelSelect2.appendChild(opt);
       });
-      keyTile.appendChild(modelSelect2);
+      subRow.appendChild(modelSelect2);
+      keyTile.appendChild(subRow);
     }
     grid.appendChild(keyTile);
 
@@ -1278,7 +1279,8 @@
       '.cw-tile-label { font-size:15px; font-weight:700; color:#f1f5f9; letter-spacing:-0.2px; }',
       '.cw-tile-label-ok { color:#f59e0b; }',
       '.cw-tile-sub { font-size:12px; color:#94a3b8; }',
-      '.cw-tile-select { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; margin-top:4px; }',
+      '.cw-tile-sub-row { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; }',
+      '.cw-tile-select { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; }',
       '.cw-tile-link { font-size:12px; color:#94a3b8; cursor:pointer; text-decoration:underline; transition:color .15s; }',
       '.cw-tile-link:hover { color:#f59e0b; }',
       '.cw-tile-key-row { display:flex; gap:4px; width:100%; margin-top:4px; }',
