@@ -643,7 +643,7 @@
               <path d="M12 6v6m3-3H9"></path>
             </svg>
             <div class="setup-section-title">Kapitel 5: Tailscale & Multi-Channel</div>
-            <div class="setup-section-count">5 Schritte</div>
+            <div class="setup-section-count">6 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -687,7 +687,19 @@
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            4. Telegram-Bot konfigurieren
+            4. Tailscale Serve aktivieren (HTTPS fuer Dashboard)
+          </div>
+          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Macht deinen Sync-Server ueber HTTPS erreichbar. Den Hostnamen (z.B. <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">srv1234.tail5678.ts.net</code>) traegst du unter "Meine Daten" ein.</p>
+          <div class="setup-code-block">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-4a">tailscale serve --bg 3456</code>
+          </div>
+
+          <div class="setup-snippet-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+            5. Telegram-Bot konfigurieren (optional)
           </div>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
@@ -698,7 +710,7 @@
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            5. Telegram erlaubte User
+            6. Telegram erlaubte User
           </div>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
