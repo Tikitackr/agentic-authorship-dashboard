@@ -1025,14 +1025,15 @@
     home.innerHTML = '';
 
     var chunk = chunks[chunkBrowserIndex];
-    var card = el('div', { className: 'cw-chunk-card' }, [
+    var card = el('div', { className: 'cw-chunk-card cw-chunk-fullarea' }, [
       el('div', { className: 'cw-chunk-header' }, [
         el('span', { className: 'cw-chunk-badge' }, chunk.category),
         el('span', { className: 'cw-chunk-counter' }, (chunkBrowserIndex + 1) + ' / ' + chunks.length),
+        el('button', { className: 'cw-btn-icon', title: 'Zurueck zur Uebersicht', onClick: function() { currentView = 'wissen'; render(); }, html: '\u2715' }),
       ]),
       el('h3', { className: 'cw-chunk-title' }, chunk.title),
       el('p', { className: 'cw-chunk-summary' }, chunk.summary),
-      el('div', { className: 'cw-chunk-content', html: renderMarkdown(chunk.content) }),
+      el('div', { className: 'cw-chunk-scroll', html: renderMarkdown(chunk.content) }),
       el('div', { className: 'cw-chunk-footer' }, [
         el('button', {
           className: 'cw-chunk-nav',
@@ -1047,9 +1048,9 @@
           className: 'cw-chunk-nav',
           onClick: function() {
             if (chunkBrowserIndex < chunks.length - 1) { chunkBrowserIndex++; render(); }
-            else { currentView = 'wissen'; render(); }
           },
-          html: chunkBrowserIndex < chunks.length - 1 ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>' : '\u2715',
+          disabled: chunkBrowserIndex >= chunks.length - 1 ? 'disabled' : null,
+          html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>',
         }),
       ]),
     ]);
@@ -1092,12 +1093,6 @@
     secBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><strong class="cw-welcome-heading" style="color:#22c55e">Dein Key bleibt sicher</strong>';
     secBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Dein API-Key wird nur lokal in deinem Browser gespeichert. Er wird nie an unsere Server gesendet \u2013 Anfragen gehen direkt von deinem Browser an die Claude API.'));
     card.appendChild(secBlock);
-
-    /* Handy */
-    var handyBlock = el('div', { className: 'cw-welcome-block' });
-    handyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Handy als Begleiter</strong>';
-    handyBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Spaeter kannst du dein Handy per QR-Code verbinden und Buchseiten fotografieren, um Fragen zu stellen.'));
-    card.appendChild(handyBlock);
 
     /* Button: Chunks durchblaettern */
     var browseBtn = el('button', {
@@ -1308,14 +1303,16 @@
 
       /* Chunk Browser – Glass Modal */
       '.cw-chunk-overlay { position:absolute; inset:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; }',
-      '.cw-chunk-card { background:rgba(18,18,26,0.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.1); border-radius:16px; padding:20px; overflow-y:auto; width:100%; max-width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-chunk-card { background:rgba(18,18,26,0.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.1); border-radius:16px; padding:20px; width:100%; max-width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); }',
+      '.cw-chunk-fullarea { flex:1; display:flex; flex-direction:column; overflow:hidden; }',
       '.cw-chunk-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }',
       '.cw-chunk-badge { background:rgba(217,119,6,0.12); color:#f59e0b; padding:3px 12px; border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }',
       '.cw-chunk-counter { color:#94a3b8; font-size:12px; }',
       '.cw-chunk-title { color:#f1f5f9; font-size:17px; font-weight:700; margin-bottom:6px; letter-spacing:-0.3px; line-height:1.3; }',
       '.cw-chunk-summary { color:#f59e0b; font-size:13px; font-style:italic; margin-bottom:14px; }',
-      '.cw-chunk-content { color:#cbd5e1; font-size:13.5px; line-height:1.7; max-height:300px; overflow-y:auto; }',
-      '.cw-chunk-footer { display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid rgba(148,163,184,0.08); }',
+      '.cw-chunk-content { color:#cbd5e1; font-size:13.5px; line-height:1.7; }',
+      '.cw-chunk-scroll { color:#cbd5e1; font-size:13.5px; line-height:1.7; flex:1; overflow-y:auto; min-height:0; }',
+      '.cw-chunk-footer { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:12px; border-top:1px solid rgba(148,163,184,0.08); flex-shrink:0; }',
       '.cw-chunk-nav { background:rgba(30,41,59,0.5); border:1px solid rgba(148,163,184,0.12); color:#f1f5f9; border-radius:12px; padding:8px 18px; font-size:13px; cursor:pointer; font-family:inherit; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); transition:all .2s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-chunk-nav:disabled { opacity:0.25; cursor:not-allowed; }',
       '.cw-chunk-nav:hover:not(:disabled) { background:rgba(217,119,6,0.12); border-color:rgba(217,119,6,0.25); color:#f59e0b; transform:translateY(-1px); }',
