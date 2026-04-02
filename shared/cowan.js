@@ -366,9 +366,10 @@
     });
   }
 
-  /* ── Sync: Companion-Events lesen (companion-connected erkennen) ── */
+  /* ── Sync: Companion-Events lesen (companion-connected erkennen + Timeout) ── */
+  var COMPANION_TIMEOUT = 30000; /* 30 Sekunden ohne Heartbeat = disconnected */
   function syncCheckCompanion() {
-    if (!syncUrl || !syncToken || isCompanionMode || companionConnected) return;
+    if (!syncUrl || !syncToken || isCompanionMode) return;
     fetch(syncUrl + '/cowan-events.json', {
       headers: { 'Authorization': 'Bearer ' + syncToken },
     }).then(function(res) {
@@ -376,12 +377,18 @@
       return null;
     }).then(function(data) {
       if (!data) return;
-      /* Einmal verbunden = bleibt verbunden (kein Timeout) */
-      if (data.type === 'companion-connected' || data.device === 'companion' || (data.event && data.event.type === 'companion-connected')) {
+      var isCompanionEvent = data.type === 'companion-connected' || data.device === 'companion' || (data.event && (data.event.type === 'companion-connected' || data.event.type === 'companion-heartbeat'));
+      var eventTime = data.lastUpdate ? new Date(data.lastUpdate).getTime() : 0;
+      var age = Date.now() - eventTime;
+      var wasConnected = companionConnected;
+      if (isCompanionEvent && age < COMPANION_TIMEOUT) {
         companionConnected = true;
-        companionLastSeen = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now();
-        render();
+        companionLastSeen = eventTime;
+      } else if (isCompanionEvent && age >= COMPANION_TIMEOUT) {
+        /* Letztes Event zu alt → Companion weg */
+        companionConnected = false;
       }
+      if (companionConnected !== wasConnected) render();
     }).catch(function() { /* still */ });
   }
 
@@ -1237,8 +1244,11 @@
     if (isCompanionMode && syncUrl && syncToken) {
       /* Sync-Settings schon aus URL gesetzt, Polling direkt starten */
       startSyncPolling();
-      /* Connected-Event an Server senden */
+      /* Connected-Event an Server senden + Heartbeat alle 15s */
       syncWriteEvent({ type: 'companion-connected', details: 'Companion verbunden' });
+      setInterval(function() {
+        syncWriteEvent({ type: 'companion-heartbeat' });
+      }, 15000);
     } else {
       startSyncPolling();
     }
