@@ -852,8 +852,47 @@
     var hasSync = !!(syncUrl && syncToken);
     var chunkCount = chunks.length;
 
-    /* Titel */
-    home.appendChild(el('div', { className: 'cw-home-title' }, 'Dein Buch-Begleiter'));
+    /* ── Welcome-Screen (nur wenn kein API-Key) ── */
+    if (!hasKey) {
+      var welcome = el('div', { className: 'cw-welcome' });
+      /* Hummer-Logo */
+      var logoWrap = el('div', { className: 'cw-welcome-logo' });
+      var hummerPath = (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg';
+      logoWrap.innerHTML = '<img src="' + hummerPath + '" alt="Cowan" width="52" height="52">';
+      welcome.appendChild(logoWrap);
+      welcome.appendChild(el('div', { className: 'cw-welcome-title' }, 'Willkommen bei Cowan'));
+      welcome.appendChild(el('div', { className: 'cw-welcome-sub' }, 'Dein intelligenter Buch-Begleiter'));
+
+      /* Wissen */
+      var wissBlock = el('div', { className: 'cw-welcome-block' });
+      wissBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg><strong class="cw-welcome-heading" style="color:#22c55e">Wissen ist schon da</strong>';
+      wissBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Cowan kennt bereits ' + chunkCount + ' Wissens-Bausteine zu deinem Buch. Du kannst Fragen stellen, Kapitel besprechen und dir Zusammenfassungen geben lassen.'));
+      welcome.appendChild(wissBlock);
+
+      /* API-Key */
+      var keyBlock = el('div', { className: 'cw-welcome-block' });
+      keyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Claude API-Key benoetigt</strong>';
+      var keyText = el('p', { className: 'cw-welcome-text' });
+      keyText.innerHTML = 'Um mit Cowan zu chatten, brauchst du einen API-Key von Anthropic. Den bekommst du kostenlos unter <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" class="cw-link">console.anthropic.com</a>. Gib ihn links in der API-Key-Kachel ein.';
+      keyBlock.appendChild(keyText);
+      welcome.appendChild(keyBlock);
+
+      /* Security-Hinweis */
+      var secBlock = el('div', { className: 'cw-welcome-security' });
+      secBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><strong class="cw-welcome-heading" style="color:#22c55e">Dein Key bleibt sicher</strong>';
+      secBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Dein API-Key wird nur lokal in deinem Browser gespeichert (localStorage). Er wird nie an unsere Server gesendet \u2013 Anfragen gehen direkt von deinem Browser an die Claude API. Niemand ausser dir hat Zugriff.'));
+      welcome.appendChild(secBlock);
+
+      /* Handy */
+      var handyBlock = el('div', { className: 'cw-welcome-block' });
+      handyBlock.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><strong class="cw-welcome-heading" style="color:#f59e0b">Handy als Begleiter</strong>';
+      handyBlock.appendChild(el('p', { className: 'cw-welcome-text' }, 'Spaeter kannst du dein Handy per QR-Code verbinden und Buchseiten fotografieren, um Fragen zu stellen. Dafuer brauchst du zuerst den API-Key.'));
+      welcome.appendChild(handyBlock);
+
+      home.appendChild(welcome);
+    } else {
+      home.appendChild(el('div', { className: 'cw-home-title' }, 'Dein Buch-Begleiter'));
+    }
 
     /* 2x2 Grid */
     var grid = el('div', { className: 'cw-home-grid' });
@@ -1297,7 +1336,7 @@
       '.cw-chunk-progress-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,#d97706,#f59e0b); transition:width .3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 0 8px rgba(217,119,6,0.4); }',
 
       /* Home-Screen */
-      '.cw-home { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:18px; overflow-y:auto; }',
+      '.cw-home { flex:1; display:flex; flex-direction:column; align-items:center; padding:20px; gap:18px; overflow-y:auto; }',
       '.cw-home-title { font-size:17px; font-weight:700; color:#94a3b8; letter-spacing:-0.3px; }',
       '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
 
@@ -1330,6 +1369,17 @@
       '.cw-home-footer { font-size:12px; color:#94a3b8; text-align:center; margin-top:8px; }',
       '.cw-home-link { color:#f59e0b; text-decoration:underline; }',
       '.cw-home-link:hover { color:#fbbf24; }',
+
+      /* Welcome-Screen */
+      '.cw-welcome { background:rgba(30,41,59,0.5); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.1); border-radius:18px; padding:24px 20px; text-align:center; width:100%; max-width:360px; }',
+      '.cw-welcome-logo { width:72px; height:72px; margin:0 auto 12px; background:rgba(217,119,6,0.1); border-radius:18px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(217,119,6,0.15); }',
+      '.cw-welcome-title { font-size:20px; font-weight:700; color:#f1f5f9; margin-bottom:4px; }',
+      '.cw-welcome-sub { font-size:13px; color:#94a3b8; margin-bottom:18px; }',
+      '.cw-welcome-block { text-align:left; margin-bottom:14px; }',
+      '.cw-welcome-icon { font-size:14px; margin-right:4px; }',
+      '.cw-welcome-heading { font-size:14px; font-weight:700; }',
+      '.cw-welcome-text { font-size:13px; color:#94a3b8; line-height:1.5; margin:4px 0 0; }',
+      '.cw-welcome-security { text-align:left; margin-bottom:14px; background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.15); border-radius:12px; padding:12px 14px; }',
 
       /* Back button */
       '.cw-btn-back { margin-right:2px; }',
