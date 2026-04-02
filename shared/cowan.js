@@ -781,25 +781,21 @@
     if (!area) return;
     area.innerHTML = '';
 
-    /* API-Key Eingabe wenn nicht gesetzt */
-    if (!apiKey || apiKeyStatus === 'none' || apiKeyStatus === 'invalid') {
-      var fileInputKey = el('input', { type: 'file', accept: 'image/*', style: { display: 'none' }, id: 'cw-file-input', onChange: handleImageSelect });
-      var imgBtnKey = el('button', { className: 'cw-btn-icon cw-img-btn', title: 'Bild senden', html: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>', onClick: function() { $('#cw-file-input').click(); } });
-      var keyInput = el('input', {
-        type: 'password',
-        className: 'cw-key-input',
-        placeholder: 'Claude API-Key eingeben (sk-ant-...)',
+    /* Kein API-Key: Eingabefeld deaktiviert mit Hinweis */
+    var hasKey = apiKey && (apiKeyStatus === 'valid' || apiKeyStatus === 'uncertain');
+    if (!hasKey) {
+      var disabledInput = el('textarea', {
+        className: 'cw-input cw-input-disabled',
+        placeholder: 'Erst API-Key eintragen...',
+        rows: '1',
+        disabled: 'disabled',
       });
-      var keyBtn = el('button', { className: 'cw-key-btn', onClick: function() { validateApiKey(keyInput.value.trim()); } }, 'Verbinden');
-      var keyRow = el('div', { className: 'cw-key-row' }, [fileInputKey, imgBtnKey, keyInput, keyBtn]);
-      area.appendChild(keyRow);
-      if (apiKeyStatus === 'invalid') {
-        area.appendChild(el('div', { className: 'cw-key-error' }, 'Ungueltiger API-Key. Bitte pruefen.'));
-      }
-      if (apiKeyStatus === 'checking') {
-        area.appendChild(el('div', { className: 'cw-key-checking' }, 'Pruefe Key...'));
-      }
-
+      var disabledSend = el('button', {
+        className: 'cw-send-btn',
+        disabled: 'disabled',
+      }, '\u27A4');
+      var row = el('div', { className: 'cw-input-row' }, [disabledInput, disabledSend]);
+      area.appendChild(row);
       return;
     }
 
@@ -1290,6 +1286,7 @@
       '.cw-input { flex:1; background:rgba(30,41,59,0.55); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:14px; padding:10px 14px; font-size:14px; font-family:inherit; resize:none; outline:none; min-height:40px; max-height:120px; line-height:1.4; transition:border-color .2s,box-shadow .2s; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }',
       '.cw-input:focus { border-color:rgba(217,119,6,0.5); box-shadow:0 0 0 2px rgba(217,119,6,0.1); }',
       '.cw-input::placeholder { color:#64748b; }',
+      '.cw-input-disabled { opacity:0.4; cursor:not-allowed; }',
       '.cw-send-btn { background:linear-gradient(135deg,#f59e0b,#d97706); color:#000; border:none; border-radius:50%; width:38px; height:38px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:opacity .2s,transform .15s,box-shadow .2s; box-shadow:0 2px 8px rgba(217,119,6,0.3); }',
       '.cw-send-btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(217,119,6,0.4); }',
       '.cw-send-btn:active { transform:scale(0.95); }',
