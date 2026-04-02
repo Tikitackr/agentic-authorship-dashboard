@@ -314,7 +314,7 @@
     if (!syncUrl || !syncToken) return;
     var payload = {
       lastUpdate: new Date().toISOString(),
-      device: 'dashboard-cowan',
+      device: isCompanionMode ? 'companion' : 'dashboard-cowan',
       event: event,
       context: {
         module: currentModuleId,
@@ -377,7 +377,7 @@
     }).then(function(data) {
       if (!data) return;
       /* Einmal verbunden = bleibt verbunden (kein Timeout) */
-      if (data.type === 'companion-connected' || data.device === 'companion') {
+      if (data.type === 'companion-connected' || data.device === 'companion' || (data.event && data.event.type === 'companion-connected')) {
         companionConnected = true;
         companionLastSeen = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now();
         render();
