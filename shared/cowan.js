@@ -1205,7 +1205,7 @@
         render();
         if (isOpen) setTimeout(scrollChat, 100);
       }});
-      fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
+      fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="50" height="50" style="pointer-events:none">';
       document.body.appendChild(fab);
     }
 
@@ -1252,7 +1252,7 @@
   function getCss() {
     return [
       /* FAB – OpenClaw Hummer mit Glow */
-      '.cw-fab { position:fixed; bottom:24px; right:24px; width:70px; height:70px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid rgba(245,158,11,0.25); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:9999; transition:transform .2s; animation:cw-glow 3.5s ease-in-out infinite; }',
+      '.cw-fab { position:fixed; bottom:24px; right:24px; width:90px; height:90px; border-radius:50%; background:var(--bg-card,#0f172a); border:2.5px solid rgba(245,158,11,0.25); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:9999; transition:transform .2s; animation:cw-glow 3.5s ease-in-out infinite; }',
       '.cw-fab:hover { transform:scale(1.1); }',
       '@keyframes cw-glow { 0%,100% { border-color:rgba(245,158,11,0.25); box-shadow:0 0 8px rgba(245,158,11,0.08),0 0 20px rgba(245,158,11,0.04); } 50% { border-color:rgba(245,158,11,0.9); box-shadow:0 0 24px rgba(245,158,11,0.6),0 0 48px rgba(245,158,11,0.3),0 0 72px rgba(245,158,11,0.1); } }',
 
@@ -1447,7 +1447,7 @@
       /* Mobile */
       '@media (max-width:480px) {',
       '  .cw-panel { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; }',
-      '  .cw-fab { bottom:16px; right:16px; width:50px; height:50px; font-size:24px; }',
+      '  .cw-fab { bottom:16px; right:16px; width:70px; height:70px; font-size:24px; }',
       '  .cw-home-grid { max-width:100%; }',
       '  .cw-tile { padding:16px 10px; }',
       '}',
