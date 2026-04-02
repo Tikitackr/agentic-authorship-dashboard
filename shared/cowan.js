@@ -684,12 +684,25 @@
       syncDot = '<span class="cw-sync-dot" style="background:' + dotColor + '" title="' + dotTitle + '"></span>';
     }
 
-    /* Sub-Zeile: Modell + Chunks + optional Modul-Kontext */
-    var subText = modelLabel + ' · ' + chunks.length + ' Chunks' + costStr;
+    /* Sub-Zeile: Modell + Chunks + optional Modul-Kontext + Sync-Status farbig */
+    var subParts = [];
     if (isCompanionMode) {
-      subText = 'Companion' + (currentModuleLabel ? ' · ' + currentModuleLabel : '') + ' · ' + modelLabel + costStr;
-    } else if (currentModuleLabel) {
-      subText = currentModuleLabel + ' · ' + subText;
+      subParts.push('Companion');
+      if (currentModuleLabel) subParts.push(currentModuleLabel);
+      subParts.push(modelLabel);
+    } else {
+      if (currentModuleLabel) subParts.push(currentModuleLabel);
+      subParts.push(modelLabel);
+      subParts.push(chunks.length + ' Chunks');
+    }
+    if (costStr) subParts.push(costStr.replace(' · ', ''));
+    var subHtml = subParts.join(' · ');
+
+    /* Sync-Status als farbiger Text in Sub-Zeile */
+    if (syncUrl) {
+      var syncColor = syncError ? '#ef4444' : (syncConnected ? '#22c55e' : '#666');
+      var syncLabel = syncError ? ('Sync: ' + syncError) : (syncConnected ? 'Sync aktiv' : 'Sync verbindet...');
+      subHtml += ' · <span style="color:' + syncColor + '">' + syncLabel + '</span>';
     }
 
     /* Titel mit Sync-Dot */
@@ -703,7 +716,7 @@
         el('div', { className: 'cw-header-icon', html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' }),
       el('div', { className: 'cw-header-info' }, [
         el('span', { className: 'cw-header-title', html: titleText + syncDot }),
-        el('span', { className: 'cw-header-sub' }, subText),
+        el('span', { className: 'cw-header-sub', html: subHtml }),
       ]),
     ]));
 
@@ -727,7 +740,13 @@
     if (sub) {
       var modelLabel = PRICING[selectedModel] ? PRICING[selectedModel].label : selectedModel;
       var costStr = totalCost > 0 ? ' · $' + formatCost(totalCost) : '';
-      sub.textContent = modelLabel + ' · ' + chunks.length + ' Chunks' + costStr;
+      var html = modelLabel + ' · ' + chunks.length + ' Chunks' + costStr;
+      if (syncUrl) {
+        var syncColor = syncError ? '#ef4444' : (syncConnected ? '#22c55e' : '#666');
+        var syncLabel = syncError ? ('Sync: ' + syncError) : (syncConnected ? 'Sync aktiv' : 'Sync verbindet...');
+        html += ' · <span style="color:' + syncColor + '">' + syncLabel + '</span>';
+      }
+      sub.innerHTML = html;
     }
   }
 
