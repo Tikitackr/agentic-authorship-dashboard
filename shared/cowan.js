@@ -136,7 +136,7 @@
         e.innerHTML = attrs[k];
       } else if (k === 'className') {
         e.className = attrs[k];
-      } else {
+      } else if (attrs[k] != null) {
         e.setAttribute(k, attrs[k]);
       }
     });
