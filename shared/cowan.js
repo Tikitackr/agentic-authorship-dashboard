@@ -800,15 +800,6 @@
         area.appendChild(el('div', { className: 'cw-key-checking' }, 'Pruefe Key...'));
       }
 
-      /* Beispielfragen */
-      var examples = el('div', { className: 'cw-examples' });
-      ['Was ist OpenClaw?', 'Wie starte ich?', 'Was ist SOUL.md?'].forEach(function(q) {
-        examples.appendChild(el('button', { className: 'cw-example-btn', onClick: function() {
-          var inp = $('#cw-input');
-          if (inp) inp.value = q;
-        }}, q));
-      });
-      area.appendChild(examples);
       return;
     }
 
