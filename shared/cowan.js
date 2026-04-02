@@ -582,11 +582,18 @@
     var panel = $('#cw-panel');
     if (!panel) return;
 
-    panel.style.display = isOpen ? 'flex' : 'none';
-
-    /* Sidebar-Mode: Dashboard-Body Platz machen/freigeben */
+    /* Sidebar-Mode: Slide-Animation + Body-Margin */
     if (isSidebarMode) {
+      /* Panel bleibt display:flex (via CSS !important), nur Klasse togglen */
+      if (isOpen) {
+        panel.classList.add('cw-sidebar-open');
+      } else {
+        panel.classList.remove('cw-sidebar-open');
+      }
+      document.body.style.transition = 'margin-right .3s cubic-bezier(0.4,0,0.2,1)';
       document.body.style.marginRight = isOpen ? '380px' : '';
+    } else {
+      panel.style.display = isOpen ? 'flex' : 'none';
     }
 
     /* FAB Button – im Sidebar-Mode immer sichtbar (Toggle), sonst verstecken wenn offen */
@@ -861,8 +868,9 @@
     keyTile.appendChild(el('div', { className: 'cw-tile-label' + (hasKey ? ' cw-tile-label-ok' : '') }, hasKey ? 'Verbunden' : 'API-Key'));
 
     if (hasKey) {
-      /* Verbunden-State: "Key aendern" Link + Modell-Dropdown (gestapelt) */
-      keyTile.appendChild(el('div', {
+      /* Verbunden-State: "Key aendern" + Dropdown auf einer Zeile */
+      var connRow = el('div', { className: 'cw-tile-sub-row' });
+      connRow.appendChild(el('span', {
         className: 'cw-tile-link',
         onClick: function(e) {
           e.stopPropagation();
@@ -871,7 +879,7 @@
           render();
         },
       }, 'Key aendern'));
-      var modelSelect = el('select', { className: 'cw-tile-select', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
+      var modelSelect = el('select', { className: 'cw-tile-select-inline', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
         selectedModel = e.target.value;
         try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
         render();
@@ -881,7 +889,8 @@
         if (mid === selectedModel) opt.selected = true;
         modelSelect.appendChild(opt);
       });
-      keyTile.appendChild(modelSelect);
+      connRow.appendChild(modelSelect);
+      keyTile.appendChild(connRow);
     } else {
       /* Eingabe-State: Input + OK-Button direkt in der Kachel */
       var keyRow = el('div', { className: 'cw-tile-key-row' });
@@ -902,16 +911,16 @@
       keyRow.appendChild(keyBtn);
       keyTile.appendChild(keyRow);
 
-      /* Status-Text */
+      /* Status + Dropdown auf einer Zeile */
+      var subRow = el('div', { className: 'cw-tile-sub-row' });
       if (apiKeyStatus === 'checking') {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-checking' }, 'Pruefe...'));
       } else if (apiKeyStatus === 'invalid') {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Key ungueltig'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub cw-tile-sub-error' }, 'Ungueltig'));
       } else {
-        keyTile.appendChild(el('div', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
+        subRow.appendChild(el('span', { className: 'cw-tile-sub' }, 'Bleibt lokal'));
       }
-      /* Modell-Dropdown */
-      var modelSelect2 = el('select', { className: 'cw-tile-select', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
+      var modelSelect2 = el('select', { className: 'cw-tile-select-inline', onClick: function(e) { e.stopPropagation(); }, onChange: function(e) {
         selectedModel = e.target.value;
         try { localStorage.setItem('shell:cowanModel', selectedModel); } catch(ex) {}
       }});
@@ -920,7 +929,8 @@
         if (mid === selectedModel) opt.selected = true;
         modelSelect2.appendChild(opt);
       });
-      keyTile.appendChild(modelSelect2);
+      subRow.appendChild(modelSelect2);
+      keyTile.appendChild(subRow);
     }
     grid.appendChild(keyTile);
 
@@ -966,14 +976,6 @@
     ]));
 
     home.appendChild(grid);
-
-    /* Kachelhoehen angleichen – nach Render messen */
-    requestAnimationFrame(function() {
-      var tiles = grid.querySelectorAll('.cw-tile');
-      var maxH = 0;
-      tiles.forEach(function(t) { if (t.offsetHeight > maxH) maxH = t.offsetHeight; });
-      if (maxH > 0) tiles.forEach(function(t) { t.style.minHeight = maxH + 'px'; });
-    });
 
     /* ── Footer-Link: Key erstellen ── */
     if (!hasKey) {
@@ -1299,21 +1301,22 @@
       '.cw-home-title { font-size:17px; font-weight:700; color:#94a3b8; letter-spacing:-0.3px; }',
       '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
 
-      /* Tiles – Glass Cards */
-      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:22px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s,background-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; }',
+      /* Tiles – Glass Cards (feste Hoehe, alle gleich) */
+      '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; min-height:155px; }',
       '.cw-tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }',
       '.cw-tile:active { transform:scale(0.96); }',
-      '.cw-tile-active { border-color:rgba(255,255,255,0.15); }',
-      '.cw-tile-active:hover { border-color:rgba(255,255,255,0.22); }',
+      '.cw-tile-active { border-color:rgba(34,197,94,0.3); box-shadow:0 0 12px rgba(34,197,94,0.12),0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); }',
+      '.cw-tile-active:hover { border-color:rgba(34,197,94,0.5); box-shadow:0 0 20px rgba(34,197,94,0.18),0 8px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08); }',
       '.cw-tile-disabled { opacity:0.45; cursor:default; border-color:rgba(100,116,139,0.1); }',
       '.cw-tile-disabled:hover { border-color:rgba(100,116,139,0.1); background:rgba(30,41,59,0.55); transform:none; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); }',
-      '.cw-tile-icon { width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; background:rgba(217,119,6,0.1); }',
-      '.cw-tile-icon-ok { background:rgba(34,197,94,0.1); }',
-      '.cw-tile-label { font-size:15px; font-weight:700; color:#f1f5f9; letter-spacing:-0.2px; }',
+      '.cw-tile-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:rgba(217,119,6,0.1); }',
+      '.cw-tile-icon-ok { background:rgba(34,197,94,0.12); }',
+      '.cw-tile-label { font-size:14px; font-weight:700; color:#f1f5f9; letter-spacing:-0.2px; }',
       '.cw-tile-label-ok { color:#22c55e; }',
-      '.cw-tile-sub { font-size:12px; color:#94a3b8; }',
-      '.cw-tile-select { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:4px 10px; font-size:12px; font-family:inherit; cursor:pointer; margin-top:4px; }',
-      '.cw-tile-link { font-size:12px; color:#94a3b8; cursor:pointer; text-decoration:underline; transition:color .15s; }',
+      '.cw-tile-sub { font-size:11px; color:#94a3b8; }',
+      '.cw-tile-sub-row { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; }',
+      '.cw-tile-select-inline { background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:8px; padding:2px 8px; font-size:11px; font-family:inherit; cursor:pointer; }',
+      '.cw-tile-link { font-size:11px; color:#94a3b8; cursor:pointer; text-decoration:underline; transition:color .15s; }',
       '.cw-tile-link:hover { color:#f59e0b; }',
       '.cw-tile-key-row { display:flex; gap:4px; width:100%; margin-top:4px; }',
       '.cw-tile-key-input { flex:1; min-width:0; background:rgba(15,23,42,0.6); color:#f1f5f9; border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:6px 8px; font-size:12px; font-family:inherit; outline:none; transition:border-color .2s; }',
@@ -1345,8 +1348,9 @@
       '.cw-qr-instruction p { font-size:13px; color:#94a3b8; margin:0; line-height:1.5; }',
       '.cw-qr-status { font-size:12px; color:#22c55e; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.15); border-radius:10px; padding:8px 12px; }',
 
-      /* Sidebar-Mode: Volle Hoehe rechts angedockt */
-      '.cw-sidebar { top:0; right:0; bottom:0; width:380px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); }',
+      /* Sidebar-Mode: Volle Hoehe rechts angedockt, Slide-Animation */
+      '.cw-sidebar { top:0; right:0; bottom:0; width:380px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); display:flex !important; transform:translateX(100%); transition:transform .3s cubic-bezier(0.4,0,0.2,1); }',
+      '.cw-sidebar.cw-sidebar-open { transform:translateX(0); }',
 
       /* Companion-Mode: Vollbild auf Mobile */
       '.cw-companion { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; border:none; }',
