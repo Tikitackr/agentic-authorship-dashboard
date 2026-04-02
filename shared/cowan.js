@@ -430,6 +430,7 @@
 
     messages.push({ role: 'user', content: text || '(Bild gesendet)', sourceIds: [], imageData: imgForSend });
     isLoading = true;
+    if (currentView === 'home') currentView = 'chat';
     render();
 
     /* API-Messages bauen */
