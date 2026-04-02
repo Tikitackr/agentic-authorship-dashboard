@@ -33,13 +33,14 @@
    - Buttons: Amber-Gradient, Glow-Shadows, Spring-Animationen
    - Geraete-neutral: "iPhone" → "Handy" ueberall
 
-   v3.1.1 (02.04.2026 – Session 178):
-   - Design-Fixes nach Thomas-Review:
-   - Tile-Borders: Amber → subtiles Weiss (rgba(255,255,255,0.18) hover)
-   - Farbkonsistenz: Gruen (#22c55e) → Amber (#f59e0b) bei allen Tile-Icons
-   - Kachelhoehen: min-height:160px fuer gleichmaessiges Grid
-   - Quick-Action Chips: Amber-Border → Glass-Look (weiss/grau statt orange)
-   - cw-tile-label-ok von Gruen auf Amber umgestellt
+   v3.2.0 (02.04.2026 – Session 178):
+   - Design-Fixes: Tile-Borders subtiler (weiss statt amber), Chips Glass-Look
+   - Gruene Icons+Labels fuer aktive Tiles (Verbunden, Wissen, Frage stellen)
+   - Kachelhoehen per JS nach Render angeglichen (requestAnimationFrame)
+   - SIDEBAR-MODUS NEU: Im Dashboard volle Hoehe rechts angedockt (380px)
+   - Erkennung via window.__shellLoaded, body margin-right 380px wenn offen
+   - FAB bleibt sichtbar im Sidebar-Mode (Toggle open/close)
+   - Drei Modi: Normal (floating) | Sidebar (Dashboard) | Companion (Handy)
    ========================================================== */
 
 (function() {
@@ -73,9 +74,10 @@
   var currentModuleId = '';  // z.B. 'fahrplan', 'setup-guide'
   var currentModuleLabel = '';  // z.B. 'Dein Fahrplan', 'Setup-Guide'
 
-  /* ── Companion-Mode & Views ── */
+  /* ── Companion-Mode, Sidebar & Views ── */
   var currentView = 'home';  // home | chat | qr
   var isCompanionMode = false;
+  var isSidebarMode = false;  // true wenn im Dashboard (Shell geladen)
   var companionParams = null;
 
   var MODULE_LABELS = {
@@ -582,9 +584,22 @@
 
     panel.style.display = isOpen ? 'flex' : 'none';
 
-    /* FAB Button – im Companion-Mode kein FAB (Vollbild) */
+    /* Sidebar-Mode: Dashboard-Body Platz machen/freigeben */
+    if (isSidebarMode) {
+      document.body.style.marginRight = isOpen ? '380px' : '';
+    }
+
+    /* FAB Button – im Sidebar-Mode immer sichtbar (Toggle), sonst verstecken wenn offen */
     var fab = $('#cw-fab');
-    if (fab) fab.style.display = (isOpen || isCompanionMode) ? 'none' : 'flex';
+    if (fab) {
+      if (isCompanionMode) {
+        fab.style.display = 'none';
+      } else if (isSidebarMode) {
+        fab.style.display = 'flex';
+      } else {
+        fab.style.display = isOpen ? 'none' : 'flex';
+      }
+    }
 
     if (!isOpen) return;
 
@@ -952,6 +967,14 @@
 
     home.appendChild(grid);
 
+    /* Kachelhoehen angleichen – nach Render messen */
+    requestAnimationFrame(function() {
+      var tiles = grid.querySelectorAll('.cw-tile');
+      var maxH = 0;
+      tiles.forEach(function(t) { if (t.offsetHeight > maxH) maxH = t.offsetHeight; });
+      if (maxH > 0) tiles.forEach(function(t) { t.style.minHeight = maxH + 'px'; });
+    });
+
     /* ── Footer-Link: Key erstellen ── */
     if (!hasKey) {
       var footer = el('div', { className: 'cw-home-footer' });
@@ -1093,6 +1116,9 @@
       }
     } catch(e) {}
 
+    /* Sidebar-Mode Erkennung: Wenn Shell geladen ist, Sidebar statt Floating */
+    isSidebarMode = !isCompanionMode && !!window.__shellLoaded;
+
     /* CSS */
     var style = document.createElement('style');
     style.textContent = getCss();
@@ -1100,13 +1126,21 @@
 
     /* FAB (Floating Action Button) – nicht im Companion-Mode */
     if (!isCompanionMode) {
-      var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() { isOpen = true; render(); setTimeout(scrollChat, 100); } });
+      var fab = el('button', { id: 'cw-fab', className: 'cw-fab', title: 'Cowan oeffnen', onClick: function() {
+        isOpen = !isOpen;
+        render();
+        if (isOpen) setTimeout(scrollChat, 100);
+        /* Dashboard-Body Platz machen/freigeben */
+        if (isSidebarMode) {
+          document.body.style.marginRight = isOpen ? '380px' : '';
+        }
+      }});
       fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="38" height="38" style="pointer-events:none">';
       document.body.appendChild(fab);
     }
 
     /* Panel – mit Home-Screen und QR-Overlay */
-    var panelClass = 'cw-panel' + (isCompanionMode ? ' cw-companion' : '');
+    var panelClass = 'cw-panel' + (isCompanionMode ? ' cw-companion' : '') + (isSidebarMode ? ' cw-sidebar' : '');
     var panel = el('div', { id: 'cw-panel', className: panelClass, style: { display: 'none' } }, [
       el('div', { id: 'cw-header', className: 'cw-header' }),
       el('div', { id: 'cw-home', className: 'cw-home', style: { display: 'none' } }),
@@ -1263,7 +1297,7 @@
       /* Home-Screen */
       '.cw-home { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:18px; overflow-y:auto; }',
       '.cw-home-title { font-size:17px; font-weight:700; color:#94a3b8; letter-spacing:-0.3px; }',
-      '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:12px; width:100%; max-width:340px; }',
+      '.cw-home-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }',
 
       /* Tiles – Glass Cards */
       '.cw-tile { background:rgba(30,41,59,0.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:22px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s cubic-bezier(0.4,0,0.2,1),box-shadow .3s,border-color .2s,background-color .2s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05); justify-content:center; }',
@@ -1310,6 +1344,9 @@
       '.cw-qr-instruction strong { font-size:15px; color:#f1f5f9; display:block; margin-bottom:4px; }',
       '.cw-qr-instruction p { font-size:13px; color:#94a3b8; margin:0; line-height:1.5; }',
       '.cw-qr-status { font-size:12px; color:#22c55e; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.15); border-radius:10px; padding:8px 12px; }',
+
+      /* Sidebar-Mode: Volle Hoehe rechts angedockt */
+      '.cw-sidebar { top:0; right:0; bottom:0; width:380px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); }',
 
       /* Companion-Mode: Vollbild auf Mobile */
       '.cw-companion { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; border:none; }',
