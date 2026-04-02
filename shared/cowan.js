@@ -831,10 +831,7 @@
       disabled: isLoading ? 'disabled' : null,
     }, '\u27A4');
 
-    var row = el('div', { className: 'cw-input-row' }, [fileInput, imgBtn, input, sendBtn]);
-    area.appendChild(row);
-
-    /* Modell-Auswahl */
+    /* Modell-Auswahl (ueber dem Input) */
     var modelRow = el('div', { className: 'cw-model-row' });
     Object.keys(PRICING).forEach(function(modelId) {
       var btn = el('button', {
@@ -848,6 +845,9 @@
       modelRow.appendChild(btn);
     });
     area.appendChild(modelRow);
+
+    var row = el('div', { className: 'cw-input-row' }, [fileInput, imgBtn, input, sendBtn]);
+    area.appendChild(row);
   }
 
   /* ── Home-Screen: 4 Kacheln (Verbunden, Wissen, Handy, Frage stellen) ── */
