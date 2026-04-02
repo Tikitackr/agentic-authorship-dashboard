@@ -85,6 +85,8 @@
   var syncUrl = '';
   var syncToken = '';
   var syncPollTimer = null;
+  var companionConnected = false;
+  var companionLastSeen = 0; /* Timestamp: wann zuletzt ein Companion-Event kam */
   var currentModuleId = '';  // z.B. 'fahrplan', 'setup-guide'
   var currentModuleLabel = '';  // z.B. 'Dein Fahrplan', 'Setup-Guide'
 
@@ -364,16 +366,43 @@
     });
   }
 
+  /* ── Sync: Companion-Events lesen (companion-connected erkennen) ── */
+  function syncCheckCompanion() {
+    if (!syncUrl || !syncToken || isCompanionMode) return;
+    fetch(syncUrl + '/cowan-events.json', {
+      headers: { 'Authorization': 'Bearer ' + syncToken },
+    }).then(function(res) {
+      if (res.ok) return res.json();
+      return null;
+    }).then(function(data) {
+      if (!data) return;
+      /* Pruefen ob das Event von einem Companion kommt und nicht aelter als 60s ist */
+      var eventTime = data.lastUpdate ? new Date(data.lastUpdate).getTime() : 0;
+      var now = Date.now();
+      var wasConnected = companionConnected;
+      if (data.type === 'companion-connected' || data.device === 'companion') {
+        companionConnected = (now - eventTime) < 60000; /* 60s Timeout */
+        companionLastSeen = eventTime;
+      } else if (eventTime > 0) {
+        companionConnected = (now - eventTime) < 60000;
+        companionLastSeen = eventTime;
+      }
+      if (wasConnected !== companionConnected) render();
+    }).catch(function() { /* still */ });
+  }
+
   /* ── Sync: Polling starten (alle 10s) ── */
   function startSyncPolling() {
     loadSyncSettings();
     if (!syncUrl || !syncToken) return;
     /* Sofort einmal lesen */
     syncReadState();
+    syncCheckCompanion();
     /* Dann alle 10 Sekunden */
     if (syncPollTimer) clearInterval(syncPollTimer);
     syncPollTimer = setInterval(function() {
       syncReadState();
+      syncCheckCompanion();
     }, 10000);
   }
 
@@ -953,18 +982,20 @@
 
     /* ── Kachel 3: Handy / QR-Code ── */
     var handyReady = hasKey && hasSync;
-    var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + (handyReady ? '#f59e0b' : '#888') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
-    var handySub = handyReady ? 'QR-Code scannen' : (!hasKey ? 'Erst API-Key' : 'Sync noetig');
+    var handyColor = companionConnected ? '#22c55e' : (handyReady ? '#f59e0b' : '#888');
+    var handyIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + handyColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+    var handySub = companionConnected ? 'Verbunden' : (handyReady ? 'QR-Code scannen' : (!hasKey ? 'Erst API-Key' : 'Sync noetig'));
+    var handyClass = companionConnected ? ' cw-tile-active' : (handyReady ? '' : ' cw-tile-disabled');
     grid.appendChild(el('div', {
-      className: 'cw-tile' + (handyReady ? '' : ' cw-tile-disabled'),
+      className: 'cw-tile' + handyClass,
       onClick: function() {
         if (!hasKey) return;
         if (!hasSync) { alert('Bitte zuerst Sync in Meine Daten einrichten (Tailscale-IP + Sync-Token).'); return; }
         currentView = 'qr'; render();
       },
     }, [
-      el('div', { className: 'cw-tile-icon', html: handyIcon }),
-      el('div', { className: 'cw-tile-label' }, 'Handy'),
+      el('div', { className: 'cw-tile-icon' + (companionConnected ? ' cw-tile-icon-ok' : ''), html: handyIcon }),
+      el('div', { className: 'cw-tile-label' + (companionConnected ? ' cw-tile-label-ok' : '') }, 'Handy'),
       el('div', { className: 'cw-tile-sub' }, handySub),
     ]));
 
