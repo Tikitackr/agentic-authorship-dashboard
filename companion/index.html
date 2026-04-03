@@ -108,6 +108,32 @@
     .comp-status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green-dim); }
     .comp-status-dot.api-ready { background: var(--amber); box-shadow: 0 0 6px var(--amber-glow); }
 
+    /* ── TTS Toggle ── */
+    .comp-tts-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+
+    .comp-tts-toggle:active { transform: scale(0.9); }
+    .comp-tts-toggle.active {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: #fff;
+    }
+
+    .comp-tts-toggle svg { width: 16px; height: 16px; }
+
     .comp-chapter {
       font-size: 11px;
       color: var(--text-muted);
@@ -288,6 +314,20 @@
     .dots-container.listening .dot:nth-child(1) { animation-delay: 0s; }
     .dots-container.listening .dot:nth-child(2) { animation-delay: 0.1s; }
     .dots-container.listening .dot:nth-child(3) { animation-delay: 0.2s; }
+
+    .dots-container.speaking .dot {
+      opacity: 1;
+      animation: dotSpeak 0.5s ease-in-out infinite alternate;
+    }
+
+    .dots-container.speaking .dot:nth-child(1) { animation-delay: 0s; }
+    .dots-container.speaking .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dots-container.speaking .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes dotSpeak {
+      from { transform: scaleY(1); opacity: 0.7; }
+      to { transform: scaleY(1.8); opacity: 1; }
+    }
 
     @keyframes dotWave {
       0%, 60%, 100% { transform: translateY(0); }
@@ -516,6 +556,13 @@
     <svg class="comp-logo" viewBox="0 0 500 500"><g fill="#f59e0b"><path fill-rule="evenodd" d="m166.5 52.5q3.5 0 7 0 2.75 2.99 1.5 7-21.27 45.61-20.5 96 39.99 2.76 72 26.5 7.87 6.86 13.5 15.5 42.88-56.39 103.5-92.5 47.35-25.46 101-25 14.52 0.38 23.5 11.5 3.19 7.74 2 16-1.81 7.18-4.5 14-1 0-1 1-5.04 6.05-9 13-1 0-1 1 0 0.5 0 1-12.42 12.15-28.5 19-6.02 36.27-41.5 45-0.83 2.75 0 5 19.02-12.85 41.5-9 10.85-8.09 23.5-13 15.01-6.37 31-2.5 14.09 7.43 14 23.5-2.83 23.25-15.5 43-6.42 9.92-14 19-10.04 8.8-19.5 18-72.02 48.88-156.5 27-19.63 9.6-41.5 10.5-4.59 1.27-9 3 2 1 4 2 20.09-1.11 35 12 25.46 6.95 37.5 30.5 1.26 5.69-1 11-3.38 3.79-7.5 6.5 5.74 10.07 1.5 20.5-7.55 7.47-17.5 3.5-11.01-5.34-22.5-9.5-18.26 10-38.5 13-15.5 0-31 0-26.62-4.54-51-17-4.17 1.33-8 3.5-7.23 5.87-15 11-8.62 2.58-13.5-4.5-1.82 2.32-4.5 3.5-6.06 2.24-12 3.5-7.5 0-15 0-27.42-2.56-50-18.5-18-17.25-23-41.5 0-11.5 0-23 4.12-22.7 25-33 6.95-16.67 22-26.5-20.39-20.8-14.5-49.5 7.01-26.98 28.5-44.5 7.56-5.27 15-10.5-13.09-30.88-7.5-64 3.16-15.57 14.5-26.5 6.85-2.48 8 4.5-6.59 39.53 11 75.5 7.99-0.49 16-2 2.42-34.57 14.5-67.5 8.51-22.23 27.5-36z"/></g></svg>
     <span class="comp-title">Cowan</span>
     <span class="comp-chapter hidden" id="chapterBadge"></span>
+    <button class="comp-tts-toggle" id="ttsToggle" onclick="toggleTts()" title="Antworten vorlesen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+    </button>
     <div class="comp-status">
       <div class="comp-status-dot" id="statusDot"></div>
       <span id="statusText">Offline</span>
@@ -599,6 +646,12 @@
   var recognition = null;
   var selectedModel = 'claude-haiku-4-5-20251001';
 
+  // TTS
+  var ttsEnabled = false;
+  var ttsUrl = '';       // wird aus syncUrl abgeleitet: hostname:8443
+  var ttsAudio = null;   // aktuelles Audio-Element
+  var isSpeaking = false;
+
   // Sync
   var syncUrl = '';
   var syncToken = '';
@@ -607,7 +660,7 @@
   var currentChapter = '';
 
   // DOM refs
-  var setupScreen, chatArea, inputBar, msgInput, sendBtn, micBtn, cameraBtn;
+  var setupScreen, chatArea, inputBar, msgInput, sendBtn, micBtn, cameraBtn, ttsToggle;
   var statusDot, statusText, chapterBadge, welcomeMsg, imagePreview, previewImg;
 
   /* ══════════════════════════════════════════
@@ -621,6 +674,7 @@
     sendBtn = document.getElementById('sendBtn');
     micBtn = document.getElementById('micBtn');
     cameraBtn = document.getElementById('cameraBtn');
+    ttsToggle = document.getElementById('ttsToggle');
     statusDot = document.getElementById('statusDot');
     statusText = document.getElementById('statusText');
     chapterBadge = document.getElementById('chapterBadge');
@@ -648,6 +702,18 @@
       }
     }
     if (!syncToken) syncToken = localStorage.getItem('aa-settings.syncToken') || '';
+
+    // TTS-URL aus Sync-URL ableiten (gleicher Hostname, Port 8443)
+    if (syncUrl) {
+      try {
+        var syncHostname = new URL(syncUrl).hostname;
+        ttsUrl = 'https://' + syncHostname + ':8443';
+      } catch(e) { ttsUrl = ''; }
+    }
+
+    // TTS-Praeferenz wiederherstellen
+    ttsEnabled = localStorage.getItem('companion-tts') === 'true';
+    if (ttsEnabled && ttsToggle) ttsToggle.classList.add('active');
 
     // Event Listeners
     msgInput.addEventListener('input', onInputChange);
@@ -756,6 +822,7 @@
       removeDots(dotsEl);
       messages.push({ role: 'assistant', text: reply });
       renderAssistantBubble(reply);
+      speakText(reply);
       scrollToBottom();
     }).catch(function(err) {
       isLoading = false;
@@ -960,6 +1027,90 @@
         updateChapterBadge(label);
       }
     }).catch(function() {});
+  }
+
+  /* ══════════════════════════════════════════
+     TTS (Text-to-Speech ueber VPS)
+     ══════════════════════════════════════════ */
+  window.toggleTts = function() {
+    ttsEnabled = !ttsEnabled;
+    localStorage.setItem('companion-tts', ttsEnabled ? 'true' : 'false');
+    ttsToggle.classList.toggle('active', ttsEnabled);
+
+    // Wenn ausgeschaltet: laufende Wiedergabe stoppen
+    if (!ttsEnabled) stopSpeaking();
+  };
+
+  function speakText(text) {
+    if (!ttsEnabled || !ttsUrl || !syncToken) return;
+
+    // Markdown/Code-Bloecke entfernen fuer sauberere Sprachausgabe
+    var cleanText = text
+      .replace(/```[\s\S]*?```/g, ' Code-Block ausgelassen. ')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .trim();
+
+    if (!cleanText) return;
+
+    // Max 5000 Zeichen (Server-Limit)
+    if (cleanText.length > 5000) cleanText = cleanText.slice(0, 4990) + '...';
+
+    // Speaking-Dots anzeigen
+    var speakDots = showDots('speaking');
+    isSpeaking = true;
+
+    fetch(ttsUrl + '/speak', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + syncToken
+      },
+      body: JSON.stringify({ text: cleanText })
+    }).then(function(res) {
+      if (!res.ok) throw new Error('TTS-Fehler ' + res.status);
+      return res.blob();
+    }).then(function(blob) {
+      var url = URL.createObjectURL(blob);
+      ttsAudio = new Audio(url);
+
+      ttsAudio.onended = function() {
+        isSpeaking = false;
+        removeDots(speakDots);
+        URL.revokeObjectURL(url);
+        ttsAudio = null;
+      };
+
+      ttsAudio.onerror = function() {
+        isSpeaking = false;
+        removeDots(speakDots);
+        URL.revokeObjectURL(url);
+        ttsAudio = null;
+      };
+
+      ttsAudio.play().catch(function() {
+        // Autoplay blockiert (erste Interaktion noetig)
+        isSpeaking = false;
+        removeDots(speakDots);
+        URL.revokeObjectURL(url);
+        ttsAudio = null;
+      });
+    }).catch(function(err) {
+      isSpeaking = false;
+      removeDots(speakDots);
+      // TTS-Fehler leise ignorieren – Chat funktioniert weiter
+    });
+  }
+
+  function stopSpeaking() {
+    if (ttsAudio) {
+      ttsAudio.pause();
+      ttsAudio = null;
+    }
+    isSpeaking = false;
   }
 
   /* ══════════════════════════════════════════
