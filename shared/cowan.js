@@ -1128,7 +1128,7 @@
 
     /* Hummer-Logo */
     var logoWrap = el('div', { className: 'cw-welcome-logo' });
-    var hummerPath = (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg';
+    var hummerPath = (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.split('?')[0].replace('cowan.js','') : 'shared/') + 'hummer.svg';
     logoWrap.innerHTML = '<img src="' + hummerPath + '" alt="Cowan" width="48" height="48">';
     card.appendChild(logoWrap);
     card.appendChild(el('div', { className: 'cw-welcome-title' }, 'Willkommen bei Cowan'));
@@ -1222,7 +1222,7 @@
         render();
         if (isOpen) setTimeout(scrollChat, 100);
       }});
-      fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="50" height="50" style="pointer-events:none">';
+      fab.innerHTML = '<img src="' + (document.querySelector('script[src*="cowan"]') ? document.querySelector('script[src*="cowan"]').src.split('?')[0].replace('cowan.js','') : 'shared/') + 'hummer.svg" alt="Cowan" width="50" height="50" style="pointer-events:none">';
       document.body.appendChild(fab);
     }
 
