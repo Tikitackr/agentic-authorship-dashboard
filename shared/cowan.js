@@ -1066,7 +1066,7 @@
       /* Anleitung */
       el('div', { className: 'cw-qr-instruction' }, [
         el('strong', null, 'Scanne mit deinem Handy'),
-        el('p', null, 'Kamera-App oeffnen, QR-Code scannen \u2013 Cowan startet im Companion-Modus.'),
+        el('p', null, 'Kamera-App oeffnen, QR-Code scannen \u2013 Cowan oeffnet sich als eigene Seite auf deinem Handy.'),
       ]),
       /* Sync-Status */
       el('div', { className: 'cw-qr-status' }, syncConnected ? 'Sync aktiv \u2013 nach dem Scannen verbindet sich der Companion automatisch.' : 'Sync wird verbunden...'),
@@ -1163,46 +1163,9 @@
 
   /* ── Widget ins DOM einbauen ── */
   function mount() {
-    /* Companion-Mode Erkennung (URL-Parameter) */
-    try {
-      var urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('companion') === 'true') {
-        isCompanionMode = true;
-        companionParams = {
-          sync: urlParams.get('sync') || '',
-          synctoken: urlParams.get('synctoken') || '',
-          apikey: urlParams.get('apikey') || '',
-        };
-        /* API-Key aus QR-Code (base64) uebernehmen */
-        if (companionParams.apikey) {
-          try {
-            var decoded = atob(decodeURIComponent(companionParams.apikey));
-            if (decoded && decoded.indexOf('sk-ant-') === 0) {
-              apiKey = decoded;
-              apiKeyStatus = 'valid';
-              try { localStorage.setItem('shell:apiKey', decoded); } catch(ex) {}
-            }
-          } catch(e) { /* base64 decode fehlgeschlagen */ }
-        }
-        /* Sync-Daten aus URL uebernehmen */
-        if (companionParams.sync) {
-          var sp = decodeURIComponent(companionParams.sync);
-          if (sp.indexOf('.ts.net') !== -1) {
-            syncUrl = 'https://' + sp.replace(/\/+$/, '');
-          } else {
-            syncUrl = 'http://' + sp;
-            /* Falls Port fehlt, Standard 3456 */
-            if (sp.indexOf(':') === -1) syncUrl += ':3456';
-          }
-        }
-        if (companionParams.synctoken) {
-          syncToken = decodeURIComponent(companionParams.synctoken);
-        }
-        /* Companion: direkt Chat, kein Home-Screen */
-        currentView = 'chat';
-        isOpen = true;
-      }
-    } catch(e) {}
+    /* Companion-Mode entfernt (S183): Companion ist jetzt eigenstaendige Seite
+       unter /companion/index.html. isCompanionMode bleibt als Variable (immer false)
+       damit bestehende Conditionals nicht brechen. */
 
     /* Sidebar-Mode Erkennung: Wenn Shell geladen ist, Sidebar statt Floating */
     isSidebarMode = !isCompanionMode && !!window.__shellLoaded;
@@ -1229,8 +1192,7 @@
       el('div', { id: 'cw-header', className: 'cw-header' }),
       el('div', { id: 'cw-home', className: 'cw-home', style: { display: 'none' } }),
       el('div', { id: 'cw-messages', className: 'cw-messages' }),
-      el('div', { id: 'cw-qr-overlay', className: 'cw-qr-overlay', style: { display: 'none' } }),
-      el('div', { id: 'cw-chunk-overlay', className: 'cw-chunk-overlay', style: { display: 'none' } }),
+      /* Overlay-Container entfernt (S183): Waren verwaist seit dem View-System-Umbau */
       el('div', { id: 'cw-input-area', className: 'cw-input-area' }),
     ]);
     document.body.appendChild(panel);
@@ -1239,18 +1201,8 @@
     loadChunks();
     updateModuleContext();
 
-    /* Sync: Im Companion-Mode ggf. aus URL-Params starten, sonst aus localStorage */
-    if (isCompanionMode && syncUrl && syncToken) {
-      /* Sync-Settings schon aus URL gesetzt, Polling direkt starten */
-      startSyncPolling();
-      /* Connected-Event an Server senden + Heartbeat alle 15s */
-      syncWriteEvent({ type: 'companion-connected', details: 'Companion verbunden' });
-      setInterval(function() {
-        syncWriteEvent({ type: 'companion-heartbeat' });
-      }, 15000);
-    } else {
-      startSyncPolling();
-    }
+    /* Sync starten (aus localStorage) */
+    startSyncPolling();
 
     /* ?cowan=open URL-Parameter: Widget sofort oeffnen (fuer QR-Code AA-COWAN) */
     if (!isCompanionMode) {
@@ -1366,7 +1318,7 @@
       '.cw-model-btn:hover { border-color:rgba(245,158,11,0.4); }',
 
       /* Chunk Browser – Glass Modal */
-      '.cw-chunk-overlay { position:absolute; inset:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; }',
+      /* .cw-chunk-overlay entfernt (S183) – verwaist seit View-System */
       '.cw-chunk-card { background:rgba(18,18,26,0.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.1); border-radius:16px; padding:20px; width:100%; max-width:92%; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); }',
       '.cw-chunk-fullarea { flex:1; display:flex; flex-direction:column; overflow:hidden; }',
       '.cw-chunk-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }',
@@ -1442,8 +1394,7 @@
       /* Back button */
       '.cw-btn-back { margin-right:2px; }',
 
-      /* QR Overlay – Dark Glass */
-      '.cw-qr-overlay { position:absolute; inset:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10; display:flex; align-items:center; justify-content:center; padding:16px; top:52px; }',
+      /* QR Card Styles (Overlay-Container entfernt S183, Card rendert jetzt im Home) */
       '.cw-qr-card { background:rgba(30,41,59,0.7); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border:1px solid rgba(148,163,184,0.12); border-radius:20px; padding:24px; max-height:100%; overflow-y:auto; width:100%; max-width:340px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05); animation:cwFadeInUp 0.2s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-qr-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }',
       '.cw-qr-title { font-size:17px; font-weight:700; color:#f1f5f9; letter-spacing:-0.3px; }',
@@ -1460,10 +1411,7 @@
       '.cw-sidebar { top:0; right:0; bottom:0; width:440px; height:100vh; max-height:100vh; border-radius:0; border-left:1px solid rgba(148,163,184,0.15); border-top:none; border-right:none; border-bottom:none; box-shadow:-4px 0 24px rgba(0,0,0,0.3); display:flex !important; transform:translateX(100%); transition:transform .3s cubic-bezier(0.4,0,0.2,1); }',
       '.cw-sidebar.cw-sidebar-open { transform:translateX(0); }',
 
-      /* Companion-Mode: Vollbild auf Mobile */
-      '.cw-companion { bottom:0; right:0; width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; border:none; }',
-      '.cw-companion .cw-header { border-bottom-color:rgba(34,197,94,0.25); }',
-      '.cw-companion .cw-header-title { color:#22c55e; }',
+      /* .cw-companion Styles entfernt (S183) – Companion ist jetzt /companion/index.html */
 
       /* Mobile */
       '@media (max-width:480px) {',
