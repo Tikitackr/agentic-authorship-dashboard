@@ -649,8 +649,9 @@
   // TTS
   var ttsEnabled = false;
   var ttsUrl = '';       // wird aus syncUrl abgeleitet: hostname:8443
-  var ttsAudio = null;   // aktuelles Audio-Element
+  var audioCtx = null;   // AudioContext (iOS Safari kompatibel)
   var isSpeaking = false;
+  var currentSource = null; // AudioBufferSourceNode
 
   // Sync
   var syncUrl = '';
@@ -1031,12 +1032,17 @@
 
   /* ══════════════════════════════════════════
      TTS (Text-to-Speech ueber VPS)
+     Verwendet AudioContext statt Audio-Element.
+     AudioContext laesst sich auf iOS Safari per
+     resume() waehrend einer User-Geste entsperren.
+     Danach funktioniert jede Wiedergabe.
      ══════════════════════════════════════════ */
-  // EIN persistentes Audio-Element – wird beim User-Tap "entsperrt"
-  // und danach wiederverwendet. iOS Safari erlaubt play() nur auf
-  // Audio-Elementen die bereits waehrend einer User-Geste gestartet wurden.
-  var persistentAudio = new Audio();
-  var lastBlobUrl = null;
+  function getAudioCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+  }
 
   window.toggleTts = function() {
     ttsEnabled = !ttsEnabled;
@@ -1044,10 +1050,9 @@
     ttsToggle.classList.toggle('active', ttsEnabled);
 
     if (ttsEnabled) {
-      // iOS Safari Unlock: play() MUSS direkt in der User-Geste passieren
-      // Stilles MP3 abspielen um das Audio-Element zu "aktivieren"
-      persistentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwBRAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQZB8P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==';
-      persistentAudio.play().catch(function() {});
+      // AudioContext erstellen + entsperren (MUSS in User-Geste passieren)
+      var ctx = getAudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
     } else {
       stopSpeaking();
     }
@@ -1067,13 +1072,13 @@
       .trim();
 
     if (!cleanText) return;
-
-    // Max 5000 Zeichen (Server-Limit)
     if (cleanText.length > 5000) cleanText = cleanText.slice(0, 4990) + '...';
 
-    // Speaking-Dots anzeigen
     var speakDots = showDots('speaking');
     isSpeaking = true;
+
+    var ctx = getAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
 
     fetch(ttsUrl + '/speak', {
       method: 'POST',
@@ -1084,28 +1089,22 @@
       body: JSON.stringify({ text: cleanText })
     }).then(function(res) {
       if (!res.ok) throw new Error('TTS-Fehler ' + res.status);
-      return res.blob();
-    }).then(function(blob) {
-      // Alten Blob aufraeumen
-      if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
-      lastBlobUrl = URL.createObjectURL(blob);
+      return res.arrayBuffer();
+    }).then(function(arrayBuffer) {
+      return ctx.decodeAudioData(arrayBuffer);
+    }).then(function(audioBuffer) {
+      // Vorherige Wiedergabe stoppen
+      if (currentSource) { try { currentSource.stop(); } catch(e) {} }
 
-      // Dasselbe Audio-Element wiederverwenden (bereits "entsperrt")
-      persistentAudio.onended = function() {
+      currentSource = ctx.createBufferSource();
+      currentSource.buffer = audioBuffer;
+      currentSource.connect(ctx.destination);
+      currentSource.onended = function() {
         isSpeaking = false;
+        currentSource = null;
         removeDots(speakDots);
       };
-      persistentAudio.onerror = function() {
-        isSpeaking = false;
-        removeDots(speakDots);
-        renderSystemMsg('[TTS] Audio-Wiedergabe fehlgeschlagen');
-      };
-      persistentAudio.src = lastBlobUrl;
-      persistentAudio.play().catch(function(playErr) {
-        isSpeaking = false;
-        removeDots(speakDots);
-        renderSystemMsg('[TTS] Play: ' + playErr.message);
-      });
+      currentSource.start(0);
     }).catch(function(err) {
       isSpeaking = false;
       removeDots(speakDots);
@@ -1114,8 +1113,10 @@
   }
 
   function stopSpeaking() {
-    persistentAudio.pause();
-    persistentAudio.currentTime = 0;
+    if (currentSource) {
+      try { currentSource.stop(); } catch(e) {}
+      currentSource = null;
+    }
     isSpeaking = false;
   }
 
