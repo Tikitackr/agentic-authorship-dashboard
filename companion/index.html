@@ -924,7 +924,7 @@
     var payload = {
       type: 'companion-heartbeat',
       device: 'companion',
-      timestamp: Date.now(),
+      lastUpdate: new Date().toISOString(),
       event: { type: 'companion-heartbeat' }
     };
     fetch(syncUrl + '/cowan-events.json', {
