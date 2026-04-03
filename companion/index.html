@@ -818,38 +818,45 @@
     // Thinking dots
     var dotsEl = showDots('thinking');
 
-    // Streaming API Call mit Typewriter
+    // Streaming API Call mit synchronem Typewriter
     isLoading = true;
     var streamBubble = null;
-    var streamBuffer = '';     // Alles was von der API kam
-    var revealedCount = 0;     // Wieviele Zeichen sichtbar sind
-    var ttsRevealedCount = 0;  // Wieviele Zeichen TTS schon gesehen hat
-    var streamDone = false;    // API-Stream fertig?
-    var typewriterTimer = null;
-    var CHAR_DELAY = 18;       // ms pro Zeichen (~55 Zeichen/Sek, schnelles Lesen)
+    var streamBuffer = '';      // Alles was von der API kam
+    var revealedCount = 0;      // Wieviele Zeichen sichtbar
+    var sentenceScanned = 0;    // Bis wohin nach Saetzen gescannt
+    var streamDone = false;
+    var sentenceQueue = [];     // [{text, endCharIdx}]
+    var processingQueue = false;
+    var activeTypewriter = null; // Timer-ID des aktiven Typewriters
+    var NO_TTS_DELAY = 25;      // ms/Zeichen ohne TTS (~40 Zeichen/Sek)
 
     callClaudeStream(text, userMsg.image, function onChunk(delta) {
-      // Erster Chunk: Dots weg, Bubble + Typewriter starten
       if (!streamBubble) {
         removeDots(dotsEl);
         streamBubble = createStreamBubble();
-        startTypewriter();
       }
       streamBuffer += delta;
+      detectSentences();
     }).then(function() {
       streamDone = true;
       isLoading = false;
       if (!streamBubble) {
         removeDots(dotsEl);
         renderSystemMsg('Leere Antwort von Claude');
+        return;
       }
-      // Typewriter laeuft weiter bis alles sichtbar ist (finishTypewriter)
+      // Letzten Rest als Satz einspeisen
+      var rest = streamBuffer.slice(sentenceScanned).trim();
+      if (rest.length > 0) {
+        sentenceQueue.push({ text: rest, endCharIdx: streamBuffer.length });
+      }
+      if (!processingQueue) processNextSentence();
     }).catch(function(err) {
       streamDone = true;
       isLoading = false;
-      if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
-      // Rest sofort anzeigen
+      if (activeTypewriter) { clearInterval(activeTypewriter); activeTypewriter = null; }
       if (streamBubble && streamBuffer) {
+        revealedCount = streamBuffer.length;
         updateStreamBubble(streamBubble, streamBuffer);
         messages.push({ role: 'assistant', text: streamBuffer });
       }
@@ -858,50 +865,96 @@
       scrollToBottom();
     });
 
-    function startTypewriter() {
-      typewriterTimer = setInterval(function() {
-        if (revealedCount < streamBuffer.length) {
-          // Naechsten Buchstaben aufdecken
+    // Satz-Grenzen im Buffer erkennen
+    function detectSentences() {
+      while (true) {
+        var remaining = streamBuffer.slice(sentenceScanned);
+        // Satz-Ende: . ! ? gefolgt von Whitespace oder Doppel-Newline
+        var match = remaining.match(/[.!?:]\s|\n\n/);
+        if (!match) break;
+        var endIdx = sentenceScanned + match.index + match[0].length;
+        var sentenceText = streamBuffer.slice(sentenceScanned, endIdx).trim();
+        if (sentenceText.length > 0) {
+          sentenceQueue.push({ text: sentenceText, endCharIdx: endIdx });
+        }
+        sentenceScanned = endIdx;
+      }
+      // Queue-Verarbeitung anstossen
+      if (!processingQueue && sentenceQueue.length > 0) processNextSentence();
+    }
+
+    // Naechsten Satz verarbeiten: TTS holen → Audio + Text synchron
+    function processNextSentence() {
+      if (sentenceQueue.length === 0) {
+        processingQueue = false;
+        // Stream fertig + alles angezeigt? → abschliessen
+        if (streamDone && revealedCount >= streamBuffer.length) {
+          messages.push({ role: 'assistant', text: streamBuffer });
+          if (ttsSpeakDots) { removeDots(ttsSpeakDots); ttsSpeakDots = null; }
+        }
+        return;
+      }
+      processingQueue = true;
+      var item = sentenceQueue.shift();
+      var useTts = ttsEnabled && ttsUrl && syncToken;
+
+      if (useTts) {
+        // TTS-Audio vorab holen
+        if (!ttsSpeakDots) ttsSpeakDots = showDots('speaking');
+        var cleanSentence = cleanTextForTts(item.text);
+        if (cleanSentence.length < 3) {
+          // Zu kurz fuer TTS → nur tippen
+          typeCharsTo(item.endCharIdx, NO_TTS_DELAY, function() { processNextSentence(); });
+          return;
+        }
+
+        fetchTtsAudio(cleanSentence).then(function(audioBuffer) {
+          // Geschwindigkeit berechnen: Satzlaenge / Audio-Dauer
+          var charsToReveal = item.endCharIdx - revealedCount;
+          var durationMs = audioBuffer.duration * 1000;
+          // Etwas schneller tippen als Audio (95%), damit Text vor Audio-Ende fertig ist
+          var charDelay = Math.max(5, (durationMs * 0.95) / Math.max(charsToReveal, 1));
+
+          // Audio starten + Text synchron tippen
+          playAudioBuffer(audioBuffer, function onAudioEnd() {
+            // Audio fertig → sicherstellen dass Text auch fertig ist
+            if (revealedCount < item.endCharIdx) {
+              // Rest sofort anzeigen
+              if (activeTypewriter) { clearInterval(activeTypewriter); activeTypewriter = null; }
+              revealedCount = item.endCharIdx;
+              updateStreamBubble(streamBubble, streamBuffer.slice(0, revealedCount));
+              scrollToBottom();
+            }
+          });
+          typeCharsTo(item.endCharIdx, charDelay, function() {
+            // Text fertig getippt → naechsten Satz
+            processNextSentence();
+          });
+        }).catch(function() {
+          // TTS-Fehler → ohne Audio tippen
+          typeCharsTo(item.endCharIdx, NO_TTS_DELAY, function() { processNextSentence(); });
+        });
+      } else {
+        // Kein TTS → Typewriter mit Lesegeschwindigkeit
+        typeCharsTo(item.endCharIdx, NO_TTS_DELAY, function() { processNextSentence(); });
+      }
+    }
+
+    // Buchstabe fuer Buchstabe bis targetIdx aufdecken
+    function typeCharsTo(targetIdx, delayMs, callback) {
+      if (activeTypewriter) clearInterval(activeTypewriter);
+      activeTypewriter = setInterval(function() {
+        if (revealedCount < targetIdx && revealedCount < streamBuffer.length) {
           revealedCount++;
           updateStreamBubble(streamBubble, streamBuffer.slice(0, revealedCount));
           scrollToBottom();
-
-          // TTS: pruefen ob ein neuer Satz im sichtbaren Text komplett ist
-          checkTtsSentence();
-        } else if (streamDone) {
-          // Alles sichtbar + Stream fertig → aufraeuemen
-          finishTypewriter();
         }
-        // Sonst: warten bis neuer Text im Buffer ankommt
-      }, CHAR_DELAY);
-    }
-
-    function checkTtsSentence() {
-      if (!ttsEnabled || !ttsUrl || !syncToken) return;
-      // Nur den neu aufgedeckten Text seit letztem TTS-Check betrachten
-      var visibleText = streamBuffer.slice(0, revealedCount);
-      var unchecked = visibleText.slice(ttsRevealedCount);
-      // Satz-Ende suchen: . ! ? gefolgt von Leerzeichen oder Zeilenumbruch
-      var match = unchecked.match(/[.!?][\s\n]/);
-      if (match) {
-        var cutAt = ttsRevealedCount + match.index + 1;
-        var sentence = streamBuffer.slice(ttsRevealedCount, cutAt).trim();
-        ttsRevealedCount = cutAt + 1; // +1 fuer das Whitespace danach
-        if (sentence.length > 3) {
-          enqueueTts(sentence);
+        if (revealedCount >= targetIdx || (streamDone && revealedCount >= streamBuffer.length)) {
+          clearInterval(activeTypewriter);
+          activeTypewriter = null;
+          if (callback) callback();
         }
-      }
-    }
-
-    function finishTypewriter() {
-      if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
-      messages.push({ role: 'assistant', text: streamBuffer });
-      // Letzten TTS-Rest flushen
-      if (ttsEnabled && ttsUrl && syncToken) {
-        var rest = streamBuffer.slice(ttsRevealedCount).trim();
-        if (rest.length > 3) enqueueTts(rest);
-      }
-      scrollToBottom();
+      }, delayMs);
     }
   };
 
@@ -1169,8 +1222,10 @@
 
   /* ══════════════════════════════════════════
      TTS (Text-to-Speech ueber VPS)
-     Streaming-Modus: Satz-Erkennung, Queue,
-     satzweises Vorlesen parallel zum Text.
+     Synchron-Modus: Audio fuehrt, Text folgt.
+     fetchTtsAudio() holt Audio, playAudioBuffer()
+     spielt ab. Typewriter-Geschwindigkeit wird an
+     Audio-Dauer angepasst → Text + Sprache synchron.
      AudioContext fuer iOS Safari Kompatibilitaet.
      ══════════════════════════════════════════ */
   var ttsSpeakDots = null;
@@ -1188,7 +1243,6 @@
     ttsToggle.classList.toggle('active', ttsEnabled);
 
     if (ttsEnabled) {
-      // AudioContext erstellen + entsperren (MUSS in User-Geste passieren)
       var ctx = getAudioCtx();
       if (ctx.state === 'suspended') ctx.resume();
     } else {
@@ -1207,59 +1261,42 @@
       .trim();
   }
 
-  function enqueueTts(sentence) {
-    var clean = cleanTextForTts(sentence);
-    if (!clean || clean.length < 3) return;
-    ttsQueue.push(clean);
-    if (!ttsPlaying) playNextTts();
-  }
-
-  function playNextTts() {
-    if (ttsQueue.length === 0) {
-      ttsPlaying = false;
-      isSpeaking = false;
-      if (ttsSpeakDots) { removeDots(ttsSpeakDots); ttsSpeakDots = null; }
-      return;
-    }
-
-    ttsPlaying = true;
-    isSpeaking = true;
-    if (!ttsSpeakDots) ttsSpeakDots = showDots('speaking');
-
-    var sentence = ttsQueue.shift();
-    if (sentence.length > 5000) sentence = sentence.slice(0, 4990) + '...';
-
+  // Audio vom TTS-Server holen (gibt AudioBuffer zurueck)
+  function fetchTtsAudio(text) {
+    if (text.length > 5000) text = text.slice(0, 4990) + '...';
     var ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
 
-    fetch(ttsUrl + '/speak', {
+    return fetch(ttsUrl + '/speak', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + syncToken
       },
-      body: JSON.stringify({ text: sentence })
+      body: JSON.stringify({ text: text })
     }).then(function(res) {
       if (!res.ok) throw new Error('TTS-Fehler ' + res.status);
       return res.arrayBuffer();
     }).then(function(arrayBuffer) {
       return ctx.decodeAudioData(arrayBuffer);
-    }).then(function(audioBuffer) {
-      if (currentSource) { try { currentSource.stop(); } catch(e) {} }
-
-      currentSource = ctx.createBufferSource();
-      currentSource.buffer = audioBuffer;
-      currentSource.connect(ctx.destination);
-      currentSource.onended = function() {
-        currentSource = null;
-        playNextTts(); // Naechsten Satz abspielen
-      };
-      currentSource.start(0);
-    }).catch(function() {
-      // TTS-Fehler leise ignorieren, naechsten Satz versuchen
-      currentSource = null;
-      playNextTts();
     });
+  }
+
+  // AudioBuffer abspielen, onEnded-Callback
+  function playAudioBuffer(audioBuffer, onEnded) {
+    var ctx = getAudioCtx();
+    if (currentSource) { try { currentSource.stop(); } catch(e) {} }
+
+    isSpeaking = true;
+    currentSource = ctx.createBufferSource();
+    currentSource.buffer = audioBuffer;
+    currentSource.connect(ctx.destination);
+    currentSource.onended = function() {
+      currentSource = null;
+      isSpeaking = false;
+      if (onEnded) onEnded();
+    };
+    currentSource.start(0);
   }
 
   function stopSpeaking() {
