@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Cowan – Dein Buch-Begleiter</title>
+  <meta name="description" content="Cowan ist dein KI-Begleiter zum OpenClaw-Buch. Frag per Text, Sprache oder Foto.">
+  <meta property="og:title" content="Cowan – Dein Buch-Begleiter">
+  <meta property="og:description" content="KI-Assistent zum OpenClaw-Buch. Text, Sprache, Kamera.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://openclaw-buch.de/companion/">
+  <style>
+    /* ── Reset & Root ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: rgba(255,255,255,0.06);
+      --bg-card-hover: rgba(255,255,255,0.10);
+      --bg-input: rgba(255,255,255,0.08);
+      --amber: #d97706;
+      --amber-light: #f59e0b;
+      --amber-glow: rgba(217,119,6,0.3);
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.3);
+      --red: #ef4444;
+      --text: #e4e4e7;
+      --text-dim: #a1a1aa;
+      --text-muted: #71717a;
+      --border: rgba(255,255,255,0.08);
+      --border-light: rgba(255,255,255,0.12);
+      --glass: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.1);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    /* ── Fullscreen Card Layout ── */
+    .companion {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    /* ── Header ── */
+    .comp-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      flex-shrink: 0;
+    }
+
+    .comp-logo {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .comp-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .comp-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .comp-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.3s;
+    }
+
+    .comp-status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green-dim); }
+    .comp-status-dot.api-ready { background: var(--amber); box-shadow: 0 0 6px var(--amber-glow); }
+
+    .comp-chapter {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 2px 8px;
+      background: var(--bg-input);
+      border-radius: 20px;
+      white-space: nowrap;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Chat / Answer Area ── */
+    .comp-chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    .comp-welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      flex: 1;
+    }
+
+    .comp-welcome-logo {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 20px;
+      opacity: 0.7;
+      filter: drop-shadow(0 0 12px var(--amber-glow));
+    }
+
+    .comp-welcome h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .comp-welcome p {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* ── Chat Bubbles ── */
+    .msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      line-height: 1.6;
+      animation: fadeInUp 0.25s ease;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--amber), #b45309);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.user.has-image {
+      padding: 6px;
+    }
+
+    .msg.user .msg-image {
+      width: 100%;
+      max-width: 200px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .msg.user .msg-image + .msg-text {
+      padding: 4px 8px;
+    }
+
+    .msg.assistant {
+      align-self: flex-start;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.assistant code {
+      background: rgba(0,0,0,0.3);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+    }
+
+    .msg.assistant pre {
+      background: rgba(0,0,0,0.4);
+      padding: 10px 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 8px 0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .msg.assistant pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .msg.assistant strong { color: var(--amber-light); }
+
+    .msg.assistant a {
+      color: var(--amber-light);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .msg.system {
+      align-self: center;
+      background: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Dot Animation ── */
+    .dots-container {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      align-self: flex-start;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+      opacity: 0.5;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .dots-container.thinking .dot {
+      animation: dotWave 1.2s ease-in-out infinite;
+      opacity: 1;
+    }
+
+    .dots-container.thinking .dot:nth-child(1) { animation-delay: 0s; }
+    .dots-container.thinking .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dots-container.thinking .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    .dots-container.listening .dot {
+      opacity: 1;
+      animation: dotPulse 0.6s ease-in-out infinite alternate;
+    }
+
+    .dots-container.listening .dot:nth-child(1) { animation-delay: 0s; }
+    .dots-container.listening .dot:nth-child(2) { animation-delay: 0.1s; }
+    .dots-container.listening .dot:nth-child(3) { animation-delay: 0.2s; }
+
+    @keyframes dotWave {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    @keyframes dotPulse {
+      from { transform: scale(1); opacity: 0.6; }
+      to { transform: scale(1.5); opacity: 1; }
+    }
+
+    /* ── Input Bar ── */
+    .comp-input-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      flex-shrink: 0;
+    }
+
+    .comp-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .comp-btn:active { transform: scale(0.92); }
+    .comp-btn:hover { background: var(--bg-card-hover); color: var(--text); }
+
+    .comp-btn.recording {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+      animation: recPulse 1.5s ease infinite;
+    }
+
+    @keyframes recPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+
+    .comp-btn svg { width: 20px; height: 20px; }
+
+    .comp-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: 22px;
+      padding: 4px 4px 4px 14px;
+      transition: border-color 0.2s;
+      min-height: 42px;
+    }
+
+    .comp-input-wrap:focus-within { border-color: var(--amber); }
+
+    .comp-input-wrap textarea {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      max-height: 120px;
+      padding: 7px 0;
+      overflow-y: auto;
+    }
+
+    .comp-input-wrap textarea::placeholder { color: var(--text-muted); }
+
+    .comp-send {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--amber);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .comp-send.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .comp-send:active { transform: scale(0.9); }
+    .comp-send svg { width: 18px; height: 18px; }
+
+    /* ── Image Preview ── */
+    .comp-image-preview {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+    }
+
+    .comp-image-preview.visible { display: flex; }
+
+    .comp-image-preview img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .comp-image-preview span {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .comp-image-preview .remove-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(239,68,68,0.2);
+      color: var(--red);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Setup Screen (kein API-Key) ── */
+    .comp-setup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+      flex: 1;
+      gap: 16px;
+    }
+
+    .comp-setup h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .comp-setup p {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 300px;
+      line-height: 1.6;
+    }
+
+    .comp-setup input {
+      width: 100%;
+      max-width: 320px;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'SF Mono', monospace;
+      outline: none;
+    }
+
+    .comp-setup input:focus { border-color: var(--amber); }
+
+    .comp-setup button {
+      padding: 12px 32px;
+      background: linear-gradient(135deg, var(--amber), #b45309);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .comp-setup button:active { transform: scale(0.96); }
+
+    /* ── Hidden File Input ── */
+    #cameraInput { display: none; }
+
+    /* ── Scrollbar ── */
+    .comp-chat::-webkit-scrollbar { width: 4px; }
+    .comp-chat::-webkit-scrollbar-track { background: transparent; }
+    .comp-chat::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+    /* ── Utility ── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="companion" id="app">
+  <!-- Header -->
+  <div class="comp-header">
+    <svg class="comp-logo" viewBox="0 0 500 500"><g fill="#f59e0b"><path fill-rule="evenodd" d="m166.5 52.5q3.5 0 7 0 2.75 2.99 1.5 7-21.27 45.61-20.5 96 39.99 2.76 72 26.5 7.87 6.86 13.5 15.5 42.88-56.39 103.5-92.5 47.35-25.46 101-25 14.52 0.38 23.5 11.5 3.19 7.74 2 16-1.81 7.18-4.5 14-1 0-1 1-5.04 6.05-9 13-1 0-1 1 0 0.5 0 1-12.42 12.15-28.5 19-6.02 36.27-41.5 45-0.83 2.75 0 5 19.02-12.85 41.5-9 10.85-8.09 23.5-13 15.01-6.37 31-2.5 14.09 7.43 14 23.5-2.83 23.25-15.5 43-6.42 9.92-14 19-10.04 8.8-19.5 18-72.02 48.88-156.5 27-19.63 9.6-41.5 10.5-4.59 1.27-9 3 2 1 4 2 20.09-1.11 35 12 25.46 6.95 37.5 30.5 1.26 5.69-1 11-3.38 3.79-7.5 6.5 5.74 10.07 1.5 20.5-7.55 7.47-17.5 3.5-11.01-5.34-22.5-9.5-18.26 10-38.5 13-15.5 0-31 0-26.62-4.54-51-17-4.17 1.33-8 3.5-7.23 5.87-15 11-8.62 2.58-13.5-4.5-1.82 2.32-4.5 3.5-6.06 2.24-12 3.5-7.5 0-15 0-27.42-2.56-50-18.5-18-17.25-23-41.5 0-11.5 0-23 4.12-22.7 25-33 6.95-16.67 22-26.5-20.39-20.8-14.5-49.5 7.01-26.98 28.5-44.5 7.56-5.27 15-10.5-13.09-30.88-7.5-64 3.16-15.57 14.5-26.5 6.85-2.48 8 4.5-6.59 39.53 11 75.5 7.99-0.49 16-2 2.42-34.57 14.5-67.5 8.51-22.23 27.5-36z"/></g></svg>
+    <span class="comp-title">Cowan</span>
+    <span class="comp-chapter hidden" id="chapterBadge"></span>
+    <div class="comp-status">
+      <div class="comp-status-dot" id="statusDot"></div>
+      <span id="statusText">Offline</span>
+    </div>
+  </div>
+
+  <!-- Setup Screen (wenn kein API-Key) -->
+  <div class="comp-setup" id="setupScreen">
+    <svg style="width:56px;height:56px;opacity:0.6;filter:drop-shadow(0 0 12px rgba(217,119,6,0.3))" viewBox="0 0 500 500"><g fill="#f59e0b"><path fill-rule="evenodd" d="m166.5 52.5q3.5 0 7 0 2.75 2.99 1.5 7-21.27 45.61-20.5 96 39.99 2.76 72 26.5 7.87 6.86 13.5 15.5 42.88-56.39 103.5-92.5 47.35-25.46 101-25 14.52 0.38 23.5 11.5 3.19 7.74 2 16-1.81 7.18-4.5 14-1 0-1 1-5.04 6.05-9 13-1 0-1 1 0 0.5 0 1-12.42 12.15-28.5 19-6.02 36.27-41.5 45-0.83 2.75 0 5 19.02-12.85 41.5-9 10.85-8.09 23.5-13 15.01-6.37 31-2.5 14.09 7.43 14 23.5-2.83 23.25-15.5 43-6.42 9.92-14 19-10.04 8.8-19.5 18-72.02 48.88-156.5 27-19.63 9.6-41.5 10.5-4.59 1.27-9 3 2 1 4 2 20.09-1.11 35 12 25.46 6.95 37.5 30.5 1.26 5.69-1 11-3.38 3.79-7.5 6.5 5.74 10.07 1.5 20.5-7.55 7.47-17.5 3.5-11.01-5.34-22.5-9.5-18.26 10-38.5 13-15.5 0-31 0-26.62-4.54-51-17-4.17 1.33-8 3.5-7.23 5.87-15 11-8.62 2.58-13.5-4.5-1.82 2.32-4.5 3.5-6.06 2.24-12 3.5-7.5 0-15 0-27.42-2.56-50-18.5-18-17.25-23-41.5 0-11.5 0-23 4.12-22.7 25-33 6.95-16.67 22-26.5-20.39-20.8-14.5-49.5 7.01-26.98 28.5-44.5 7.56-5.27 15-10.5-13.09-30.88-7.5-64 3.16-15.57 14.5-26.5 6.85-2.48 8 4.5-6.59 39.53 11 75.5 7.99-0.49 16-2 2.42-34.57 14.5-67.5 8.51-22.23 27.5-36z"/></g></svg>
+    <h2>Willkommen bei Cowan</h2>
+    <p>Dein KI-Begleiter zum OpenClaw-Buch. Trag deinen API-Key ein oder scanne den QR-Code am Dashboard.</p>
+    <input type="password" id="setupKeyInput" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <button onclick="saveSetupKey()">Verbinden</button>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="comp-chat hidden" id="chatArea">
+    <div class="comp-welcome" id="welcomeMsg">
+      <svg class="comp-welcome-logo" viewBox="0 0 500 500"><g fill="#f59e0b"><path fill-rule="evenodd" d="m166.5 52.5q3.5 0 7 0 2.75 2.99 1.5 7-21.27 45.61-20.5 96 39.99 2.76 72 26.5 7.87 6.86 13.5 15.5 42.88-56.39 103.5-92.5 47.35-25.46 101-25 14.52 0.38 23.5 11.5 3.19 7.74 2 16-1.81 7.18-4.5 14-1 0-1 1-5.04 6.05-9 13-1 0-1 1 0 0.5 0 1-12.42 12.15-28.5 19-6.02 36.27-41.5 45-0.83 2.75 0 5 19.02-12.85 41.5-9 10.85-8.09 23.5-13 15.01-6.37 31-2.5 14.09 7.43 14 23.5-2.83 23.25-15.5 43-6.42 9.92-14 19-10.04 8.8-19.5 18-72.02 48.88-156.5 27-19.63 9.6-41.5 10.5-4.59 1.27-9 3 2 1 4 2 20.09-1.11 35 12 25.46 6.95 37.5 30.5 1.26 5.69-1 11-3.38 3.79-7.5 6.5 5.74 10.07 1.5 20.5-7.55 7.47-17.5 3.5-11.01-5.34-22.5-9.5-18.26 10-38.5 13-15.5 0-31 0-26.62-4.54-51-17-4.17 1.33-8 3.5-7.23 5.87-15 11-8.62 2.58-13.5-4.5-1.82 2.32-4.5 3.5-6.06 2.24-12 3.5-7.5 0-15 0-27.42-2.56-50-18.5-18-17.25-23-41.5 0-11.5 0-23 4.12-22.7 25-33 6.95-16.67 22-26.5-20.39-20.8-14.5-49.5 7.01-26.98 28.5-44.5 7.56-5.27 15-10.5-13.09-30.88-7.5-64 3.16-15.57 14.5-26.5 6.85-2.48 8 4.5-6.59 39.53 11 75.5 7.99-0.49 16-2 2.42-34.57 14.5-67.5 8.51-22.23 27.5-36z"/></g></svg>
+      <h2>Frag mich was zum Buch</h2>
+      <p>Tippe, sprich oder zeig mir die Seite.</p>
+    </div>
+  </div>
+
+  <!-- Image Preview -->
+  <div class="comp-image-preview" id="imagePreview">
+    <img id="previewImg" src="" alt="Vorschau">
+    <span>Foto angehangen</span>
+    <button class="remove-img" onclick="removeImage()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- Input Bar -->
+  <div class="comp-input-bar hidden" id="inputBar">
+    <!-- Kamera -->
+    <button class="comp-btn" id="cameraBtn" onclick="openCamera()" title="Buchseite fotografieren">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+    </button>
+
+    <!-- Textfeld -->
+    <div class="comp-input-wrap">
+      <textarea id="msgInput" rows="1" placeholder="Frage tippen..." enterkeyhint="send"></textarea>
+      <button class="comp-send" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mikrofon -->
+    <button class="comp-btn" id="micBtn" onclick="toggleMic()" title="Spracheingabe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Hidden Camera Input -->
+  <input type="file" id="cameraInput" accept="image/*" capture="environment">
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ══════════════════════════════════════════
+     STATE
+     ══════════════════════════════════════════ */
+  var apiKey = '';
+  var messages = [];       // {role, content, image?}
+  var chunks = [];
+  var isLoading = false;
+  var isRecording = false;
+  var pendingImage = null; // {base64, mimeType}
+  var recognition = null;
+  var selectedModel = 'claude-haiku-4-5-20251001';
+
+  // Sync
+  var syncUrl = '';
+  var syncToken = '';
+  var syncTimer = null;
+  var heartbeatTimer = null;
+  var currentChapter = '';
+
+  // DOM refs
+  var setupScreen, chatArea, inputBar, msgInput, sendBtn, micBtn, cameraBtn;
+  var statusDot, statusText, chapterBadge, welcomeMsg, imagePreview, previewImg;
+
+  /* ══════════════════════════════════════════
+     INIT
+     ══════════════════════════════════════════ */
+  function init() {
+    setupScreen = document.getElementById('setupScreen');
+    chatArea = document.getElementById('chatArea');
+    inputBar = document.getElementById('inputBar');
+    msgInput = document.getElementById('msgInput');
+    sendBtn = document.getElementById('sendBtn');
+    micBtn = document.getElementById('micBtn');
+    cameraBtn = document.getElementById('cameraBtn');
+    statusDot = document.getElementById('statusDot');
+    statusText = document.getElementById('statusText');
+    chapterBadge = document.getElementById('chapterBadge');
+    welcomeMsg = document.getElementById('welcomeMsg');
+    imagePreview = document.getElementById('imagePreview');
+    previewImg = document.getElementById('previewImg');
+
+    // URL-Parameter auslesen (QR-Code Flow)
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('apikey')) {
+      try { apiKey = atob(params.get('apikey')); } catch(e) { apiKey = params.get('apikey'); }
+    }
+    if (params.get('sync')) syncUrl = params.get('sync').replace(/\/$/, '');
+    if (params.get('synctoken')) syncToken = params.get('synctoken');
+
+    // Fallback: localStorage
+    if (!apiKey) apiKey = localStorage.getItem('companion-apikey') || '';
+    if (!syncUrl) {
+      var ip = localStorage.getItem('aa-settings.tailscaleIp') || '';
+      if (ip) {
+        var clean = ip.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+        syncUrl = (clean.indexOf('.ts.net') !== -1)
+          ? 'https://' + clean
+          : 'http://' + clean + ':3456';
+      }
+    }
+    if (!syncToken) syncToken = localStorage.getItem('aa-settings.syncToken') || '';
+
+    // Event Listeners
+    msgInput.addEventListener('input', onInputChange);
+    msgInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    document.getElementById('cameraInput').addEventListener('change', onCameraCapture);
+
+    // Auto-resize textarea
+    msgInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Chunks laden
+    loadChunks();
+
+    // UI State
+    if (apiKey) {
+      showChat();
+    } else {
+      showSetup();
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     UI STATES
+     ══════════════════════════════════════════ */
+  function showSetup() {
+    setupScreen.classList.remove('hidden');
+    chatArea.classList.add('hidden');
+    inputBar.classList.add('hidden');
+    imagePreview.classList.remove('visible');
+    updateStatus('offline', 'Kein API-Key');
+  }
+
+  function showChat() {
+    setupScreen.classList.add('hidden');
+    chatArea.classList.remove('hidden');
+    inputBar.classList.remove('hidden');
+    localStorage.setItem('companion-apikey', apiKey);
+    updateStatus('api-ready', 'Bereit');
+
+    // Sync starten wenn URL vorhanden
+    if (syncUrl && syncToken) {
+      startSync();
+    }
+  }
+
+  function updateStatus(state, text) {
+    statusDot.className = 'comp-status-dot';
+    if (state === 'connected') statusDot.classList.add('connected');
+    else if (state === 'api-ready') statusDot.classList.add('api-ready');
+    statusText.textContent = text;
+  }
+
+  function updateChapterBadge(chapter) {
+    if (chapter) {
+      chapterBadge.textContent = chapter;
+      chapterBadge.classList.remove('hidden');
+    } else {
+      chapterBadge.classList.add('hidden');
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     SETUP
+     ══════════════════════════════════════════ */
+  window.saveSetupKey = function() {
+    var input = document.getElementById('setupKeyInput');
+    var key = (input.value || '').trim();
+    if (!key) return;
+    apiKey = key;
+    showChat();
+  };
+
+  /* ══════════════════════════════════════════
+     SEND MESSAGE
+     ══════════════════════════════════════════ */
+  window.sendMessage = function() {
+    var text = (msgInput.value || '').trim();
+    if (!text && !pendingImage) return;
+    if (isLoading) return;
+
+    // Welcome ausblenden
+    if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
+
+    // User-Bubble
+    var userMsg = { role: 'user', text: text, image: pendingImage };
+    messages.push(userMsg);
+    renderUserBubble(userMsg);
+
+    // Input leeren
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
+    onInputChange();
+    removeImage();
+
+    // Thinking dots
+    var dotsEl = showDots('thinking');
+
+    // API Call
+    isLoading = true;
+    callClaude(text, userMsg.image).then(function(reply) {
+      isLoading = false;
+      removeDots(dotsEl);
+      messages.push({ role: 'assistant', text: reply });
+      renderAssistantBubble(reply);
+      scrollToBottom();
+    }).catch(function(err) {
+      isLoading = false;
+      removeDots(dotsEl);
+      renderSystemMsg('Fehler: ' + (err.message || 'Unbekannter Fehler'));
+      scrollToBottom();
+    });
+  };
+
+  /* ══════════════════════════════════════════
+     CLAUDE API (Messages API, direkt)
+     ══════════════════════════════════════════ */
+  function callClaude(text, image) {
+    // System-Prompt mit Chunks
+    var systemPrompt = buildSystemPrompt();
+
+    // Messages bauen
+    var apiMessages = [];
+    // Konversations-History (letzte 10 Nachrichten)
+    var historyStart = Math.max(0, messages.length - 11);
+    for (var i = historyStart; i < messages.length; i++) {
+      var m = messages[i];
+      if (m.role === 'user') {
+        var content = [];
+        if (m.image) {
+          content.push({
+            type: 'image',
+            source: { type: 'base64', media_type: m.image.mimeType, data: m.image.base64 }
+          });
+        }
+        if (m.text) content.push({ type: 'text', text: m.text });
+        apiMessages.push({ role: 'user', content: content });
+      } else if (m.role === 'assistant') {
+        apiMessages.push({ role: 'assistant', content: m.text });
+      }
+    }
+
+    return fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: selectedModel,
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: apiMessages
+      })
+    }).then(function(res) {
+      if (!res.ok) {
+        return res.json().then(function(err) {
+          if (res.status === 401) {
+            apiKey = '';
+            localStorage.removeItem('companion-apikey');
+            showSetup();
+            throw new Error('API-Key ungueltig. Bitte neu eingeben.');
+          }
+          throw new Error(err.error ? err.error.message : 'API-Fehler ' + res.status);
+        });
+      }
+      return res.json();
+    }).then(function(data) {
+      if (data.content && data.content[0]) {
+        return data.content[0].text;
+      }
+      throw new Error('Leere Antwort von Claude');
+    });
+  }
+
+  function buildSystemPrompt() {
+    var parts = [
+      'Du bist Cowan, der freundliche KI-Begleiter zum OpenClaw-Buch.',
+      'Du hilfst dem Leser bei Fragen rund ums Buch: Installation, Docker, Agent-Konfiguration, Troubleshooting, und allem was im Buch behandelt wird.',
+      'Antworte kurz und praezise (max 3-4 Absaetze). Verwende Du-Form.',
+      'Wenn der Leser ein Foto einer Buchseite schickt, erkenne das Kapitel und die Stelle und hilf gezielt weiter.',
+      'Wenn du eine Frage nicht beantworten kannst, sag das ehrlich.'
+    ];
+
+    // Kapitel-Kontext
+    if (currentChapter) {
+      parts.push('Der Leser ist gerade bei: ' + currentChapter + '. Beziehe dich darauf wenn es passt.');
+    }
+
+    // Relevante Chunks einbinden
+    var relevantChunks = getRelevantChunks();
+    if (relevantChunks.length > 0) {
+      parts.push('\n--- Wissensbasis ---');
+      for (var i = 0; i < relevantChunks.length; i++) {
+        parts.push('\n### ' + relevantChunks[i].title + '\n' + relevantChunks[i].content);
+      }
+    }
+
+    return parts.join('\n');
+  }
+
+  /* ══════════════════════════════════════════
+     CHUNKS
+     ══════════════════════════════════════════ */
+  function loadChunks() {
+    // Relative path: companion/ -> shared/chunks.json
+    fetch('../shared/chunks.json').then(function(res) {
+      if (!res.ok) throw new Error('Chunks nicht gefunden');
+      return res.json();
+    }).then(function(data) {
+      chunks = data;
+    }).catch(function() {
+      // Fallback: try absolute
+      fetch('/shared/chunks.json').then(function(res) {
+        return res.ok ? res.json() : [];
+      }).then(function(data) {
+        chunks = data || [];
+      }).catch(function() { chunks = []; });
+    });
+  }
+
+  function getRelevantChunks() {
+    if (!chunks.length) return [];
+
+    // Wenn Kapitel bekannt: nach Tags filtern
+    if (currentChapter) {
+      var chapterNum = currentChapter.replace(/\D/g, '');
+      var relevant = [];
+      for (var i = 0; i < chunks.length; i++) {
+        var c = chunks[i];
+        // Basis-Chunks immer dabei
+        if (c.category === 'setup' || c.category === 'overview' || c.difficulty === 'beginner') {
+          relevant.push(c);
+        }
+        // Kapitel-Tag matching (wenn vorhanden)
+        if (c.kapitel && c.kapitel.indexOf(parseInt(chapterNum)) !== -1) {
+          relevant.push(c);
+        }
+      }
+      // Deduplizieren und limitieren
+      var seen = {};
+      var unique = [];
+      for (var j = 0; j < relevant.length; j++) {
+        if (!seen[relevant[j].id]) {
+          seen[relevant[j].id] = true;
+          unique.push(relevant[j]);
+        }
+      }
+      return unique.slice(0, 8);
+    }
+
+    // Ohne Kapitel: Basis-Chunks (die wichtigsten 5)
+    return chunks.slice(0, 5);
+  }
+
+  /* ══════════════════════════════════════════
+     SYNC (Heartbeat + Dashboard-State)
+     ══════════════════════════════════════════ */
+  function startSync() {
+    sendHeartbeat();
+    heartbeatTimer = setInterval(sendHeartbeat, 15000);
+    readDashboardState();
+    syncTimer = setInterval(readDashboardState, 10000);
+    updateStatus('connected', 'Verbunden');
+  }
+
+  function sendHeartbeat() {
+    if (!syncUrl || !syncToken) return;
+    var payload = {
+      type: 'companion-heartbeat',
+      device: 'companion',
+      timestamp: Date.now(),
+      event: { type: 'companion-heartbeat' }
+    };
+    fetch(syncUrl + '/cowan-events.json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + syncToken
+      },
+      body: JSON.stringify(payload)
+    }).catch(function() {
+      // Sync-Fehler leise ignorieren
+    });
+  }
+
+  function readDashboardState() {
+    if (!syncUrl || !syncToken) return;
+    fetch(syncUrl + '/dashboard-state.json', {
+      headers: { 'Authorization': 'Bearer ' + syncToken }
+    }).then(function(res) {
+      return res.ok ? res.json() : null;
+    }).then(function(data) {
+      if (data && data.module) {
+        var LABELS = {
+          'fahrplan': 'Dein Fahrplan', 'setup-guide': 'Setup-Guide',
+          'meine-daten': 'Meine Daten', 'buch-dashboard': 'Buch-Dashboard',
+          'publishing': 'Publishing', 'workspace-wizard': 'Workspace Wizard',
+          'config-builder': 'Config Builder', 'cost-calculator': 'Kostenrechner',
+          'soul-gallery': 'SOUL Gallery', 'cli-referenz': 'CLI-Referenz',
+          'system-status': 'System-Status'
+        };
+        var label = LABELS[data.module] || data.module;
+        currentChapter = label;
+        updateChapterBadge(label);
+      }
+    }).catch(function() {});
+  }
+
+  /* ══════════════════════════════════════════
+     CAMERA
+     ══════════════════════════════════════════ */
+  window.openCamera = function() {
+    document.getElementById('cameraInput').click();
+  };
+
+  function onCameraCapture(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target.result;
+      var base64 = dataUrl.split(',')[1];
+      var mimeType = file.type || 'image/jpeg';
+      pendingImage = { base64: base64, mimeType: mimeType };
+
+      // Preview zeigen
+      previewImg.src = dataUrl;
+      imagePreview.classList.add('visible');
+      onInputChange();
+
+      // Auto-Prompt wenn kein Text
+      if (!msgInput.value.trim()) {
+        msgInput.value = 'Was siehst du auf diesem Foto?';
+        msgInput.dispatchEvent(new Event('input'));
+      }
+    };
+    reader.readAsDataURL(file);
+    // Input resetten fuer erneutes Foto
+    e.target.value = '';
+  }
+
+  window.removeImage = function() {
+    pendingImage = null;
+    imagePreview.classList.remove('visible');
+    previewImg.src = '';
+    onInputChange();
+  };
+
+  /* ══════════════════════════════════════════
+     WEB SPEECH API (Mikrofon)
+     ══════════════════════════════════════════ */
+  window.toggleMic = function() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  function startRecording() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      renderSystemMsg('Spracheingabe wird von deinem Browser nicht unterstuetzt. Nutze die Tastatur.');
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'de-DE';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = function() {
+      isRecording = true;
+      micBtn.classList.add('recording');
+      showListeningDots();
+    };
+
+    recognition.onresult = function(e) {
+      var transcript = '';
+      for (var i = 0; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      msgInput.value = transcript;
+      msgInput.dispatchEvent(new Event('input'));
+    };
+
+    recognition.onend = function() {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      hideListeningDots();
+      // Auto-senden wenn Text vorhanden
+      if (msgInput.value.trim()) {
+        setTimeout(function() { sendMessage(); }, 300);
+      }
+    };
+
+    recognition.onerror = function(e) {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      hideListeningDots();
+      if (e.error !== 'no-speech' && e.error !== 'aborted') {
+        renderSystemMsg('Mikrofon-Fehler: ' + e.error);
+      }
+    };
+
+    recognition.start();
+  }
+
+  function stopRecording() {
+    if (recognition) {
+      recognition.stop();
+    }
+  }
+
+  var listeningDotsEl = null;
+
+  function showListeningDots() {
+    if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
+    listeningDotsEl = showDots('listening');
+  }
+
+  function hideListeningDots() {
+    if (listeningDotsEl) { removeDots(listeningDotsEl); listeningDotsEl = null; }
+  }
+
+  /* ══════════════════════════════════════════
+     RENDER
+     ══════════════════════════════════════════ */
+  function renderUserBubble(msg) {
+    var el = document.createElement('div');
+    el.className = 'msg user' + (msg.image ? ' has-image' : '');
+    var html = '';
+    if (msg.image) {
+      html += '<img class="msg-image" src="data:' + msg.image.mimeType + ';base64,' + msg.image.base64 + '" alt="Foto">';
+    }
+    if (msg.text) {
+      html += '<div class="msg-text">' + escapeHtml(msg.text) + '</div>';
+    }
+    el.innerHTML = html;
+    chatArea.appendChild(el);
+    scrollToBottom();
+  }
+
+  function renderAssistantBubble(text) {
+    var el = document.createElement('div');
+    el.className = 'msg assistant';
+    el.innerHTML = renderMarkdown(text);
+    chatArea.appendChild(el);
+    scrollToBottom();
+  }
+
+  function renderSystemMsg(text) {
+    var el = document.createElement('div');
+    el.className = 'msg system';
+    el.textContent = text;
+    chatArea.appendChild(el);
+    scrollToBottom();
+  }
+
+  function showDots(mode) {
+    var container = document.createElement('div');
+    container.className = 'dots-container ' + mode;
+    for (var i = 0; i < 3; i++) {
+      var dot = document.createElement('div');
+      dot.className = 'dot';
+      container.appendChild(dot);
+    }
+    chatArea.appendChild(container);
+    scrollToBottom();
+    return container;
+  }
+
+  function removeDots(el) {
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function scrollToBottom() {
+    requestAnimationFrame(function() {
+      chatArea.scrollTop = chatArea.scrollHeight;
+    });
+  }
+
+  /* ══════════════════════════════════════════
+     INPUT HANDLING
+     ══════════════════════════════════════════ */
+  function onInputChange() {
+    var hasText = (msgInput.value || '').trim().length > 0;
+    var hasImage = !!pendingImage;
+    if (hasText || hasImage) {
+      sendBtn.classList.add('active');
+    } else {
+      sendBtn.classList.remove('active');
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     MARKDOWN (minimal)
+     ══════════════════════════════════════════ */
+  function renderMarkdown(text) {
+    var html = escapeHtml(text);
+
+    // Code-Bloecke (```)
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+      return '<pre><code>' + code.trim() + '</code></pre>';
+    });
+
+    // Inline Code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Bold
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // Italic
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+    // Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+    // Line breaks
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/\n/g, '<br>');
+    html = '<p>' + html + '</p>';
+
+    return html;
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ══════════════════════════════════════════
+     BOOT
+     ══════════════════════════════════════════ */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+</body>
+</html>

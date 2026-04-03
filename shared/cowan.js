@@ -1041,14 +1041,11 @@
     var encodedKey = '';
     try { encodedKey = btoa(apiKey); } catch(e) {}
 
-    var qrUrl = 'https://openclaw-buch.de/?cowan=open&companion=true';
-    if (encodedKey) qrUrl += '&apikey=' + encodeURIComponent(encodedKey);
-    if (syncUrl) {
-      /* syncUrl ist z.B. "http://100.99.167.112:3456" – wir brauchen nur ip:port */
-      var syncPart = syncUrl.replace(/^https?:\/\//, '');
-      qrUrl += '&sync=' + encodeURIComponent(syncPart);
-    }
-    if (syncToken) qrUrl += '&synctoken=' + encodeURIComponent(syncToken);
+    var qrUrl = 'https://openclaw-buch.de/companion/';
+    var sep = '?';
+    if (encodedKey) { qrUrl += sep + 'apikey=' + encodeURIComponent(encodedKey); sep = '&'; }
+    if (syncUrl) { qrUrl += sep + 'sync=' + encodeURIComponent(syncUrl); sep = '&'; }
+    if (syncToken) { qrUrl += sep + 'synctoken=' + encodeURIComponent(syncToken); sep = '&'; }
 
     /* QR-Code generieren */
     var qrSvg = '';
