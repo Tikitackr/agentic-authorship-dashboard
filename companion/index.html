@@ -818,42 +818,91 @@
     // Thinking dots
     var dotsEl = showDots('thinking');
 
-    // Streaming API Call
+    // Streaming API Call mit Typewriter
     isLoading = true;
     var streamBubble = null;
-    var fullReply = '';
+    var streamBuffer = '';     // Alles was von der API kam
+    var revealedCount = 0;     // Wieviele Zeichen sichtbar sind
+    var ttsRevealedCount = 0;  // Wieviele Zeichen TTS schon gesehen hat
+    var streamDone = false;    // API-Stream fertig?
+    var typewriterTimer = null;
+    var CHAR_DELAY = 18;       // ms pro Zeichen (~55 Zeichen/Sek, schnelles Lesen)
 
     callClaudeStream(text, userMsg.image, function onChunk(delta) {
-      // Erster Chunk: Dots weg, Bubble erstellen
+      // Erster Chunk: Dots weg, Bubble + Typewriter starten
       if (!streamBubble) {
         removeDots(dotsEl);
         streamBubble = createStreamBubble();
+        startTypewriter();
       }
-      fullReply += delta;
-      updateStreamBubble(streamBubble, fullReply);
-      scrollToBottom();
+      streamBuffer += delta;
     }).then(function() {
+      streamDone = true;
       isLoading = false;
       if (!streamBubble) {
-        // Kein einziger Chunk angekommen
         removeDots(dotsEl);
         renderSystemMsg('Leere Antwort von Claude');
-      } else {
-        messages.push({ role: 'assistant', text: fullReply });
-        // TTS: letzten unvollstaendigen Satz noch flushen
-        flushTtsSentence();
       }
-      scrollToBottom();
+      // Typewriter laeuft weiter bis alles sichtbar ist (finishTypewriter)
     }).catch(function(err) {
+      streamDone = true;
       isLoading = false;
-      if (streamBubble) {
-        // Partial response behalten
-        messages.push({ role: 'assistant', text: fullReply });
+      if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+      // Rest sofort anzeigen
+      if (streamBubble && streamBuffer) {
+        updateStreamBubble(streamBubble, streamBuffer);
+        messages.push({ role: 'assistant', text: streamBuffer });
       }
       removeDots(dotsEl);
       renderSystemMsg('Fehler: ' + (err.message || 'Unbekannter Fehler'));
       scrollToBottom();
     });
+
+    function startTypewriter() {
+      typewriterTimer = setInterval(function() {
+        if (revealedCount < streamBuffer.length) {
+          // Naechsten Buchstaben aufdecken
+          revealedCount++;
+          updateStreamBubble(streamBubble, streamBuffer.slice(0, revealedCount));
+          scrollToBottom();
+
+          // TTS: pruefen ob ein neuer Satz im sichtbaren Text komplett ist
+          checkTtsSentence();
+        } else if (streamDone) {
+          // Alles sichtbar + Stream fertig → aufraeuemen
+          finishTypewriter();
+        }
+        // Sonst: warten bis neuer Text im Buffer ankommt
+      }, CHAR_DELAY);
+    }
+
+    function checkTtsSentence() {
+      if (!ttsEnabled || !ttsUrl || !syncToken) return;
+      // Nur den neu aufgedeckten Text seit letztem TTS-Check betrachten
+      var visibleText = streamBuffer.slice(0, revealedCount);
+      var unchecked = visibleText.slice(ttsRevealedCount);
+      // Satz-Ende suchen: . ! ? gefolgt von Leerzeichen oder Zeilenumbruch
+      var match = unchecked.match(/[.!?][\s\n]/);
+      if (match) {
+        var cutAt = ttsRevealedCount + match.index + 1;
+        var sentence = streamBuffer.slice(ttsRevealedCount, cutAt).trim();
+        ttsRevealedCount = cutAt + 1; // +1 fuer das Whitespace danach
+        if (sentence.length > 3) {
+          enqueueTts(sentence);
+        }
+      }
+    }
+
+    function finishTypewriter() {
+      if (typewriterTimer) { clearInterval(typewriterTimer); typewriterTimer = null; }
+      messages.push({ role: 'assistant', text: streamBuffer });
+      // Letzten TTS-Rest flushen
+      if (ttsEnabled && ttsUrl && syncToken) {
+        var rest = streamBuffer.slice(ttsRevealedCount).trim();
+        if (rest.length > 3) enqueueTts(rest);
+      }
+      scrollToBottom();
+    }
   };
 
   /* ══════════════════════════════════════════
@@ -884,8 +933,7 @@
       }
     }
 
-    // TTS Satz-Buffer zuruecksetzen
-    ttsSentenceBuffer = '';
+    // TTS-Queue zuruecksetzen
     ttsQueue = [];
     ttsPlaying = false;
 
@@ -945,9 +993,7 @@
 
               // Text-Delta extrahieren
               if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
-                var delta = evt.delta.text;
-                onChunk(delta);
-                feedTtsSentence(delta);
+                onChunk(evt.delta.text);
               }
 
               // Fehler im Stream
@@ -1127,7 +1173,6 @@
      satzweises Vorlesen parallel zum Text.
      AudioContext fuer iOS Safari Kompatibilitaet.
      ══════════════════════════════════════════ */
-  var ttsSentenceBuffer = '';
   var ttsSpeakDots = null;
 
   function getAudioCtx() {
@@ -1150,40 +1195,6 @@
       stopSpeaking();
     }
   };
-
-  // Wird waehrend des Streamings mit jedem Text-Delta gefuettert
-  function feedTtsSentence(delta) {
-    if (!ttsEnabled || !ttsUrl || !syncToken) return;
-
-    ttsSentenceBuffer += delta;
-
-    // Satz-Ende erkennen: . ! ? gefolgt von Whitespace oder Ende
-    // Auch: Zeilenumbruch nach einem Satz zaehlt
-    var sentenceEnd = ttsSentenceBuffer.search(/[.!?]\s|[.!?]$/);
-    if (sentenceEnd !== -1) {
-      // Position nach dem Satzzeichen finden
-      var cutAt = sentenceEnd + 1;
-      // Wenn danach Whitespace kommt, den mitnehmen
-      if (cutAt < ttsSentenceBuffer.length && /\s/.test(ttsSentenceBuffer[cutAt])) cutAt++;
-
-      var sentence = ttsSentenceBuffer.slice(0, cutAt).trim();
-      ttsSentenceBuffer = ttsSentenceBuffer.slice(cutAt);
-
-      if (sentence.length > 3) { // Zu kurze Fragmente ignorieren
-        enqueueTts(sentence);
-      }
-    }
-  }
-
-  // Wird am Ende des Streams aufgerufen fuer den letzten Rest
-  function flushTtsSentence() {
-    if (!ttsEnabled || !ttsUrl || !syncToken) return;
-    var rest = ttsSentenceBuffer.trim();
-    ttsSentenceBuffer = '';
-    if (rest.length > 3) {
-      enqueueTts(rest);
-    }
-  }
 
   function cleanTextForTts(text) {
     return text
@@ -1254,7 +1265,6 @@
   function stopSpeaking() {
     ttsQueue = [];
     ttsPlaying = false;
-    ttsSentenceBuffer = '';
     if (currentSource) {
       try { currentSource.stop(); } catch(e) {}
       currentSource = null;
