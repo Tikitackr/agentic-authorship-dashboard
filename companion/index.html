@@ -2382,8 +2382,12 @@
 
       // DataChannel fuer Session-Konfiguration (Voice, Instructions, Sprache)
       var rtDataChannel = realtimePc.createDataChannel('oai-events');
-      rtDataChannel.onopen = function() {
-        console.log('[Realtime] DataChannel offen – sende session.update');
+      var rtSessionConfigSent = false;
+
+      function sendRealtimeConfig() {
+        if (rtSessionConfigSent || rtDataChannel.readyState !== 'open') return;
+        rtSessionConfigSent = true;
+        console.log('[Realtime] Sende session.update (Deutsch + coral)');
         rtDataChannel.send(JSON.stringify({
           type: 'session.update',
           session: {
@@ -2394,15 +2398,24 @@
             turn_detection: { type: 'server_vad' }
           }
         }));
+      }
+
+      rtDataChannel.onopen = function() {
+        console.log('[Realtime] DataChannel offen');
+        // Nicht sofort senden – auf session.created warten
       };
       rtDataChannel.onmessage = function(event) {
         try {
           var msg = JSON.parse(event.data);
           console.log('[Realtime] Event:', msg.type);
-          if (msg.type === 'error') {
-            console.error('[Realtime] Server-Event Fehler:', JSON.stringify(msg.error));
+          if (msg.type === 'session.created') {
+            // Jetzt ist die Session bereit – Config schicken
+            console.log('[Realtime] session.created empfangen – konfiguriere Deutsch');
+            sendRealtimeConfig();
           } else if (msg.type === 'session.updated') {
             console.log('[Realtime] Session konfiguriert:', JSON.stringify(msg.session));
+          } else if (msg.type === 'error') {
+            console.error('[Realtime] Server-Event Fehler:', JSON.stringify(msg.error));
           }
         } catch(e) {}
       };
