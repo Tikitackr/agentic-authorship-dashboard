@@ -1254,7 +1254,8 @@
       debugEl.id = 'cw-debug';
       debugEl.style.cssText = 'position:fixed;bottom:60px;left:0;right:0;padding:8px;font:11px monospace;color:#0f0;background:rgba(0,0,0,0.85);z-index:99999;max-height:120px;overflow:auto;';
       document.body.appendChild(debugEl);
-      debugEl.textContent = 'Companion init | syncUrl=' + syncUrl + ' | token=' + syncToken.substring(0,8) + '...';
+      var rawParams = window.location.search;
+      debugEl.textContent = 'v3.5.2 POST | syncUrl=' + syncUrl + ' | sync-param=' + (companionParams ? companionParams.sync : 'NONE') + ' | params=' + rawParams.substring(0,100);
       /* Test-Fetch mit sichtbarem Ergebnis */
       fetch(syncUrl + '/cowan-events.json', {
         method: 'POST',
