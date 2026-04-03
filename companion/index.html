@@ -1035,31 +1035,25 @@
   /* ══════════════════════════════════════════
      TTS (Text-to-Speech ueber VPS)
      ══════════════════════════════════════════ */
-  // AudioContext fuer iOS Safari Autoplay-Unlock
-  var audioUnlocked = false;
-
-  function unlockAudio() {
-    if (audioUnlocked) return;
-    try {
-      // AudioContext erstellen und resumieren – entsperrt Audio auf iOS Safari
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      ctx.resume().then(function() { audioUnlocked = true; });
-      // Zusaetzlich: stilles Audio abspielen (Doppelt-haelt-besser)
-      var silent = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwBRAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQZB8P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==');
-      silent.play().then(function() { audioUnlocked = true; }).catch(function() {});
-    } catch(e) {}
-  }
+  // EIN persistentes Audio-Element – wird beim User-Tap "entsperrt"
+  // und danach wiederverwendet. iOS Safari erlaubt play() nur auf
+  // Audio-Elementen die bereits waehrend einer User-Geste gestartet wurden.
+  var persistentAudio = new Audio();
+  var lastBlobUrl = null;
 
   window.toggleTts = function() {
     ttsEnabled = !ttsEnabled;
     localStorage.setItem('companion-tts', ttsEnabled ? 'true' : 'false');
     ttsToggle.classList.toggle('active', ttsEnabled);
 
-    // Audio entsperren beim ersten Aktivieren (iOS Safari braucht User-Geste)
-    if (ttsEnabled) unlockAudio();
-
-    // Wenn ausgeschaltet: laufende Wiedergabe stoppen
-    if (!ttsEnabled) stopSpeaking();
+    if (ttsEnabled) {
+      // iOS Safari Unlock: play() MUSS direkt in der User-Geste passieren
+      // Stilles MP3 abspielen um das Audio-Element zu "aktivieren"
+      persistentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwBRAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQZB8P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==';
+      persistentAudio.play().catch(function() {});
+    } else {
+      stopSpeaking();
+    }
   };
 
   function speakText(text) {
@@ -1095,43 +1089,36 @@
       if (!res.ok) throw new Error('TTS-Fehler ' + res.status);
       return res.blob();
     }).then(function(blob) {
-      var url = URL.createObjectURL(blob);
-      ttsAudio = new Audio(url);
+      // Alten Blob aufraeumen
+      if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
+      lastBlobUrl = URL.createObjectURL(blob);
 
-      ttsAudio.onended = function() {
+      // Dasselbe Audio-Element wiederverwenden (bereits "entsperrt")
+      persistentAudio.onended = function() {
         isSpeaking = false;
         removeDots(speakDots);
-        URL.revokeObjectURL(url);
-        ttsAudio = null;
       };
-
-      ttsAudio.onerror = function() {
+      persistentAudio.onerror = function() {
         isSpeaking = false;
         removeDots(speakDots);
-        URL.revokeObjectURL(url);
-        ttsAudio = null;
+        renderSystemMsg('[TTS] Audio-Wiedergabe fehlgeschlagen');
       };
-
-      ttsAudio.play().catch(function(playErr) {
+      persistentAudio.src = lastBlobUrl;
+      persistentAudio.play().catch(function(playErr) {
         isSpeaking = false;
         removeDots(speakDots);
-        URL.revokeObjectURL(url);
-        ttsAudio = null;
-        renderSystemMsg('[TTS] Autoplay blockiert: ' + playErr.message);
+        renderSystemMsg('[TTS] Play: ' + playErr.message);
       });
     }).catch(function(err) {
       isSpeaking = false;
       removeDots(speakDots);
       renderSystemMsg('[TTS] ' + err.message);
-      // TTS-Fehler leise ignorieren – Chat funktioniert weiter
     });
   }
 
   function stopSpeaking() {
-    if (ttsAudio) {
-      ttsAudio.pause();
-      ttsAudio = null;
-    }
+    persistentAudio.pause();
+    persistentAudio.currentTime = 0;
     isSpeaking = false;
   }
 
