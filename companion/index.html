@@ -729,6 +729,221 @@
       0%, 100% { opacity: 0.05; transform: translate(0, 0) scale(0.55); }
       45% { opacity: 0.45; transform: translate(-1px, 1px) scale(1.05); }
     }
+
+    /* ══════════════════════════════════════════
+       VOICE OVERLAY THEME VARIANTS
+       Default = Frost (bereits oben definiert).
+       Ember, Mono, Aurora ueberschreiben per body[data-vo-theme].
+       ══════════════════════════════════════════ */
+
+    /* ── Ember: raffiniertes Dunkel mit Amber-Akzenten ── */
+    body[data-vo-theme="ember"] .voice-overlay {
+      background: linear-gradient(to top, rgba(20,16,12,0.95), rgba(12,10,8,0.88));
+      backdrop-filter: blur(40px) saturate(160%);
+      -webkit-backdrop-filter: blur(40px) saturate(160%);
+      border-top: 1px solid rgba(217,119,6,0.2);
+    }
+    body[data-vo-theme="ember"] .vo-text .vo-word.spoken { color: rgba(245,158,11,0.45); }
+    body[data-vo-theme="ember"] .vo-text .vo-word.current {
+      color: #fbbf24; font-weight: 400;
+      text-shadow: 0 0 20px rgba(217,119,6,0.4);
+    }
+    body[data-vo-theme="ember"] .vo-text .vo-word.upcoming { color: rgba(245,158,11,0.0); }
+    body[data-vo-theme="ember"] .vo-dot { background: var(--amber-light); }
+    body[data-vo-theme="ember"] .comp-input-bar.voice-mode {
+      background: linear-gradient(to right, rgba(20,16,12,0.9), rgba(30,24,16,0.9));
+      border-top: 1px solid rgba(217,119,6,0.15);
+    }
+
+    /* ── Mono: ultra-minimales Apple-Design ── */
+    body[data-vo-theme="mono"] .voice-overlay {
+      background: rgba(18,18,20,0.95);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-top: 0.5px solid rgba(255,255,255,0.06);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    }
+    body[data-vo-theme="mono"] .vo-text .vo-word.spoken { color: rgba(255,255,255,0.3); }
+    body[data-vo-theme="mono"] .vo-text .vo-word.current {
+      color: rgba(255,255,255,0.85); font-weight: 400;
+      text-shadow: none;
+    }
+    body[data-vo-theme="mono"] .vo-text .vo-word.upcoming { color: rgba(255,255,255,0.0); }
+    body[data-vo-theme="mono"] .vo-dot { background: rgba(255,255,255,0.6); }
+    body[data-vo-theme="mono"] .comp-input-bar.voice-mode {
+      background: rgba(18,18,20,0.92);
+      border-top: 0.5px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── Aurora: warmer Farbverlauf mit Violett ── */
+    body[data-vo-theme="aurora"] .voice-overlay {
+      background: linear-gradient(to top, rgba(15,12,25,0.92), rgba(25,18,12,0.88));
+      backdrop-filter: blur(50px) saturate(170%);
+      -webkit-backdrop-filter: blur(50px) saturate(170%);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    body[data-vo-theme="aurora"] .vo-text .vo-word.spoken { color: rgba(200,180,255,0.4); }
+    body[data-vo-theme="aurora"] .vo-text .vo-word.current {
+      color: rgba(255,230,200,0.95); font-weight: 400;
+      text-shadow: 0 0 18px rgba(200,180,255,0.3);
+    }
+    body[data-vo-theme="aurora"] .vo-text .vo-word.upcoming { color: rgba(255,230,200,0.0); }
+    body[data-vo-theme="aurora"] .vo-dot { background: rgba(255,230,200,0.7); }
+    body[data-vo-theme="aurora"] .comp-input-bar.voice-mode {
+      background: linear-gradient(to right, rgba(15,12,25,0.9), rgba(25,18,12,0.9));
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ══════════════════════════════════════════
+       SETTINGS PANEL (Landscape-Modus)
+       ══════════════════════════════════════════ */
+    .settings-panel {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: var(--safe-top) env(safe-area-inset-right, 0px) var(--safe-bottom) env(safe-area-inset-left, 0px);
+      background: rgba(10,10,15,0.97);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+    }
+
+    .set-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    .set-header h1 { font-size: 16px; font-weight: 600; color: var(--text); }
+    .set-close {
+      width: 28px; height: 28px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.08); color: var(--text-dim);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+    }
+    .set-hint { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+    .set-content {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: 16px 20px; display: flex; flex-direction: column; gap: 24px;
+    }
+    @media (orientation: landscape) {
+      .set-content { flex-direction: row; flex-wrap: wrap; gap: 16px; align-content: flex-start; }
+      .set-section { flex: 1; min-width: 260px; }
+    }
+
+    .set-section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+    }
+
+    /* Theme Picker */
+    .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .theme-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 10px 4px; border-radius: 12px; border: 2px solid transparent;
+      background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .theme-card:active { transform: scale(0.95); }
+    .theme-card.active { border-color: var(--amber-light); background: rgba(217,119,6,0.08); }
+    .theme-swatch {
+      width: 40px; height: 40px; border-radius: 10px; position: relative; overflow: hidden;
+    }
+    .swatch-frost {
+      background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .swatch-frost::after {
+      content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%;
+      background: #fff; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      box-shadow: -8px -4px 0 2px rgba(255,255,255,0.3), 6px 6px 0 1px rgba(255,255,255,0.2);
+    }
+    .swatch-ember {
+      background: linear-gradient(180deg, rgba(20,16,12,0.95), rgba(12,10,8,0.98));
+      border: 1px solid rgba(217,119,6,0.2);
+    }
+    .swatch-ember::after {
+      content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%;
+      background: var(--amber-light); top: 50%; left: 50%; transform: translate(-50%,-50%);
+      box-shadow: -8px -4px 0 2px rgba(217,119,6,0.4), 6px 6px 0 1px rgba(217,119,6,0.3);
+    }
+    .swatch-mono {
+      background: rgba(18,18,20,0.98); border: 0.5px solid rgba(255,255,255,0.1);
+    }
+    .swatch-mono::after {
+      content: ''; position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(255,255,255,0.6); top: 50%; left: 50%; transform: translate(-50%,-50%);
+      box-shadow: -8px -4px 0 1.5px rgba(255,255,255,0.15), 6px 6px 0 1px rgba(255,255,255,0.1);
+    }
+    .swatch-aurora {
+      background: linear-gradient(170deg, rgba(15,12,25,0.97), rgba(20,15,10,0.98));
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .swatch-aurora::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: radial-gradient(ellipse at 30% 0%, rgba(217,119,6,0.15), transparent 60%),
+                  radial-gradient(ellipse at 70% 0%, rgba(139,92,246,0.1), transparent 50%);
+    }
+    .swatch-aurora::after {
+      content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(255,230,200,0.7); top: 55%; left: 50%; transform: translate(-50%,-50%);
+      box-shadow: -7px -3px 0 1.5px rgba(200,180,255,0.3), 6px 5px 0 1px rgba(255,230,200,0.25);
+    }
+    .theme-name { font-size: 11px; font-weight: 500; color: var(--text-dim); }
+    .theme-card.active .theme-name { color: var(--amber-light); }
+
+    /* Voice Options */
+    .voice-list { display: flex; flex-direction: column; gap: 6px; }
+    .voice-option {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      border: 1.5px solid transparent; cursor: pointer; transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .voice-option:active { transform: scale(0.98); }
+    .voice-option.active { border-color: var(--green); background: rgba(34,197,94,0.06); }
+    .voice-option.disabled { opacity: 0.45; cursor: not-allowed; }
+    .voice-option.disabled:active { transform: none; }
+    .vo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px;
+    }
+    .vo-icon-katja { background: rgba(34,197,94,0.12); color: var(--green); }
+    .vo-icon-openai { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+    .vo-icon-browser { background: rgba(59,130,246,0.12); color: #3b82f6; }
+    .vo-icon-off { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .vo-info { flex: 1; }
+    .vo-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .vo-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .voice-option.disabled .vo-name { color: var(--text-muted); }
+    .vo-status {
+      font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 6px; flex-shrink: 0;
+    }
+    .vo-status-on { background: rgba(34,197,94,0.12); color: var(--green); }
+    .vo-status-off { background: rgba(239,68,68,0.1); color: rgba(239,68,68,0.7); }
+
+    /* Model Toggle */
+    .model-toggle {
+      display: flex; gap: 4px; padding: 3px;
+      background: rgba(255,255,255,0.04); border-radius: 10px;
+    }
+    .model-btn {
+      flex: 1; padding: 8px 12px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .model-btn.active { background: rgba(255,255,255,0.1); color: var(--text); }
+    .model-desc { font-size: 11px; color: var(--text-muted); margin-top: 6px; padding: 0 4px; }
+
+    /* ── Orientation: Landscape = Settings, Portrait = Companion ── */
+    @media (orientation: landscape) {
+      .settings-panel { display: flex; }
+      .companion { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -816,6 +1031,103 @@
   <div class="voice-overlay vo-hidden" id="voiceOverlay">
     <div class="vo-handle" id="voHandle"></div>
     <div class="vo-text" id="voiceText"></div>
+  </div>
+</div>
+
+<!-- Settings Panel (Landscape-Modus) -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="set-header">
+    <h1>Einstellungen</h1>
+    <span class="set-hint">Zurueckdrehen zum Schliessen</span>
+    <button class="set-close" id="settingsClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="set-content">
+
+    <!-- Spalte 1: Design + Modell -->
+    <div class="set-section">
+      <div class="set-section-title">Voice-Overlay Design</div>
+      <div class="theme-grid" id="themeGrid">
+        <div class="theme-card active" data-theme="frost">
+          <div class="theme-swatch swatch-frost"></div>
+          <span class="theme-name">Frost</span>
+        </div>
+        <div class="theme-card" data-theme="ember">
+          <div class="theme-swatch swatch-ember"></div>
+          <span class="theme-name">Ember</span>
+        </div>
+        <div class="theme-card" data-theme="mono">
+          <div class="theme-swatch swatch-mono"></div>
+          <span class="theme-name">Mono</span>
+        </div>
+        <div class="theme-card" data-theme="aurora">
+          <div class="theme-swatch swatch-aurora"></div>
+          <span class="theme-name">Aurora</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <div class="set-section-title">KI-Modell</div>
+        <div class="model-toggle" id="modelToggle">
+          <button class="model-btn active" data-model="claude-haiku-4-5-20251001">Haiku</button>
+          <button class="model-btn" data-model="claude-sonnet-4-5-20250514">Sonnet</button>
+        </div>
+        <div class="model-desc">Haiku: schnell + guenstig. Sonnet: klueger, ~5x teurer.</div>
+      </div>
+    </div>
+
+    <!-- Spalte 2: Stimme -->
+    <div class="set-section">
+      <div class="set-section-title">Stimme / TTS</div>
+      <div class="voice-list" id="voiceList">
+
+        <div class="voice-option active" data-voice="katja">
+          <div class="vo-icon vo-icon-katja">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </div>
+          <div class="vo-info">
+            <div class="vo-name">Katja (Edge TTS)</div>
+            <div class="vo-desc">Deutsche Stimme, kostenlos, VPS noetig</div>
+          </div>
+          <span class="vo-status vo-status-off" id="voStatusKatja">Pruefen...</span>
+        </div>
+
+        <div class="voice-option disabled" data-voice="openai">
+          <div class="vo-icon vo-icon-openai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+          </div>
+          <div class="vo-info">
+            <div class="vo-name">OpenAI Realtime</div>
+            <div class="vo-desc">Echtzeit-Gespraech, OpenAI API-Key noetig</div>
+          </div>
+          <span class="vo-status vo-status-off">Bald</span>
+        </div>
+
+        <div class="voice-option disabled" data-voice="browser">
+          <div class="vo-icon vo-icon-browser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="vo-info">
+            <div class="vo-name">Browser TTS</div>
+            <div class="vo-desc">Geraetestimme, kein Server noetig</div>
+          </div>
+          <span class="vo-status vo-status-off">Bald</span>
+        </div>
+
+        <div class="voice-option" data-voice="off">
+          <div class="vo-icon vo-icon-off">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          </div>
+          <div class="vo-info">
+            <div class="vo-name">Aus</div>
+            <div class="vo-desc">Nur Text, keine Sprachausgabe</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -954,6 +1266,9 @@
 
     // Chunks laden
     loadChunks();
+
+    // Settings initialisieren (Theme, Modell, Voice aus localStorage)
+    initSettings();
 
     // UI State
     if (apiKey) {
@@ -2062,6 +2377,166 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  /* ══════════════════════════════════════════
+     SETTINGS (Landscape-Modus)
+     ══════════════════════════════════════════ */
+  function initSettings() {
+    // Theme wiederherstellen
+    var savedTheme = localStorage.getItem('companion-vo-theme') || 'frost';
+    applyVoTheme(savedTheme);
+
+    // Modell wiederherstellen
+    var savedModel = localStorage.getItem('companion-model');
+    if (savedModel) {
+      selectedModel = savedModel;
+      var btns = document.querySelectorAll('#modelToggle .model-btn');
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle('active', btns[i].getAttribute('data-model') === savedModel);
+      }
+    }
+
+    // Voice-Einstellung wiederherstellen
+    var savedVoice = localStorage.getItem('companion-voice') || 'katja';
+    applyVoiceSetting(savedVoice);
+
+    // Theme-Karten Klick
+    var themeCards = document.querySelectorAll('#themeGrid .theme-card');
+    for (var t = 0; t < themeCards.length; t++) {
+      themeCards[t].addEventListener('click', function() {
+        for (var j = 0; j < themeCards.length; j++) themeCards[j].classList.remove('active');
+        this.classList.add('active');
+        var theme = this.getAttribute('data-theme');
+        applyVoTheme(theme);
+        localStorage.setItem('companion-vo-theme', theme);
+      });
+    }
+
+    // Modell-Buttons Klick
+    var modelBtns = document.querySelectorAll('#modelToggle .model-btn');
+    for (var m = 0; m < modelBtns.length; m++) {
+      modelBtns[m].addEventListener('click', function() {
+        for (var j = 0; j < modelBtns.length; j++) modelBtns[j].classList.remove('active');
+        this.classList.add('active');
+        selectedModel = this.getAttribute('data-model');
+        localStorage.setItem('companion-model', selectedModel);
+      });
+    }
+
+    // Voice-Optionen Klick
+    var voiceOpts = document.querySelectorAll('#voiceList .voice-option');
+    for (var v = 0; v < voiceOpts.length; v++) {
+      voiceOpts[v].addEventListener('click', function() {
+        if (this.classList.contains('disabled')) return;
+        for (var j = 0; j < voiceOpts.length; j++) voiceOpts[j].classList.remove('active');
+        this.classList.add('active');
+        var voice = this.getAttribute('data-voice');
+        applyVoiceSetting(voice);
+        localStorage.setItem('companion-voice', voice);
+      });
+    }
+
+    // Settings-Close Button (zurueck zum Portrait-Modus simulieren)
+    var closeBtn = document.getElementById('settingsClose');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        // Kann auf Desktop helfen – auf iPhone dreht man einfach zurueck
+        document.getElementById('settingsPanel').style.display = 'none';
+        document.getElementById('app').style.display = '';
+        setTimeout(function() {
+          document.getElementById('settingsPanel').style.display = '';
+          document.getElementById('app').style.display = '';
+        }, 100);
+      });
+    }
+  }
+
+  function applyVoTheme(theme) {
+    if (theme === 'frost') {
+      document.body.removeAttribute('data-vo-theme');
+    } else {
+      document.body.setAttribute('data-vo-theme', theme);
+    }
+    // Theme-Karten synchronisieren (falls von ausserhalb aufgerufen)
+    var cards = document.querySelectorAll('#themeGrid .theme-card');
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].classList.toggle('active', cards[i].getAttribute('data-theme') === theme);
+    }
+  }
+
+  function applyVoiceSetting(voice) {
+    if (voice === 'off') {
+      ttsEnabled = false;
+      localStorage.setItem('companion-tts', 'false');
+      if (ttsToggle) ttsToggle.classList.remove('active');
+    } else if (voice === 'katja') {
+      ttsEnabled = true;
+      localStorage.setItem('companion-tts', 'true');
+      if (ttsToggle) ttsToggle.classList.add('active');
+    }
+    // Voice-Optionen in der UI synchronisieren
+    var opts = document.querySelectorAll('#voiceList .voice-option');
+    for (var i = 0; i < opts.length; i++) {
+      opts[i].classList.toggle('active', opts[i].getAttribute('data-voice') === voice);
+    }
+  }
+
+  // TTS-Verfuegbarkeit pruefen (wird bei Landscape-Anzeige aufgerufen)
+  function checkTtsAvailability() {
+    var statusEl = document.getElementById('voStatusKatja');
+    if (!statusEl) return;
+    if (!ttsUrl || !syncToken) {
+      statusEl.textContent = 'Nicht konfiguriert';
+      statusEl.className = 'vo-status vo-status-off';
+      // Katja disablen wenn kein TTS-Server
+      var katjaOpt = document.querySelector('[data-voice="katja"]');
+      if (katjaOpt && !ttsUrl) {
+        katjaOpt.classList.add('disabled');
+      }
+      return;
+    }
+    // Ping TTS-Server
+    statusEl.textContent = 'Pruefen...';
+    statusEl.className = 'vo-status vo-status-off';
+    fetch(ttsUrl + '/health', {
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer ' + syncToken },
+      signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined
+    }).then(function(res) {
+      if (res.ok) {
+        statusEl.textContent = 'Verbunden';
+        statusEl.className = 'vo-status vo-status-on';
+        var katjaOpt = document.querySelector('[data-voice="katja"]');
+        if (katjaOpt) katjaOpt.classList.remove('disabled');
+      } else {
+        statusEl.textContent = 'Nicht erreichbar';
+        statusEl.className = 'vo-status vo-status-off';
+      }
+    }).catch(function() {
+      statusEl.textContent = 'Nicht erreichbar';
+      statusEl.className = 'vo-status vo-status-off';
+    });
+  }
+
+  // Bei Orientierungswechsel TTS-Check ausfuehren
+  var settingsCheckDone = false;
+  function onOrientationChange() {
+    var isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    if (isLandscape && !settingsCheckDone) {
+      settingsCheckDone = true;
+      checkTtsAvailability();
+    }
+    if (!isLandscape) {
+      settingsCheckDone = false; // Beim naechsten Landscape neu pruefen
+    }
+  }
+
+  if (window.matchMedia) {
+    window.matchMedia('(orientation: landscape)').addEventListener('change', onOrientationChange);
+  }
+  window.addEventListener('orientationchange', function() {
+    setTimeout(onOrientationChange, 300); // iOS braucht kurz
+  });
 
   /* ══════════════════════════════════════════
      BOOT
