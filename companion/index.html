@@ -2387,17 +2387,22 @@
         rtDataChannel.send(JSON.stringify({
           type: 'session.update',
           session: {
+            modalities: ['text', 'audio'],
             voice: 'coral',
-            instructions: 'Du bist ein freundlicher Assistent fuer ein Buchprojekt ueber KI-Agenten und OpenClaw. Antworte immer auf Deutsch, kurz und hilfreich. Dein Name ist Cowan.',
-            input_audio_transcription: { model: 'whisper-1' }
+            instructions: 'WICHTIG: Du MUSST immer auf Deutsch antworten. Sprich ausschliesslich Deutsch. Du bist Cowan, ein freundlicher Assistent fuer ein Buchprojekt ueber KI-Agenten und OpenClaw. Antworte kurz und hilfreich. Niemals auf Englisch antworten.',
+            input_audio_transcription: { model: 'whisper-1' },
+            turn_detection: { type: 'server_vad' }
           }
         }));
       };
       rtDataChannel.onmessage = function(event) {
         try {
           var msg = JSON.parse(event.data);
+          console.log('[Realtime] Event:', msg.type);
           if (msg.type === 'error') {
-            console.error('[Realtime] Server-Event Fehler:', msg.error);
+            console.error('[Realtime] Server-Event Fehler:', JSON.stringify(msg.error));
+          } else if (msg.type === 'session.updated') {
+            console.log('[Realtime] Session konfiguriert:', JSON.stringify(msg.session));
           }
         } catch(e) {}
       };
