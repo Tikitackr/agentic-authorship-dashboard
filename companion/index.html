@@ -923,6 +923,31 @@
     }
     .vo-status-on { background: rgba(34,197,94,0.12); color: var(--green); }
     .vo-status-off { background: rgba(239,68,68,0.1); color: rgba(239,68,68,0.7); }
+    .vo-status-wait { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+
+    /* Realtime Timer (im Voice-Overlay) */
+    .rt-timer {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 12px; font-weight: 500; color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .rt-timer.rt-warn { color: #f59e0b; }
+
+    /* Mic-Button Realtime-Modus (pulsierendes Violet) */
+    .comp-btn.mic-realtime {
+      background: rgba(139,92,246,0.15); color: #8b5cf6;
+      animation: mic-rt-pulse 2s ease-in-out infinite;
+    }
+    @keyframes mic-rt-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(139,92,246,0); }
+    }
+
+    /* Voice-Overlay Realtime Variante */
+    .voice-overlay.vo-realtime .vo-dots-container { }
+    .voice-overlay.vo-realtime .vo-dots-container .dot {
+      background: #8b5cf6;
+    }
 
     /* Model Toggle */
     .model-toggle {
@@ -1092,15 +1117,15 @@
           <span class="vo-status vo-status-off" id="voStatusKatja">Pruefen...</span>
         </div>
 
-        <div class="voice-option disabled" data-voice="openai">
+        <div class="voice-option" data-voice="openai">
           <div class="vo-icon vo-icon-openai">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
           </div>
           <div class="vo-info">
             <div class="vo-name">OpenAI Realtime</div>
-            <div class="vo-desc">Echtzeit-Gespraech, OpenAI API-Key noetig</div>
+            <div class="vo-desc">Echtzeit-Gespraech ueber Mikrofon, VPS noetig</div>
           </div>
-          <span class="vo-status vo-status-off">Bald</span>
+          <span class="vo-status vo-status-off" id="voStatusOpenai">Pruefen...</span>
         </div>
 
         <div class="voice-option disabled" data-voice="browser">
@@ -1154,6 +1179,16 @@
   var currentSource = null; // AudioBufferSourceNode
   var ttsQueue = [];     // Satz-Queue fuer satzweises Vorlesen
   var ttsPlaying = false; // Laeuft gerade ein TTS-Satz?
+
+  // Realtime Voice (OpenAI WebRTC)
+  var realtimeUrl = '';       // wird aus syncUrl abgeleitet: hostname:10000
+  var realtimeEnabled = false;
+  var realtimePc = null;      // RTCPeerConnection
+  var realtimeStream = null;  // MediaStream (Mikrofon)
+  var realtimeActive = false;
+  var realtimeReconnects = 0;
+  var realtimeTimerInterval = null;
+  var realtimeStartTime = 0;
 
   // Voice Overlay (Comet-Stil)
   var voiceOverlay, voiceText, voiceDots, voHandle;
@@ -1238,17 +1273,30 @@
     }
     if (!syncToken) syncToken = localStorage.getItem('aa-settings.syncToken') || '';
 
-    // TTS-URL aus Sync-URL ableiten (gleicher Hostname, Port 8443)
+    // TTS-URL + Realtime-URL aus Sync-URL ableiten
     if (syncUrl) {
       try {
         var syncHostname = new URL(syncUrl).hostname;
         ttsUrl = 'https://' + syncHostname + ':8443';
-      } catch(e) { ttsUrl = ''; }
+        realtimeUrl = 'https://' + syncHostname + ':10000';
+      } catch(e) { ttsUrl = ''; realtimeUrl = ''; }
     }
 
-    // TTS-Praeferenz wiederherstellen
-    ttsEnabled = localStorage.getItem('companion-tts') === 'true';
+    // Voice-Praeferenz wiederherstellen
+    var savedVoice = localStorage.getItem('companion-voice') || '';
+    if (savedVoice === 'openai') {
+      realtimeEnabled = true;
+      ttsEnabled = false;
+    } else if (savedVoice === 'off') {
+      ttsEnabled = false;
+      realtimeEnabled = false;
+    } else {
+      // Default: katja (TTS) wenn konfiguriert
+      ttsEnabled = localStorage.getItem('companion-tts') === 'true';
+      realtimeEnabled = false;
+    }
     if (ttsEnabled && ttsToggle) ttsToggle.classList.add('active');
+    if (realtimeEnabled && micBtn) micBtn.classList.add('mic-realtime');
 
     // Event Listeners
     msgInput.addEventListener('input', onInputChange);
@@ -1851,6 +1899,20 @@
   }
 
   window.closeVoiceOverlay = function() {
+    // Realtime-Session beenden wenn aktiv
+    if (realtimeActive) {
+      realtimeActive = false;
+      stopRealtimeTimer();
+      if (realtimeStream) {
+        realtimeStream.getTracks().forEach(function(t) { t.stop(); });
+        realtimeStream = null;
+      }
+      if (realtimePc) {
+        try { realtimePc.close(); } catch(e) {}
+        realtimePc = null;
+      }
+      micBtn.classList.remove('recording');
+    }
     // Stream abbrechen (Punkt 2: X stoppt ALLES)
     if (currentAbortController) {
       try { currentAbortController.abort(); } catch(e) {}
@@ -2190,6 +2252,16 @@
      WEB SPEECH API (Mikrofon)
      ══════════════════════════════════════════ */
   window.toggleMic = function() {
+    // Realtime-Modus: Mic startet/stoppt WebRTC-Session
+    if (realtimeEnabled) {
+      if (realtimeActive) {
+        stopRealtimeSession();
+      } else {
+        startRealtimeSession();
+      }
+      return;
+    }
+    // Standard: Web Speech API
     if (isRecording) {
       stopRecording();
     } else {
@@ -2266,6 +2338,212 @@
 
   function hideListeningDots() {
     if (listeningDotsEl) { removeDots(listeningDotsEl); listeningDotsEl = null; }
+  }
+
+  /* ══════════════════════════════════════════
+     REALTIME VOICE (OpenAI WebRTC via SDP-Proxy)
+     Audio fliesst direkt iPhone ↔ OpenAI.
+     VPS vermittelt nur den Handshake (1x POST).
+     ══════════════════════════════════════════ */
+  function startRealtimeSession() {
+    if (realtimeActive) return;
+    if (!realtimeUrl || !syncToken) {
+      renderSystemMsg('Realtime nicht konfiguriert. Pruefe Sync-Verbindung.');
+      return;
+    }
+
+    // Welcome ausblenden
+    if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
+
+    realtimeActive = true;
+    realtimeReconnects = 0;
+    micBtn.classList.add('recording');
+
+    // Voice-Overlay: "Verbinde..."
+    showVoiceOverlay('thinking');
+    voSetText('Verbinde mit OpenAI...');
+    voRevealUpTo(999);
+
+    // iOS Safari: AudioContext muss nach User-Gesture resumed werden
+    var ctx = getAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    // 1. Mikrofon holen
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      realtimeStream = stream;
+
+      // 2. RTCPeerConnection erstellen
+      realtimePc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+
+      // Mikrofon-Audio zur Connection hinzufuegen
+      stream.getAudioTracks().forEach(function(track) {
+        realtimePc.addTrack(track, stream);
+      });
+
+      // 3. Remote-Audio empfangen (OpenAI spricht)
+      realtimePc.ontrack = function(event) {
+        var audio = new Audio();
+        audio.srcObject = event.streams[0];
+        audio.play().catch(function(e) {
+          console.warn('[Realtime] Audio autoplay blocked:', e.message);
+        });
+      };
+
+      // 4. ICE-Logging (Debugging)
+      realtimePc.onicecandidate = function(event) {
+        if (event.candidate) {
+          var type = event.candidate.type || 'unknown';
+          console.log('[ICE]', type, event.candidate.address || '');
+        }
+      };
+
+      // 5. Connection-State ueberwachen
+      realtimePc.onconnectionstatechange = function() {
+        console.log('[Realtime] Connection:', realtimePc.connectionState);
+        if (realtimePc.connectionState === 'connected') {
+          // Verbunden! Overlay umschalten
+          voSetText('Sprich jetzt... Tippe zum Beenden.');
+          voRevealUpTo(999);
+          showVoiceOverlay('speaking');
+          startRealtimeTimer();
+        } else if (realtimePc.connectionState === 'failed' || realtimePc.connectionState === 'disconnected') {
+          if (realtimeReconnects < 3 && realtimeActive) {
+            realtimeReconnects++;
+            console.log('[Realtime] Reconnect Versuch ' + realtimeReconnects + '/3');
+            voSetText('Verbindung unterbrochen... Reconnect ' + realtimeReconnects + '/3');
+            voRevealUpTo(999);
+            // Neuer Handshake
+            doRealtimeHandshake();
+          } else {
+            voSetText('Verbindung fehlgeschlagen. Pruefe dein Netz.');
+            voRevealUpTo(999);
+            setTimeout(function() { stopRealtimeSession(); }, 2000);
+          }
+        }
+      };
+
+      // 6. SDP-Handshake starten
+      doRealtimeHandshake();
+
+    }).catch(function(err) {
+      console.error('[Realtime] Mikrofon-Fehler:', err.message);
+      realtimeActive = false;
+      micBtn.classList.remove('recording');
+      closeVoiceOverlay();
+      if (err.name === 'NotAllowedError') {
+        renderSystemMsg('Mikrofon-Zugriff verweigert. Erlaube den Zugriff in den Browser-Einstellungen.');
+      } else {
+        renderSystemMsg('Mikrofon-Fehler: ' + err.message);
+      }
+    });
+  }
+
+  function doRealtimeHandshake() {
+    if (!realtimePc) return;
+
+    realtimePc.createOffer().then(function(offer) {
+      return realtimePc.setLocalDescription(offer);
+    }).then(function() {
+      // SDP-Offer an VPS senden (10s Timeout)
+      var controller = new AbortController();
+      var timeout = setTimeout(function() { controller.abort(); }, 10000);
+
+      return fetch(realtimeUrl + '/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/sdp',
+          'Authorization': 'Bearer ' + syncToken
+        },
+        body: realtimePc.localDescription.sdp,
+        signal: controller.signal
+      }).then(function(res) {
+        clearTimeout(timeout);
+        if (!res.ok) {
+          return res.text().then(function(body) {
+            var errMsg = 'Server-Fehler ' + res.status;
+            try { var parsed = JSON.parse(body); errMsg = parsed.error || errMsg; } catch(e) {}
+            throw new Error(errMsg);
+          });
+        }
+        return res.text();
+      }).then(function(answerSdp) {
+        // SDP-Answer setzen → WebRTC-Verbindung steht
+        return realtimePc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+      });
+    }).catch(function(err) {
+      if (!realtimeActive) return; // Bereits gestoppt
+      console.error('[Realtime] Handshake Fehler:', err.message);
+      var isTimeout = err.name === 'AbortError';
+      voSetText(isTimeout ? 'Timeout – Server antwortet nicht.' : 'Fehler: ' + err.message);
+      voRevealUpTo(999);
+      setTimeout(function() { stopRealtimeSession(); }, 2500);
+    });
+  }
+
+  function stopRealtimeSession() {
+    realtimeActive = false;
+    stopRealtimeTimer();
+
+    // Mikrofon freigeben
+    if (realtimeStream) {
+      realtimeStream.getTracks().forEach(function(t) { t.stop(); });
+      realtimeStream = null;
+    }
+
+    // WebRTC-Connection schliessen
+    if (realtimePc) {
+      try { realtimePc.close(); } catch(e) {}
+      realtimePc = null;
+    }
+
+    // UI zuruecksetzen
+    micBtn.classList.remove('recording');
+    closeVoiceOverlay();
+  }
+
+  // Timer: Zeigt Gespraechsdauer im Voice-Overlay
+  function startRealtimeTimer() {
+    realtimeStartTime = Date.now();
+    // Timer-Element im Overlay erstellen
+    var existing = document.getElementById('rtTimer');
+    if (existing) existing.remove();
+    var timerEl = document.createElement('div');
+    timerEl.className = 'rt-timer';
+    timerEl.id = 'rtTimer';
+    timerEl.textContent = '0:00';
+    voiceOverlay.appendChild(timerEl);
+
+    realtimeTimerInterval = setInterval(function() {
+      if (!realtimeActive) { stopRealtimeTimer(); return; }
+      var elapsed = Math.floor((Date.now() - realtimeStartTime) / 1000);
+      var min = Math.floor(elapsed / 60);
+      var sec = elapsed % 60;
+      timerEl.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+      // Warnung ab 4 Minuten (Kosten!)
+      if (elapsed >= 240) {
+        timerEl.classList.add('rt-warn');
+      }
+      // Auto-Disconnect nach 5 Min ohne Interaktion (Sicherheit)
+      if (elapsed >= 300) {
+        voSetText('Auto-Trennung nach 5 Minuten.');
+        voRevealUpTo(999);
+        setTimeout(function() { stopRealtimeSession(); }, 1500);
+      }
+    }, 1000);
+  }
+
+  function stopRealtimeTimer() {
+    if (realtimeTimerInterval) {
+      clearInterval(realtimeTimerInterval);
+      realtimeTimerInterval = null;
+    }
+    var timerEl = document.getElementById('rtTimer');
+    if (timerEl) timerEl.remove();
   }
 
   /* ══════════════════════════════════════════
@@ -2466,12 +2744,28 @@
   function applyVoiceSetting(voice) {
     if (voice === 'off') {
       ttsEnabled = false;
+      realtimeEnabled = false;
       localStorage.setItem('companion-tts', 'false');
       if (ttsToggle) ttsToggle.classList.remove('active');
+      // Laufende Realtime-Session beenden
+      if (realtimeActive) stopRealtimeSession();
     } else if (voice === 'katja') {
       ttsEnabled = true;
+      realtimeEnabled = false;
       localStorage.setItem('companion-tts', 'true');
       if (ttsToggle) ttsToggle.classList.add('active');
+      if (realtimeActive) stopRealtimeSession();
+    } else if (voice === 'openai') {
+      realtimeEnabled = true;
+      ttsEnabled = false;
+      localStorage.setItem('companion-tts', 'false');
+      if (ttsToggle) ttsToggle.classList.remove('active');
+      // Mic-Button visuell anpassen
+      if (micBtn) micBtn.classList.add('mic-realtime');
+    }
+    // Mic-Button Realtime-Styling entfernen wenn nicht OpenAI
+    if (voice !== 'openai' && micBtn) {
+      micBtn.classList.remove('mic-realtime');
     }
     // Voice-Optionen in der UI synchronisieren
     var opts = document.querySelectorAll('#voiceList .voice-option');
@@ -2487,14 +2781,12 @@
     if (!ttsUrl || !syncToken) {
       statusEl.textContent = 'Nicht konfiguriert';
       statusEl.className = 'vo-status vo-status-off';
-      // Katja disablen wenn kein TTS-Server
       var katjaOpt = document.querySelector('[data-voice="katja"]');
       if (katjaOpt && !ttsUrl) {
         katjaOpt.classList.add('disabled');
       }
       return;
     }
-    // Ping TTS-Server
     statusEl.textContent = 'Pruefen...';
     statusEl.className = 'vo-status vo-status-off';
     fetch(ttsUrl + '/health', {
@@ -2517,6 +2809,38 @@
     });
   }
 
+  // Realtime-Verfuegbarkeit pruefen
+  function checkRealtimeAvailability() {
+    var statusEl = document.getElementById('voStatusOpenai');
+    if (!statusEl) return;
+    if (!realtimeUrl || !syncToken) {
+      statusEl.textContent = 'Nicht konfiguriert';
+      statusEl.className = 'vo-status vo-status-off';
+      var openaiOpt = document.querySelector('[data-voice="openai"]');
+      if (openaiOpt) openaiOpt.classList.add('disabled');
+      return;
+    }
+    statusEl.textContent = 'Pruefen...';
+    statusEl.className = 'vo-status vo-status-wait';
+    fetch(realtimeUrl + '/health', {
+      method: 'GET',
+      signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+    }).then(function(res) {
+      if (res.ok) {
+        statusEl.textContent = 'Verbunden';
+        statusEl.className = 'vo-status vo-status-on';
+        var openaiOpt = document.querySelector('[data-voice="openai"]');
+        if (openaiOpt) openaiOpt.classList.remove('disabled');
+      } else {
+        statusEl.textContent = 'Nicht erreichbar';
+        statusEl.className = 'vo-status vo-status-off';
+      }
+    }).catch(function() {
+      statusEl.textContent = 'Nicht erreichbar';
+      statusEl.className = 'vo-status vo-status-off';
+    });
+  }
+
   // Bei Orientierungswechsel TTS-Check ausfuehren
   var settingsCheckDone = false;
   function onOrientationChange() {
@@ -2524,6 +2848,7 @@
     if (isLandscape && !settingsCheckDone) {
       settingsCheckDone = true;
       checkTtsAvailability();
+      checkRealtimeAvailability();
     }
     if (!isLandscape) {
       settingsCheckDone = false; // Beim naechsten Landscape neu pruefen
