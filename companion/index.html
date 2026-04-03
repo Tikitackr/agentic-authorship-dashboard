@@ -1020,6 +1020,8 @@
       return;
     }
 
+    var speechSent = false;
+
     recognition = new SpeechRecognition();
     recognition.lang = 'de-DE';
     recognition.continuous = false;
@@ -1027,11 +1029,13 @@
 
     recognition.onstart = function() {
       isRecording = true;
+      speechSent = false;
       micBtn.classList.add('recording');
       showListeningDots();
     };
 
     recognition.onresult = function(e) {
+      if (speechSent) return; // Nach dem Senden nichts mehr ins Feld schreiben
       var transcript = '';
       for (var i = 0; i < e.results.length; i++) {
         transcript += e.results[i][0].transcript;
@@ -1045,8 +1049,9 @@
       micBtn.classList.remove('recording');
       hideListeningDots();
       // Auto-senden wenn Text vorhanden
-      if (msgInput.value.trim()) {
-        setTimeout(function() { sendMessage(); }, 300);
+      if (!speechSent && msgInput.value.trim()) {
+        speechSent = true;
+        sendMessage();
       }
     };
 
