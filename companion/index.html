@@ -1071,6 +1071,12 @@
       }
 
       function voProcessNext() {
+        // Abbruch: Overlay wurde geschlossen (Tap-to-Stop/X)
+        if (!voActive) {
+          sentenceQueue = [];
+          processingQueue = false;
+          return;
+        }
         if (sentenceQueue.length === 0) {
           processingQueue = false;
           if (streamDone) {
@@ -1093,6 +1099,8 @@
         var sentenceWords = cleanSentence.split(/\s+/).length;
 
         fetchTtsAudio(cleanSentence).then(function(audioBuffer) {
+          // Abbruch-Check: Overlay wurde waehrend fetch geschlossen
+          if (!voActive) return;
           var durationMs = audioBuffer.duration * 1000;
 
           // Audio starten
@@ -1104,6 +1112,7 @@
           // Karaoke: Woerter synchron mit Audio aufdecken
           voStartKaraoke(voCurrentWordIdx, sentenceWords, durationMs * 0.95, null);
         }).catch(function() {
+          if (!voActive) return;
           // TTS-Fehler → Woerter schnell aufdecken, weiter
           voStartKaraoke(voCurrentWordIdx, sentenceWords, 500, function() {
             voProcessNext();
@@ -1468,19 +1477,20 @@
 
   function enterVoiceBar(state) {
     inputBar.classList.add('voice-mode');
-    // Dots einfuegen (zwischen Kamera-Btn-Slot und Mic)
-    if (!voiceDots.parentNode || voiceDots.parentNode !== inputBar) {
-      // X-Button vor den Dots
-      var closeBtn = document.getElementById('voCloseInline');
-      if (!closeBtn) {
-        closeBtn = document.createElement('button');
-        closeBtn.id = 'voCloseInline';
-        closeBtn.className = 'comp-btn';
-        closeBtn.onclick = function() { closeVoiceOverlay(); };
-        closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-      }
+    // X-Button immer sicherstellen (wird in exitVoiceBar entfernt)
+    var closeBtn = document.getElementById('voCloseInline');
+    if (!closeBtn) {
+      closeBtn = document.createElement('button');
+      closeBtn.id = 'voCloseInline';
+      closeBtn.className = 'comp-btn';
+      closeBtn.onclick = function() { closeVoiceOverlay(); };
+      closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    }
+    if (!closeBtn.parentNode) {
       inputBar.insertBefore(closeBtn, inputBar.firstChild);
-      // Dots nach dem X
+    }
+    // Dots einfuegen (zwischen X-Button und Mic)
+    if (!voiceDots.parentNode || voiceDots.parentNode !== inputBar) {
       inputBar.insertBefore(voiceDots, closeBtn.nextSibling);
     }
     voiceDots.style.display = 'flex';
