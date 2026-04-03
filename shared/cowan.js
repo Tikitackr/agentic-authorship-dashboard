@@ -293,6 +293,8 @@
 
   /* ── Sync: Verbindungsdaten aus Meine-Daten laden ── */
   function loadSyncSettings() {
+    /* Im Companion-Mode kommen Sync-Daten aus URL-Params, nicht aus localStorage */
+    if (isCompanionMode && syncUrl && syncToken) return;
     try {
       syncToken = localStorage.getItem('aa-settings.syncToken') || '';
       /* URL aus tailscaleIp + syncPort zusammenbauen (wie Meine-Daten sie speichert) */
