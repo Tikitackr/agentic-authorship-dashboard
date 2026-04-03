@@ -652,6 +652,8 @@
   var audioCtx = null;   // AudioContext (iOS Safari kompatibel)
   var isSpeaking = false;
   var currentSource = null; // AudioBufferSourceNode
+  var ttsQueue = [];     // Satz-Queue fuer satzweises Vorlesen
+  var ttsPlaying = false; // Laeuft gerade ein TTS-Satz?
 
   // Sync
   var syncUrl = '';
@@ -816,17 +818,38 @@
     // Thinking dots
     var dotsEl = showDots('thinking');
 
-    // API Call
+    // Streaming API Call
     isLoading = true;
-    callClaude(text, userMsg.image).then(function(reply) {
+    var streamBubble = null;
+    var fullReply = '';
+
+    callClaudeStream(text, userMsg.image, function onChunk(delta) {
+      // Erster Chunk: Dots weg, Bubble erstellen
+      if (!streamBubble) {
+        removeDots(dotsEl);
+        streamBubble = createStreamBubble();
+      }
+      fullReply += delta;
+      updateStreamBubble(streamBubble, fullReply);
+      scrollToBottom();
+    }).then(function() {
       isLoading = false;
-      removeDots(dotsEl);
-      messages.push({ role: 'assistant', text: reply });
-      renderAssistantBubble(reply);
-      speakText(reply);
+      if (!streamBubble) {
+        // Kein einziger Chunk angekommen
+        removeDots(dotsEl);
+        renderSystemMsg('Leere Antwort von Claude');
+      } else {
+        messages.push({ role: 'assistant', text: fullReply });
+        // TTS: letzten unvollstaendigen Satz noch flushen
+        flushTtsSentence();
+      }
       scrollToBottom();
     }).catch(function(err) {
       isLoading = false;
+      if (streamBubble) {
+        // Partial response behalten
+        messages.push({ role: 'assistant', text: fullReply });
+      }
       removeDots(dotsEl);
       renderSystemMsg('Fehler: ' + (err.message || 'Unbekannter Fehler'));
       scrollToBottom();
@@ -834,9 +857,9 @@
   };
 
   /* ══════════════════════════════════════════
-     CLAUDE API (Messages API, direkt)
+     CLAUDE API (Streaming, SSE)
      ══════════════════════════════════════════ */
-  function callClaude(text, image) {
+  function callClaudeStream(text, image, onChunk) {
     // System-Prompt mit Chunks
     var systemPrompt = buildSystemPrompt();
 
@@ -861,6 +884,11 @@
       }
     }
 
+    // TTS Satz-Buffer zuruecksetzen
+    ttsSentenceBuffer = '';
+    ttsQueue = [];
+    ttsPlaying = false;
+
     return fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -872,27 +900,74 @@
       body: JSON.stringify({
         model: selectedModel,
         max_tokens: 1024,
+        stream: true,
         system: systemPrompt,
         messages: apiMessages
       })
     }).then(function(res) {
       if (!res.ok) {
-        return res.json().then(function(err) {
+        return res.text().then(function(body) {
           if (res.status === 401) {
             apiKey = '';
             localStorage.removeItem('companion-apikey');
             showSetup();
             throw new Error('API-Key ungueltig. Bitte neu eingeben.');
           }
-          throw new Error(err.error ? err.error.message : 'API-Fehler ' + res.status);
+          var errMsg = 'API-Fehler ' + res.status;
+          try { var parsed = JSON.parse(body); errMsg = parsed.error ? parsed.error.message : errMsg; } catch(e) {}
+          throw new Error(errMsg);
         });
       }
-      return res.json();
-    }).then(function(data) {
-      if (data.content && data.content[0]) {
-        return data.content[0].text;
+
+      // SSE-Stream lesen
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var sseBuffer = '';
+
+      function processStream() {
+        return reader.read().then(function(result) {
+          if (result.done) return;
+
+          sseBuffer += decoder.decode(result.value, { stream: true });
+
+          // SSE-Events zeilenweise parsen
+          var lines = sseBuffer.split('\n');
+          sseBuffer = lines.pop(); // Letztes (unvollstaendiges) Fragment behalten
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line.startsWith('data: ')) continue;
+            var jsonStr = line.slice(6);
+            if (jsonStr === '[DONE]') return;
+
+            try {
+              var evt = JSON.parse(jsonStr);
+
+              // Text-Delta extrahieren
+              if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
+                var delta = evt.delta.text;
+                onChunk(delta);
+                feedTtsSentence(delta);
+              }
+
+              // Fehler im Stream
+              if (evt.type === 'error') {
+                throw new Error(evt.error ? evt.error.message : 'Stream-Fehler');
+              }
+            } catch (parseErr) {
+              if (parseErr.message && parseErr.message !== 'Stream-Fehler' && parseErr.message.indexOf('JSON') !== -1) {
+                // JSON Parse-Fehler ignorieren (unvollstaendige Chunks)
+              } else if (parseErr.message) {
+                throw parseErr;
+              }
+            }
+          }
+
+          return processStream();
+        });
       }
-      throw new Error('Leere Antwort von Claude');
+
+      return processStream();
     });
   }
 
@@ -901,6 +976,7 @@
       'Du bist Cowan, der freundliche KI-Begleiter zum OpenClaw-Buch.',
       'Du hilfst dem Leser bei Fragen rund ums Buch: Installation, Docker, Agent-Konfiguration, Troubleshooting, und allem was im Buch behandelt wird.',
       'Antworte kurz und praezise (max 3-4 Absaetze). Verwende Du-Form.',
+      'Verwende NIEMALS Emojis – deine Antworten werden vorgelesen.',
       'Wenn der Leser ein Foto einer Buchseite schickt, erkenne das Kapitel und die Stelle und hilf gezielt weiter.',
       'Wenn du eine Frage nicht beantworten kannst, sag das ehrlich.'
     ];
@@ -1031,12 +1107,29 @@
   }
 
   /* ══════════════════════════════════════════
-     TTS (Text-to-Speech ueber VPS)
-     Verwendet AudioContext statt Audio-Element.
-     AudioContext laesst sich auf iOS Safari per
-     resume() waehrend einer User-Geste entsperren.
-     Danach funktioniert jede Wiedergabe.
+     STREAM BUBBLE (Wort-fuer-Wort-Anzeige)
      ══════════════════════════════════════════ */
+  function createStreamBubble() {
+    var el = document.createElement('div');
+    el.className = 'msg assistant';
+    el.innerHTML = '<p></p>';
+    chatArea.appendChild(el);
+    return el;
+  }
+
+  function updateStreamBubble(el, fullText) {
+    el.innerHTML = renderMarkdown(fullText);
+  }
+
+  /* ══════════════════════════════════════════
+     TTS (Text-to-Speech ueber VPS)
+     Streaming-Modus: Satz-Erkennung, Queue,
+     satzweises Vorlesen parallel zum Text.
+     AudioContext fuer iOS Safari Kompatibilitaet.
+     ══════════════════════════════════════════ */
+  var ttsSentenceBuffer = '';
+  var ttsSpeakDots = null;
+
   function getAudioCtx() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1058,11 +1151,42 @@
     }
   };
 
-  function speakText(text) {
+  // Wird waehrend des Streamings mit jedem Text-Delta gefuettert
+  function feedTtsSentence(delta) {
     if (!ttsEnabled || !ttsUrl || !syncToken) return;
 
-    // Markdown/Code-Bloecke entfernen fuer sauberere Sprachausgabe
-    var cleanText = text
+    ttsSentenceBuffer += delta;
+
+    // Satz-Ende erkennen: . ! ? gefolgt von Whitespace oder Ende
+    // Auch: Zeilenumbruch nach einem Satz zaehlt
+    var sentenceEnd = ttsSentenceBuffer.search(/[.!?]\s|[.!?]$/);
+    if (sentenceEnd !== -1) {
+      // Position nach dem Satzzeichen finden
+      var cutAt = sentenceEnd + 1;
+      // Wenn danach Whitespace kommt, den mitnehmen
+      if (cutAt < ttsSentenceBuffer.length && /\s/.test(ttsSentenceBuffer[cutAt])) cutAt++;
+
+      var sentence = ttsSentenceBuffer.slice(0, cutAt).trim();
+      ttsSentenceBuffer = ttsSentenceBuffer.slice(cutAt);
+
+      if (sentence.length > 3) { // Zu kurze Fragmente ignorieren
+        enqueueTts(sentence);
+      }
+    }
+  }
+
+  // Wird am Ende des Streams aufgerufen fuer den letzten Rest
+  function flushTtsSentence() {
+    if (!ttsEnabled || !ttsUrl || !syncToken) return;
+    var rest = ttsSentenceBuffer.trim();
+    ttsSentenceBuffer = '';
+    if (rest.length > 3) {
+      enqueueTts(rest);
+    }
+  }
+
+  function cleanTextForTts(text) {
+    return text
       .replace(/```[\s\S]*?```/g, ' Code-Block ausgelassen. ')
       .replace(/`([^`]+)`/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -1070,12 +1194,29 @@
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/#{1,6}\s/g, '')
       .trim();
+  }
 
-    if (!cleanText) return;
-    if (cleanText.length > 5000) cleanText = cleanText.slice(0, 4990) + '...';
+  function enqueueTts(sentence) {
+    var clean = cleanTextForTts(sentence);
+    if (!clean || clean.length < 3) return;
+    ttsQueue.push(clean);
+    if (!ttsPlaying) playNextTts();
+  }
 
-    var speakDots = showDots('speaking');
+  function playNextTts() {
+    if (ttsQueue.length === 0) {
+      ttsPlaying = false;
+      isSpeaking = false;
+      if (ttsSpeakDots) { removeDots(ttsSpeakDots); ttsSpeakDots = null; }
+      return;
+    }
+
+    ttsPlaying = true;
     isSpeaking = true;
+    if (!ttsSpeakDots) ttsSpeakDots = showDots('speaking');
+
+    var sentence = ttsQueue.shift();
+    if (sentence.length > 5000) sentence = sentence.slice(0, 4990) + '...';
 
     var ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
@@ -1086,38 +1227,40 @@
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + syncToken
       },
-      body: JSON.stringify({ text: cleanText })
+      body: JSON.stringify({ text: sentence })
     }).then(function(res) {
       if (!res.ok) throw new Error('TTS-Fehler ' + res.status);
       return res.arrayBuffer();
     }).then(function(arrayBuffer) {
       return ctx.decodeAudioData(arrayBuffer);
     }).then(function(audioBuffer) {
-      // Vorherige Wiedergabe stoppen
       if (currentSource) { try { currentSource.stop(); } catch(e) {} }
 
       currentSource = ctx.createBufferSource();
       currentSource.buffer = audioBuffer;
       currentSource.connect(ctx.destination);
       currentSource.onended = function() {
-        isSpeaking = false;
         currentSource = null;
-        removeDots(speakDots);
+        playNextTts(); // Naechsten Satz abspielen
       };
       currentSource.start(0);
-    }).catch(function(err) {
-      isSpeaking = false;
-      removeDots(speakDots);
-      renderSystemMsg('[TTS] ' + err.message);
+    }).catch(function() {
+      // TTS-Fehler leise ignorieren, naechsten Satz versuchen
+      currentSource = null;
+      playNextTts();
     });
   }
 
   function stopSpeaking() {
+    ttsQueue = [];
+    ttsPlaying = false;
+    ttsSentenceBuffer = '';
     if (currentSource) {
       try { currentSource.stop(); } catch(e) {}
       currentSource = null;
     }
     isSpeaking = false;
+    if (ttsSpeakDots) { removeDots(ttsSpeakDots); ttsSpeakDots = null; }
   }
 
   /* ══════════════════════════════════════════
