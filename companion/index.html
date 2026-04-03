@@ -798,9 +798,6 @@
     if (!text && !pendingImage) return;
     if (isLoading) return;
 
-    // Audio entsperren bei jeder User-Geste (iOS Safari Autoplay-Policy)
-    if (ttsEnabled) unlockAudio();
-
     // Welcome ausblenden
     if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
 
