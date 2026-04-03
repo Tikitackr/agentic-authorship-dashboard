@@ -369,7 +369,7 @@
   }
 
   /* ── Sync: Companion-Events lesen (companion-connected erkennen + Timeout) ── */
-  var COMPANION_TIMEOUT = 30000; /* 30 Sekunden ohne Heartbeat = disconnected */
+  var COMPANION_TIMEOUT = 45000; /* 45 Sekunden ohne Heartbeat = disconnected */
   function syncCheckCompanion() {
     if (!syncUrl || !syncToken || isCompanionMode) return;
     fetch(syncUrl + '/cowan-events.json', {
@@ -1251,30 +1251,6 @@
       setInterval(function() {
         syncWriteEvent({ type: 'companion-heartbeat' });
       }, 15000);
-      /* DEBUG: Sichtbarer Sync-Status im Companion-Mode */
-      var debugEl = document.createElement('div');
-      debugEl.id = 'cw-debug';
-      debugEl.style.cssText = 'position:fixed;bottom:60px;left:0;right:0;padding:8px;font:11px monospace;color:#0f0;background:rgba(0,0,0,0.85);z-index:99999;max-height:120px;overflow:auto;';
-      document.body.appendChild(debugEl);
-      var rawParams = window.location.search;
-      debugEl.textContent = 'v3.5.2 POST | syncUrl=' + syncUrl + ' | sync-param=' + (companionParams ? companionParams.sync : 'NONE') + ' | params=' + rawParams.substring(0,100);
-      /* Test-Fetch mit sichtbarem Ergebnis */
-      fetch(syncUrl + '/cowan-events.json', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + syncToken },
-        body: JSON.stringify({ lastUpdate: new Date().toISOString(), device: 'companion', event: { type: 'companion-debug' }, context: {} })
-      }).then(function(r) {
-        debugEl.textContent += ' | PUT=' + r.status;
-      }).catch(function(e) {
-        debugEl.textContent += ' | PUT-ERROR=' + e.message;
-      });
-    } else if (isCompanionMode) {
-      /* DEBUG: Companion ohne Sync */
-      var debugEl = document.createElement('div');
-      debugEl.id = 'cw-debug';
-      debugEl.style.cssText = 'position:fixed;bottom:60px;left:0;right:0;padding:8px;font:11px monospace;color:#f00;background:rgba(0,0,0,0.85);z-index:99999;';
-      document.body.appendChild(debugEl);
-      debugEl.textContent = 'Companion OHNE Sync! syncUrl=' + syncUrl + ' | syncToken=' + (syncToken ? 'ja' : 'FEHLT');
     } else {
       startSyncPolling();
     }
