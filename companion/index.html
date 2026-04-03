@@ -549,11 +549,14 @@
 
     /* ══════════════════════════════════════════
        VOICE OVERLAY (Comet-Stil)
+       Sitzt UEBER dem Chat, UNTER der Input-Bar.
+       Input-Bar wechselt zu Voice-Modus (X + Dots + Mic).
        ══════════════════════════════════════════ */
     .voice-overlay {
       position: fixed;
-      left: 0; right: 0; bottom: 0;
-      z-index: 100;
+      left: 0; right: 0;
+      bottom: 56px; /* Hoehe der Input-Bar */
+      z-index: 90;
       display: flex;
       flex-direction: column;
       background: linear-gradient(165deg, rgba(20,80,80,0.92) 0%, rgba(30,60,50,0.95) 50%, rgba(50,40,20,0.92) 100%);
@@ -563,20 +566,20 @@
       border-top-right-radius: 20px;
       box-shadow: 0 -4px 40px rgba(0,0,0,0.5);
       transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      padding-bottom: var(--safe-bottom);
       overflow: hidden;
+      touch-action: none; /* Fuer Swipe */
     }
 
     .voice-overlay.vo-hidden { display: none; }
 
-    /* Minimiert: nur Bottom-Bar (~70px) */
-    .voice-overlay.vo-minimized { height: 70px; }
+    /* Minimiert: nur Handle sichtbar (~20px) */
+    .voice-overlay.vo-minimized { height: 20px; }
 
-    /* Expanded: 60% vom Screen */
-    .voice-overlay.vo-expanded { height: 60vh; height: 60dvh; }
+    /* Expanded: 55% vom Screen */
+    .voice-overlay.vo-expanded { height: 55vh; height: 55dvh; }
 
     /* Fullscreen (hochgezogen) */
-    .voice-overlay.vo-full { height: 85vh; height: 85dvh; }
+    .voice-overlay.vo-full { height: 80vh; height: 80dvh; }
 
     /* Drag Handle */
     .vo-handle {
@@ -584,15 +587,14 @@
       height: 4px;
       background: rgba(255,255,255,0.3);
       border-radius: 2px;
-      margin: 10px auto 0;
+      margin: 8px auto 4px;
       flex-shrink: 0;
-      cursor: grab;
     }
 
     /* Karaoke Text Area */
     .vo-text {
       flex: 1;
-      padding: 20px 24px;
+      padding: 12px 24px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       font-size: 18px;
@@ -618,41 +620,24 @@
       color: rgba(255,255,255,0.0);
     }
 
-    /* Bottom Bar */
-    .vo-bar {
-      display: flex;
-      align-items: center;
+    /* Input-Bar Voice-Modus: X + Dots + Mic statt Textfeld */
+    .comp-input-bar.voice-mode {
       justify-content: space-between;
-      padding: 12px 20px;
-      flex-shrink: 0;
+      background: linear-gradient(165deg, rgba(20,70,70,0.95) 0%, rgba(30,55,45,0.97) 100%);
+      border-top: 1px solid rgba(100,210,200,0.15);
     }
 
-    .vo-bar-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: all 0.2s;
-    }
+    .comp-input-bar.voice-mode .comp-input-wrap,
+    .comp-input-bar.voice-mode #cameraBtn { display: none; }
 
-    .vo-bar-btn:active { transform: scale(0.9); }
-    .vo-bar-btn svg { width: 20px; height: 20px; }
-
-    /* Dots in der Bar (Comet-Stil: Grid aus kleinen Punkten) */
-    .vo-dots {
+    .vo-dots-inline {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      gap: 3px;
       justify-content: center;
       align-items: center;
-      width: 160px;
+      flex: 1;
+      max-width: 200px;
     }
 
     .vo-dot {
@@ -663,17 +648,17 @@
       transition: all 0.15s;
     }
 
-    .voice-overlay.vo-speaking .vo-dot {
+    .voice-active .vo-dot {
       animation: voDotPulse 1.5s ease-in-out infinite;
+    }
+
+    .voice-thinking .vo-dot {
+      animation: voDotWave 1.2s ease-in-out infinite;
     }
 
     .vo-dot:nth-child(3n) { animation-delay: 0.1s; }
     .vo-dot:nth-child(3n+1) { animation-delay: 0.25s; }
     .vo-dot:nth-child(3n+2) { animation-delay: 0.4s; }
-
-    .voice-overlay.vo-thinking .vo-dot {
-      animation: voDotWave 1.2s ease-in-out infinite;
-    }
 
     @keyframes voDotPulse {
       0%, 100% { opacity: 0.4; transform: scale(0.8); }
@@ -767,23 +752,10 @@
   <!-- Hidden Camera Input -->
   <input type="file" id="cameraInput" accept="image/*" capture="environment">
 
-  <!-- Voice Overlay (Comet-Stil) -->
+  <!-- Voice Overlay (Comet-Stil, ohne eigene Bar) -->
   <div class="voice-overlay vo-hidden" id="voiceOverlay">
     <div class="vo-handle" id="voHandle"></div>
     <div class="vo-text" id="voiceText"></div>
-    <div class="vo-bar">
-      <button class="vo-bar-btn" id="voCloseBtn" onclick="closeVoiceOverlay()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="vo-dots" id="voiceDots"></div>
-      <button class="vo-bar-btn" id="voMicBtn" onclick="toggleMic()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-      </button>
-    </div>
   </div>
 </div>
 
@@ -854,17 +826,20 @@
     // Voice Overlay
     voiceOverlay = document.getElementById('voiceOverlay');
     voiceText = document.getElementById('voiceText');
-    voiceDots = document.getElementById('voiceDots');
     voHandle = document.getElementById('voHandle');
 
-    // Dots generieren (5x6 Grid wie Comet)
-    for (var d = 0; d < 30; d++) {
+    // Dots-Container in der Input-Bar (wird bei Voice-Mode sichtbar)
+    voiceDots = document.createElement('div');
+    voiceDots.className = 'vo-dots-inline';
+    voiceDots.id = 'voDotsInline';
+    voiceDots.style.display = 'none';
+    for (var d = 0; d < 24; d++) {
       var dot = document.createElement('div');
       dot.className = 'vo-dot';
       voiceDots.appendChild(dot);
     }
 
-    // Swipe-Geste auf Handle
+    // Swipe-Geste auf ganzes Overlay
     initVoSwipe();
 
     // URL-Parameter auslesen (QR-Code Flow)
@@ -1427,10 +1402,43 @@
     if (state === 'minimized') {
       voiceOverlay.classList.add('vo-minimized');
     } else if (state === 'thinking') {
-      voiceOverlay.classList.add('vo-expanded', 'vo-thinking');
+      voiceOverlay.classList.add('vo-expanded');
     } else if (state === 'speaking') {
-      voiceOverlay.classList.add('vo-expanded', 'vo-speaking');
+      voiceOverlay.classList.add('vo-expanded');
     }
+    // Input-Bar in Voice-Modus schalten
+    enterVoiceBar(state);
+  }
+
+  function enterVoiceBar(state) {
+    inputBar.classList.add('voice-mode');
+    // Dots einfuegen (zwischen Kamera-Btn-Slot und Mic)
+    if (!voiceDots.parentNode || voiceDots.parentNode !== inputBar) {
+      // X-Button vor den Dots
+      var closeBtn = document.getElementById('voCloseInline');
+      if (!closeBtn) {
+        closeBtn = document.createElement('button');
+        closeBtn.id = 'voCloseInline';
+        closeBtn.className = 'comp-btn';
+        closeBtn.onclick = function() { closeVoiceOverlay(); };
+        closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      }
+      inputBar.insertBefore(closeBtn, inputBar.firstChild);
+      // Dots nach dem X
+      inputBar.insertBefore(voiceDots, closeBtn.nextSibling);
+    }
+    voiceDots.style.display = 'flex';
+    // Dots-Animation je nach State
+    voiceDots.className = 'vo-dots-inline';
+    if (state === 'thinking') voiceDots.classList.add('voice-thinking');
+    else if (state === 'speaking') voiceDots.classList.add('voice-active');
+  }
+
+  function exitVoiceBar() {
+    inputBar.classList.remove('voice-mode');
+    voiceDots.style.display = 'none';
+    var closeBtn = document.getElementById('voCloseInline');
+    if (closeBtn && closeBtn.parentNode) closeBtn.parentNode.removeChild(closeBtn);
   }
 
   window.closeVoiceOverlay = function() {
@@ -1441,6 +1449,7 @@
     voWords = [];
     voCurrentWordIdx = 0;
     voActive = false;
+    exitVoiceBar();
   };
 
   // Karaoke: Text als Wort-Spans rendern (alles hidden/upcoming)
@@ -1539,18 +1548,27 @@
       voWords = [];
       voCurrentWordIdx = 0;
       voActive = false;
+      exitVoiceBar();
     }, 600);
   }
 
   // Swipe-Geste fuer Overlay
   function initVoSwipe() {
     var isDragging = false;
+    var startScrollTop = 0;
 
     function onStart(e) {
       if (!voActive) return;
+      // Nur starten wenn oben im Text oder auf dem Handle
+      var touch = e.touches ? e.touches[0] : e;
+      var isHandle = e.target === voHandle || e.target.parentNode === voHandle;
+      var isTextTop = (voiceText.scrollTop <= 5);
+
+      if (!isHandle && !isTextTop) return; // Nicht draggen wenn Text gescrollt
       isDragging = true;
-      voDragStartY = e.touches ? e.touches[0].clientY : e.clientY;
+      voDragStartY = touch.clientY;
       voDragStartH = voiceOverlay.offsetHeight;
+      startScrollTop = voiceText.scrollTop;
       voiceOverlay.style.transition = 'none';
     }
 
@@ -1558,8 +1576,9 @@
       if (!isDragging) return;
       var y = e.touches ? e.touches[0].clientY : e.clientY;
       var diff = voDragStartY - y; // positiv = hochziehen
-      var newH = Math.max(70, Math.min(window.innerHeight * 0.9, voDragStartH + diff));
+      var newH = Math.max(20, Math.min(window.innerHeight * 0.85, voDragStartH + diff));
       voiceOverlay.style.height = newH + 'px';
+      if (e.cancelable) e.preventDefault();
     }
 
     function onEnd() {
@@ -1568,23 +1587,22 @@
       voiceOverlay.style.transition = '';
       var h = voiceOverlay.offsetHeight;
       var vh = window.innerHeight;
-      // Snap-Logik
-      if (h < vh * 0.2) {
-        voiceOverlay.className = voiceOverlay.className.replace(/vo-(expanded|full|minimized)/g, '').trim() + ' vo-minimized';
-      } else if (h > vh * 0.7) {
-        voiceOverlay.className = voiceOverlay.className.replace(/vo-(expanded|full|minimized)/g, '').trim() + ' vo-full';
+      // Snap: <15% = minimiert, >65% = full, sonst expanded
+      var cls = voiceOverlay.className.replace(/vo-(expanded|full|minimized)/g, '').trim();
+      if (h < vh * 0.15) {
+        voiceOverlay.className = cls + ' vo-minimized';
+      } else if (h > vh * 0.65) {
+        voiceOverlay.className = cls + ' vo-full';
       } else {
-        voiceOverlay.className = voiceOverlay.className.replace(/vo-(expanded|full|minimized)/g, '').trim() + ' vo-expanded';
+        voiceOverlay.className = cls + ' vo-expanded';
       }
       voiceOverlay.style.height = '';
     }
 
-    voHandle.addEventListener('touchstart', onStart, { passive: true });
-    document.addEventListener('touchmove', onMove, { passive: true });
-    document.addEventListener('touchend', onEnd);
-    voHandle.addEventListener('mousedown', onStart);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onEnd);
+    // Touch auf gesamtes Overlay (Handle + Text)
+    voiceOverlay.addEventListener('touchstart', onStart, { passive: false });
+    voiceOverlay.addEventListener('touchmove', onMove, { passive: false });
+    voiceOverlay.addEventListener('touchend', onEnd);
   }
 
   /* ══════════════════════════════════════════
