@@ -539,7 +539,7 @@
           }
         } catch(e) {}
         fetch(url, {
-          method: 'PUT',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify(payload)
         }).catch(function() { /* Stiller Fehler – Sync ist optional */ });

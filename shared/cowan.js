@@ -322,7 +322,7 @@
       },
     };
     fetch(syncUrl + '/cowan-events.json', {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + syncToken },
       body: JSON.stringify(payload),
     }).then(function(res) {
@@ -1257,7 +1257,7 @@
       debugEl.textContent = 'Companion init | syncUrl=' + syncUrl + ' | token=' + syncToken.substring(0,8) + '...';
       /* Test-Fetch mit sichtbarem Ergebnis */
       fetch(syncUrl + '/cowan-events.json', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + syncToken },
         body: JSON.stringify({ lastUpdate: new Date().toISOString(), device: 'companion', event: { type: 'companion-debug' }, context: {} })
       }).then(function(r) {
