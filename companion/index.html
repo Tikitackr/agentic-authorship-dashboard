@@ -559,7 +559,7 @@
       z-index: 90;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(165deg, rgba(20,80,80,0.92) 0%, rgba(30,60,50,0.95) 50%, rgba(50,40,20,0.92) 100%);
+      background: linear-gradient(165deg, rgba(25,15,5,0.95) 0%, rgba(35,20,8,0.95) 50%, rgba(20,12,5,0.92) 100%);
       backdrop-filter: blur(40px) saturate(200%);
       -webkit-backdrop-filter: blur(40px) saturate(200%);
       border-top-left-radius: 20px;
@@ -603,17 +603,18 @@
     }
 
     .vo-text .vo-word {
-      color: rgba(255,255,255,0.4);
-      transition: color 0.15s;
+      color: rgba(255,255,255,0.3);
+      transition: color 0.2s, text-shadow 0.2s;
     }
 
     .vo-text .vo-word.spoken {
-      color: rgba(255,255,255,0.5);
+      color: rgba(217,170,120,0.5);
     }
 
     .vo-text .vo-word.current {
-      color: #fff;
+      color: #fbbf24;
       font-weight: 500;
+      text-shadow: 0 0 8px rgba(251,191,36,0.4);
     }
 
     .vo-text .vo-word.upcoming {
@@ -623,8 +624,8 @@
     /* Input-Bar Voice-Modus: X + Dots + Mic statt Textfeld */
     .comp-input-bar.voice-mode {
       justify-content: space-between;
-      background: linear-gradient(165deg, rgba(20,70,70,0.95) 0%, rgba(30,55,45,0.97) 100%);
-      border-top: 1px solid rgba(100,210,200,0.15);
+      background: linear-gradient(165deg, rgba(25,15,5,0.97) 0%, rgba(35,20,8,0.97) 100%);
+      border-top: 1px solid rgba(217,119,6,0.2);
     }
 
     .comp-input-bar.voice-mode .comp-input-wrap,
@@ -644,30 +645,60 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: rgba(100,210,200,0.5);
+      background: rgba(217,119,6,0.4);
       transition: all 0.15s;
     }
 
-    .voice-active .vo-dot {
-      animation: voDotPulse 1.5s ease-in-out infinite;
+    /* Punkt 6: Unregelmaessiges Glimmen – jeder Dot hat eigene Dauer+Delay */
+    .voice-active .vo-dot { animation: voGlimA 2.1s ease-in-out infinite; }
+    .voice-active .vo-dot:nth-child(2) { animation: voGlimB 1.7s ease-in-out infinite 0.3s; }
+    .voice-active .vo-dot:nth-child(3) { animation: voGlimC 2.5s ease-in-out infinite 0.1s; }
+    .voice-active .vo-dot:nth-child(4) { animation: voGlimA 1.9s ease-in-out infinite 0.6s; }
+    .voice-active .vo-dot:nth-child(5) { animation: voGlimB 2.3s ease-in-out infinite 0.15s; }
+    .voice-active .vo-dot:nth-child(6) { animation: voGlimC 1.6s ease-in-out infinite 0.45s; }
+    .voice-active .vo-dot:nth-child(7) { animation: voGlimA 2.7s ease-in-out infinite 0.2s; }
+    .voice-active .vo-dot:nth-child(8) { animation: voGlimB 1.8s ease-in-out infinite 0.55s; }
+    .voice-active .vo-dot:nth-child(9) { animation: voGlimC 2.0s ease-in-out infinite 0.35s; }
+    .voice-active .vo-dot:nth-child(10) { animation: voGlimA 1.5s ease-in-out infinite 0.7s; }
+    .voice-active .vo-dot:nth-child(11) { animation: voGlimB 2.4s ease-in-out infinite 0.05s; }
+    .voice-active .vo-dot:nth-child(12) { animation: voGlimC 1.7s ease-in-out infinite 0.5s; }
+    .voice-active .vo-dot:nth-child(3n+13) { animation: voGlimA 2.2s ease-in-out infinite 0.25s; }
+    .voice-active .vo-dot:nth-child(3n+14) { animation: voGlimB 1.9s ease-in-out infinite 0.4s; }
+    .voice-active .vo-dot:nth-child(3n+15) { animation: voGlimC 2.6s ease-in-out infinite 0.1s; }
+
+    .voice-thinking .vo-dot { animation: voThinkA 1.8s ease-in-out infinite; }
+    .voice-thinking .vo-dot:nth-child(2) { animation: voThinkB 2.2s ease-in-out infinite 0.2s; }
+    .voice-thinking .vo-dot:nth-child(3) { animation: voThinkA 1.5s ease-in-out infinite 0.5s; }
+    .voice-thinking .vo-dot:nth-child(3n+1) { animation: voThinkB 2.0s ease-in-out infinite 0.35s; }
+    .voice-thinking .vo-dot:nth-child(3n+2) { animation: voThinkA 1.7s ease-in-out infinite 0.6s; }
+
+    @keyframes voGlimA {
+      0%, 100% { opacity: 0.15; transform: scale(0.7); }
+      35% { opacity: 1; transform: scale(1.3); background: rgba(245,158,11,0.95); }
+      65% { opacity: 0.5; transform: scale(0.9); }
     }
 
-    .voice-thinking .vo-dot {
-      animation: voDotWave 1.2s ease-in-out infinite;
+    @keyframes voGlimB {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      25% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); background: rgba(217,119,6,0.9); }
+      80% { opacity: 0.3; transform: scale(0.75); }
     }
 
-    .vo-dot:nth-child(3n) { animation-delay: 0.1s; }
-    .vo-dot:nth-child(3n+1) { animation-delay: 0.25s; }
-    .vo-dot:nth-child(3n+2) { animation-delay: 0.4s; }
-
-    @keyframes voDotPulse {
-      0%, 100% { opacity: 0.4; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); background: rgba(100,220,210,0.9); }
+    @keyframes voGlimC {
+      0%, 100% { opacity: 0.1; transform: scale(0.75); }
+      40% { opacity: 0.9; transform: scale(1.15); background: rgba(251,191,36,0.85); }
+      70% { opacity: 0.6; transform: scale(1.0); }
     }
 
-    @keyframes voDotWave {
-      0%, 100% { opacity: 0.3; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-3px); }
+    @keyframes voThinkA {
+      0%, 100% { opacity: 0.2; transform: translateY(0) scale(0.8); }
+      50% { opacity: 0.8; transform: translateY(-3px) scale(1.1); background: rgba(217,119,6,0.7); }
+    }
+
+    @keyframes voThinkB {
+      0%, 100% { opacity: 0.15; transform: translateY(0) scale(0.75); }
+      40% { opacity: 0.9; transform: translateY(-4px) scale(1.15); background: rgba(245,158,11,0.8); }
     }
   </style>
 </head>
@@ -792,6 +823,10 @@
   var voKaraokeTimer = null;   // Timer fuer Wort-Highlight
   var voDragStartY = 0;
   var voDragStartH = 0;
+
+  // Stream-Abort (Punkt 1+2: Tap-to-Stop + X stoppt alles)
+  var currentAbortController = null;
+  var currentStreamBuffer = '';  // Referenz auf laufenden Stream-Text
 
   // Sync
   var syncUrl = '';
@@ -979,6 +1014,7 @@
       showVoiceOverlay('thinking');
       isLoading = true;
       var streamBuffer = '';
+      currentStreamBuffer = '';  // Globale Referenz fuer Tap-to-Stop
       var streamStarted = false;
       var sentenceScanned = 0;
       var sentenceQueue = [];
@@ -991,6 +1027,7 @@
           showVoiceOverlay('speaking');
         }
         streamBuffer += delta;
+        currentStreamBuffer = streamBuffer;  // Global tracken
         // Karaoke-Text aktualisieren (alle Woerter neu setzen)
         voSetText(streamBuffer);
         voDetectSentences();
@@ -1011,11 +1048,9 @@
       }).catch(function(err) {
         streamDone = true;
         isLoading = false;
+        // Bei Abort (Tap-to-Stop/X) wurde bereits in closeVoiceOverlay transferiert
+        if (err.name === 'AbortError') return;
         closeVoiceOverlay();
-        if (streamBuffer) {
-          messages.push({ role: 'assistant', text: streamBuffer });
-          renderAssistantBubble(streamBuffer);
-        }
         renderSystemMsg('Fehler: ' + (err.message || 'Unbekannter Fehler'));
         scrollToBottom();
       });
@@ -1163,7 +1198,12 @@
     ttsQueue = [];
     ttsPlaying = false;
 
+    // AbortController fuer Stream-Abbruch (Tap-to-Stop, X-Button)
+    currentAbortController = new AbortController();
+    var signal = currentAbortController.signal;
+
     return fetch('https://api.anthropic.com/v1/messages', {
+      signal: signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1173,7 +1213,7 @@
       },
       body: JSON.stringify({
         model: selectedModel,
-        max_tokens: 1024,
+        max_tokens: 200,
         stream: true,
         system: systemPrompt,
         messages: apiMessages
@@ -1245,25 +1285,41 @@
 
   function buildSystemPrompt() {
     var parts = [
-      'Du bist Cowan, der freundliche KI-Begleiter zum OpenClaw-Buch.',
-      'Du hilfst dem Leser bei Fragen rund ums Buch: Installation, Docker, Agent-Konfiguration, Troubleshooting, und allem was im Buch behandelt wird.',
-      'Antworte kurz und praezise (max 3-4 Absaetze). Verwende Du-Form.',
-      'Verwende NIEMALS Emojis – deine Antworten werden vorgelesen.',
-      'Wenn der Leser ein Foto einer Buchseite schickt, erkenne das Kapitel und die Stelle und hilf gezielt weiter.',
-      'Wenn du eine Frage nicht beantworten kannst, sag das ehrlich.'
+      'Du bist Cowan, ein gespraechiger Begleiter zum OpenClaw-Buch. Du sprichst wie ein kompetenter Kumpel, nicht wie ein Lehrbuch.',
+      '',
+      'WICHTIGSTE REGELN:',
+      '- Antworte in 1-3 kurzen Saetzen. Das ist ein Gespraech, kein Vortrag.',
+      '- Verwende Du-Form. Keine Emojis (Antworten werden vorgelesen).',
+      '- Wenn die Frage klar ist: Direkt antworten, nicht nachfragen.',
+      '- Wenn die Frage vage ist: EINE Rueckfrage stellen, dann antworten.',
+      '- NIEMALS Wissen ungefragt runterbeten. Nur das beantworten was gefragt wurde.',
+      '',
+      'BEI FOTOS:',
+      '- Erkenne was auf dem Foto zu sehen ist (Buchseite, Code, Terminal, etc.).',
+      '- Frag ZUERST: "Ich sehe [Seite/Kapitel]. Welchen Punkt moechtest du besprechen?"',
+      '- Analysiere NICHT die ganze Seite. Warte auf die konkrete Frage.',
+      '',
+      'ANGEBOTE:',
+      '- Du darfst gelegentlich etwas anbieten ("Soll ich dir den Befehl zeigen?" oder "Das steht auch im Dashboard").',
+      '- Aber nicht bei jeder Antwort. Nur wenn es wirklich passt.'
     ];
 
     // Kapitel-Kontext
     if (currentChapter) {
-      parts.push('Der Leser ist gerade bei: ' + currentChapter + '. Beziehe dich darauf wenn es passt.');
+      parts.push('');
+      parts.push('Der Leser ist gerade bei: ' + currentChapter + '.');
     }
 
-    // Relevante Chunks einbinden
+    // Relevante Chunks als Hintergrundwissen (nicht zum Zitieren!)
     var relevantChunks = getRelevantChunks();
     if (relevantChunks.length > 0) {
-      parts.push('\n--- Wissensbasis ---');
-      for (var i = 0; i < relevantChunks.length; i++) {
-        parts.push('\n### ' + relevantChunks[i].title + '\n' + relevantChunks[i].content);
+      parts.push('');
+      parts.push('--- Hintergrundwissen (NICHT zitieren, nur bei Bedarf nutzen) ---');
+      for (var i = 0; i < Math.min(relevantChunks.length, 5); i++) {
+        // Nur Titel + gekuerzte Inhalte, nicht den Volltext
+        var content = relevantChunks[i].content || '';
+        if (content.length > 300) content = content.slice(0, 300) + '...';
+        parts.push('\n### ' + relevantChunks[i].title + '\n' + content);
       }
     }
 
@@ -1442,14 +1498,31 @@
   }
 
   window.closeVoiceOverlay = function() {
+    // Stream abbrechen (Punkt 2: X stoppt ALLES)
+    if (currentAbortController) {
+      try { currentAbortController.abort(); } catch(e) {}
+      currentAbortController = null;
+    }
     stopSpeaking();
     if (voKaraokeTimer) { clearInterval(voKaraokeTimer); voKaraokeTimer = null; }
+
+    // Punkt 3: Bisherigen Text in Chat uebertragen (erst Overlay weg, dann Bubble)
+    var textToTransfer = currentStreamBuffer;
     voiceOverlay.className = 'voice-overlay vo-hidden';
     voiceText.innerHTML = '';
     voWords = [];
     voCurrentWordIdx = 0;
     voActive = false;
+    isLoading = false;
     exitVoiceBar();
+
+    // Nur wenn Text vorhanden, als Chat-Bubble rendern
+    if (textToTransfer && textToTransfer.trim()) {
+      messages.push({ role: 'assistant', text: textToTransfer });
+      renderAssistantBubble(textToTransfer);
+      scrollToBottom();
+    }
+    currentStreamBuffer = '';
   };
 
   // Karaoke: Text als Wort-Spans rendern (alles hidden/upcoming)
@@ -1531,36 +1604,48 @@
     }, delay);
   }
 
-  // Voice-Overlay -> Chat Transfer
+  // Voice-Overlay -> Chat Transfer (Punkt 3: Erst Overlay weg, dann Bubble)
   function voTransferToChat(fullText) {
+    if (!voActive) return; // Bereits geschlossen (z.B. durch Tap-to-Stop)
     // Alle Woerter als "spoken" zeigen
     for (var i = 0; i < voWords.length; i++) {
       if (voWords[i].classList && voWords[i].classList.contains('vo-word')) {
         voWords[i].className = 'vo-word spoken';
       }
     }
-    // Kurz warten, dann ins Chat uebertragen + Overlay schliessen
+    // Kurz warten, dann Overlay schliessen und DANACH Chat-Bubble rendern
     setTimeout(function() {
-      renderAssistantBubble(fullText);
-      scrollToBottom();
       voiceOverlay.className = 'voice-overlay vo-hidden';
       voiceText.innerHTML = '';
       voWords = [];
       voCurrentWordIdx = 0;
       voActive = false;
+      currentStreamBuffer = '';
       exitVoiceBar();
+      // Erst NACH Overlay-Schluss die Bubble rendern
+      renderAssistantBubble(fullText);
+      scrollToBottom();
     }, 600);
   }
 
-  // Swipe-Geste fuer Overlay
+  // Swipe-Geste fuer Overlay + Tap-to-Stop (Punkt 1)
   function initVoSwipe() {
     var isDragging = false;
     var startScrollTop = 0;
+    var tapStartTime = 0;
+    var tapStartX = 0;
+    var tapStartY = 0;
 
     function onStart(e) {
       if (!voActive) return;
-      // Nur starten wenn oben im Text oder auf dem Handle
       var touch = e.touches ? e.touches[0] : e;
+
+      // Tap-Tracking starten
+      tapStartTime = Date.now();
+      tapStartX = touch.clientX;
+      tapStartY = touch.clientY;
+
+      // Nur starten wenn oben im Text oder auf dem Handle
       var isHandle = e.target === voHandle || e.target.parentNode === voHandle;
       var isTextTop = (voiceText.scrollTop <= 5);
 
@@ -1581,7 +1666,20 @@
       if (e.cancelable) e.preventDefault();
     }
 
-    function onEnd() {
+    function onEnd(e) {
+      // Punkt 1: Tap-to-Stop erkennen (< 300ms, < 15px Bewegung)
+      if (voActive && tapStartTime) {
+        var elapsed = Date.now() - tapStartTime;
+        var endTouch = (e.changedTouches && e.changedTouches[0]) || e;
+        var dx = Math.abs(endTouch.clientX - tapStartX);
+        var dy = Math.abs(endTouch.clientY - tapStartY);
+        if (elapsed < 300 && dx < 15 && dy < 15) {
+          // Tap erkannt → Overlay schliessen (stoppt alles + transferiert Text)
+          isDragging = false;
+          closeVoiceOverlay();
+          return;
+        }
+      }
       if (!isDragging) return;
       isDragging = false;
       voiceOverlay.style.transition = '';
@@ -1717,10 +1815,10 @@
       imagePreview.classList.add('visible');
       onInputChange();
 
-      // Auto-Prompt wenn kein Text
+      // Kein Auto-Prompt mehr – Nutzer entscheidet was er fragen will
       if (!msgInput.value.trim()) {
-        msgInput.value = 'Was siehst du auf diesem Foto?';
-        msgInput.dispatchEvent(new Event('input'));
+        msgInput.placeholder = 'Was willst du zu diesem Foto wissen?';
+        onInputChange();
       }
     };
     reader.readAsDataURL(file);
