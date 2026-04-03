@@ -798,6 +798,9 @@
     if (!text && !pendingImage) return;
     if (isLoading) return;
 
+    // Audio entsperren bei jeder User-Geste (iOS Safari Autoplay-Policy)
+    if (ttsEnabled) unlockAudio();
+
     // Welcome ausblenden
     if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
 
@@ -1032,10 +1035,28 @@
   /* ══════════════════════════════════════════
      TTS (Text-to-Speech ueber VPS)
      ══════════════════════════════════════════ */
+  // AudioContext fuer iOS Safari Autoplay-Unlock
+  var audioUnlocked = false;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    try {
+      // AudioContext erstellen und resumieren – entsperrt Audio auf iOS Safari
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      ctx.resume().then(function() { audioUnlocked = true; });
+      // Zusaetzlich: stilles Audio abspielen (Doppelt-haelt-besser)
+      var silent = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwBRAAAAAAAAAAAAAAAAAAAA//tQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQZB8P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==');
+      silent.play().then(function() { audioUnlocked = true; }).catch(function() {});
+    } catch(e) {}
+  }
+
   window.toggleTts = function() {
     ttsEnabled = !ttsEnabled;
     localStorage.setItem('companion-tts', ttsEnabled ? 'true' : 'false');
     ttsToggle.classList.toggle('active', ttsEnabled);
+
+    // Audio entsperren beim ersten Aktivieren (iOS Safari braucht User-Geste)
+    if (ttsEnabled) unlockAudio();
 
     // Wenn ausgeschaltet: laufende Wiedergabe stoppen
     if (!ttsEnabled) stopSpeaking();
@@ -1091,16 +1112,17 @@
         ttsAudio = null;
       };
 
-      ttsAudio.play().catch(function() {
-        // Autoplay blockiert (erste Interaktion noetig)
+      ttsAudio.play().catch(function(playErr) {
         isSpeaking = false;
         removeDots(speakDots);
         URL.revokeObjectURL(url);
         ttsAudio = null;
+        renderSystemMsg('[TTS] Autoplay blockiert: ' + playErr.message);
       });
     }).catch(function(err) {
       isSpeaking = false;
       removeDots(speakDots);
+      renderSystemMsg('[TTS] ' + err.message);
       // TTS-Fehler leise ignorieren – Chat funktioniert weiter
     });
   }
