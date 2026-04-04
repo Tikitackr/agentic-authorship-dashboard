@@ -1054,6 +1054,7 @@
   <!-- Voice Overlay (Comet-Stil, ohne eigene Bar) -->
   <div class="voice-overlay vo-hidden" id="voiceOverlay">
     <div class="vo-handle" id="voHandle"></div>
+    <div id="voDebugBadge" style="display:none; text-align:center; font-size:11px; color:rgba(251,191,36,0.6); padding:2px 0 4px; letter-spacing:0.5px;"></div>
     <div class="vo-text" id="voiceText"></div>
   </div>
 </div>
@@ -2878,6 +2879,9 @@
       // Adaptives Timing: OpenAI spricht laengere Texte schneller
       var msPerWord = rtAdaptiveMsPerWord(totalVoWords);
       console.log('[Karaoke] ' + totalVoWords + ' Woerter → ' + msPerWord + 'ms/Wort (' + Math.round(60000/msPerWord) + ' WPM)');
+      // Debug-Badge im Overlay anzeigen
+      var dbg = document.getElementById('voDebugBadge');
+      if (dbg) { dbg.textContent = totalVoWords + ' Wörter · ' + msPerWord + 'ms · ' + Math.round(60000/msPerWord) + ' WPM'; dbg.style.display = 'block'; }
       voStartKaraoke(0, totalVoWords, totalVoWords * msPerWord, null);
     }
 
