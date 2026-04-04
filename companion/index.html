@@ -2525,7 +2525,8 @@
             modalities: ['text', 'audio'],
             voice: 'echo',
             instructions: 'Du bist Cowan, ein freundlicher Vorleser. Wenn dir Text gegeben wird, lies ihn natuerlich und ausdruecklich auf Deutsch vor. Aendere den Inhalt NICHT – lies ihn genau so vor wie er geschrieben ist. Sprich natuerlich und lebendig, nicht monoton. Du MUSST immer auf Deutsch sprechen. Niemals auf Englisch.',
-            turn_detection: { type: 'server_vad' }  // Mic ist stummgeschaltet → VAD hoert nichts, antwortet nicht
+            input_audio_transcription: { model: 'whisper-1' },
+            turn_detection: { type: 'server_vad' }
           }
         }));
       }
