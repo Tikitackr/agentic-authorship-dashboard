@@ -2532,6 +2532,8 @@
 
       rtDataChannel.onopen = function() {
         console.log('[Hybrid] DataChannel offen');
+        voSetText('Verbinde Stimme... (DataChannel offen)');
+        voRevealUpTo(999);
       };
 
       rtDataChannel.onmessage = function(event) {
@@ -2540,6 +2542,8 @@
           console.log('[Hybrid] Event:', msg.type);
           if (msg.type === 'session.created') {
             console.log('[Hybrid] session.created – konfiguriere Vorleser');
+            voSetText('Verbinde Stimme... (Konfiguriere...)');
+            voRevealUpTo(999);
             sendRealtimeConfig();
           } else if (msg.type === 'session.updated') {
             console.log('[Hybrid] Session konfiguriert (Vorleser-Modus aktiv)');
@@ -2557,6 +2561,8 @@
             rtProcessNextSentence();
           } else if (msg.type === 'error') {
             console.error('[Hybrid] Server-Event Fehler:', JSON.stringify(msg.error));
+            voSetText('Fehler: ' + (msg.error && msg.error.message ? msg.error.message : JSON.stringify(msg.error)));
+            voRevealUpTo(999);
             rtSpeaking = false;
             rtProcessNextSentence();
           }
@@ -2590,6 +2596,8 @@
         console.log('[Hybrid] Connection:', realtimePc.connectionState);
         if (realtimePc.connectionState === 'connected') {
           console.log('[Hybrid] WebRTC verbunden – warte auf session.updated');
+          voSetText('Verbinde Stimme... (WebRTC verbunden)');
+          voRevealUpTo(999);
         } else if (realtimePc.connectionState === 'failed' || realtimePc.connectionState === 'disconnected') {
           if (realtimeReconnects < 3 && realtimeActive) {
             realtimeReconnects++;
