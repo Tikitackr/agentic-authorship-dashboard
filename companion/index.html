@@ -1123,7 +1123,7 @@
           </div>
           <div class="vo-info">
             <div class="vo-name">OpenAI Realtime</div>
-            <div class="vo-desc">Echtzeit-Gespraech ueber Mikrofon, VPS noetig</div>
+            <div class="vo-desc">Claude denkt, Cowan spricht (Hybrid Voice)</div>
           </div>
           <span class="vo-status vo-status-off" id="voStatusOpenai">Pruefen...</span>
         </div>
@@ -1180,15 +1180,19 @@
   var ttsQueue = [];     // Satz-Queue fuer satzweises Vorlesen
   var ttsPlaying = false; // Laeuft gerade ein TTS-Satz?
 
-  // Realtime Voice (OpenAI WebRTC)
+  // Realtime Voice (OpenAI WebRTC – Hybrid: Claude denkt, OpenAI spricht)
   var realtimeUrl = '';       // wird aus syncUrl abgeleitet: hostname:10000
   var realtimeEnabled = false;
   var realtimePc = null;      // RTCPeerConnection
-  var realtimeStream = null;  // MediaStream (Mikrofon)
-  var realtimeActive = false;
+  var realtimeStream = null;  // MediaStream (Mikrofon, stummgeschaltet)
+  var realtimeActive = false; // WebRTC-Verbindung steht
+  var realtimeReady = false;  // session.created + session.updated empfangen
   var realtimeReconnects = 0;
   var realtimeTimerInterval = null;
   var realtimeStartTime = 0;
+  var rtDataChannel = null;   // Globale Referenz fuer realtimeSpeak()
+  var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
+  var rtSpeaking = false;     // Gerade am Vorlesen?
 
   // Voice Overlay (Comet-Stil)
   var voiceOverlay, voiceText, voiceDots, voHandle;
@@ -1398,10 +1402,58 @@
     onInputChange();
     removeImage();
 
-    var useTts = ttsEnabled && ttsUrl && syncToken;
+    var useHybrid = realtimeEnabled && realtimeActive && realtimeReady;
+    var useTts = !useHybrid && ttsEnabled && ttsUrl && syncToken;
 
-    if (useTts) {
-      // ═══ VOICE OVERLAY MODUS (Comet-Stil) ═══
+    if (useHybrid) {
+      // ═══ HYBRID MODUS (Claude denkt, OpenAI spricht) ═══
+      showVoiceOverlay('thinking');
+      voSetText('Denkt nach...');
+      voRevealUpTo(999);
+      isLoading = true;
+      var streamBuffer = '';
+      currentStreamBuffer = '';
+
+      callClaudeStream(text, userMsg.image, function onChunk(delta) {
+        streamBuffer += delta;
+        currentStreamBuffer = streamBuffer;
+        // Karaoke-Text live aktualisieren
+        voSetText(streamBuffer);
+        voRevealUpTo(999);
+      }).then(function() {
+        isLoading = false;
+        if (!streamBuffer.trim()) {
+          closeVoiceOverlay();
+          renderSystemMsg('Leere Antwort von Claude');
+          return;
+        }
+        // Claude ist fertig → Text an OpenAI zum Vorlesen
+        showVoiceOverlay('speaking');
+        voSetText(streamBuffer);
+        voRevealUpTo(0); // Zuruecksetzen fuer Karaoke
+
+        var spoke = realtimeSpeak(streamBuffer, function() {
+          // Vorlesen fertig → in Chat uebertragen
+          messages.push({ role: 'assistant', text: streamBuffer });
+          voTransferToChat(streamBuffer);
+        });
+
+        if (!spoke) {
+          // Fallback: Realtime nicht bereit → als Chat-Bubble rendern
+          console.warn('[Hybrid] Fallback – Realtime nicht bereit');
+          messages.push({ role: 'assistant', text: streamBuffer });
+          voTransferToChat(streamBuffer);
+        }
+      }).catch(function(err) {
+        isLoading = false;
+        if (err.name === 'AbortError') return;
+        closeVoiceOverlay();
+        renderSystemMsg('Fehler: ' + (err.message || 'Unbekannter Fehler'));
+        scrollToBottom();
+      });
+
+    } else if (useTts) {
+      // ═══ VOICE OVERLAY MODUS (Comet-Stil, Edge TTS) ═══
       showVoiceOverlay('thinking');
       isLoading = true;
       var streamBuffer = '';
@@ -1902,6 +1954,10 @@
     // Realtime-Session beenden wenn aktiv
     if (realtimeActive) {
       realtimeActive = false;
+      realtimeReady = false;
+      rtSpeakQueue = [];
+      rtSpeaking = false;
+      rtDataChannel = null;
       stopRealtimeTimer();
       if (realtimeStream) {
         realtimeStream.getTracks().forEach(function(t) { t.stop(); });
@@ -1912,6 +1968,7 @@
         realtimePc = null;
       }
       micBtn.classList.remove('recording');
+      micBtn.classList.remove('mic-realtime');
     }
     // Stream abbrechen (Punkt 2: X stoppt ALLES)
     if (currentAbortController) {
@@ -2252,12 +2309,19 @@
      WEB SPEECH API (Mikrofon)
      ══════════════════════════════════════════ */
   window.toggleMic = function() {
-    // Realtime-Modus: Mic startet/stoppt WebRTC-Session
+    // Hybrid-Modus: Realtime-Verbindung steht im Hintergrund
+    // Mic nutzt Web Speech API (transkribiert), dann Claude, dann realtimeSpeak()
     if (realtimeEnabled) {
-      if (realtimeActive) {
-        stopRealtimeSession();
-      } else {
+      // Erste Benutzung: Realtime-Session aufbauen
+      if (!realtimeActive) {
         startRealtimeSession();
+        return;
+      }
+      // Session aktiv: Web Speech API fuer Transkription
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startHybridRecording();
       }
       return;
     }
@@ -2268,6 +2332,60 @@
       startRecording();
     }
   };
+
+  // Hybrid-Recording: Web Speech API → Claude → realtimeSpeak()
+  function startHybridRecording() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      renderSystemMsg('Spracheingabe wird von deinem Browser nicht unterstuetzt.');
+      return;
+    }
+
+    var speechSent = false;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'de-DE';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = function() {
+      isRecording = true;
+      speechSent = false;
+      micBtn.classList.add('recording');
+      showListeningDots();
+    };
+
+    recognition.onresult = function(e) {
+      if (speechSent) return;
+      var transcript = '';
+      for (var i = 0; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      msgInput.value = transcript;
+      msgInput.dispatchEvent(new Event('input'));
+    };
+
+    recognition.onend = function() {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      hideListeningDots();
+      // Auto-senden wenn Text vorhanden → geht durch sendMessage() mit Hybrid-Branch
+      if (!speechSent && msgInput.value.trim()) {
+        speechSent = true;
+        sendMessage();
+      }
+    };
+
+    recognition.onerror = function(e) {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      hideListeningDots();
+      if (e.error !== 'no-speech' && e.error !== 'aborted') {
+        renderSystemMsg('Mikrofon-Fehler: ' + e.error);
+      }
+    };
+
+    recognition.start();
+  }
 
   function startRecording() {
     var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2341,9 +2459,10 @@
   }
 
   /* ══════════════════════════════════════════
-     REALTIME VOICE (OpenAI WebRTC via SDP-Proxy)
-     Audio fliesst direkt iPhone ↔ OpenAI.
-     VPS vermittelt nur den Handshake (1x POST).
+     REALTIME VOICE – HYBRID (Claude denkt, OpenAI spricht)
+     WebRTC-Verbindung bleibt im Hintergrund offen.
+     Mic-Audio geht NICHT an OpenAI (stummgeschaltet).
+     Claude liefert Text → realtimeSpeak() → OpenAI liest vor.
      ══════════════════════════════════════════ */
   function startRealtimeSession() {
     if (realtimeActive) return;
@@ -2356,21 +2475,28 @@
     if (welcomeMsg) { welcomeMsg.remove(); welcomeMsg = null; }
 
     realtimeActive = true;
+    realtimeReady = false;
     realtimeReconnects = 0;
-    micBtn.classList.add('recording');
+    rtSpeakQueue = [];
+    rtSpeaking = false;
 
     // Voice-Overlay: "Verbinde..."
     showVoiceOverlay('thinking');
-    voSetText('Verbinde mit OpenAI...');
+    voSetText('Verbinde Stimme...');
     voRevealUpTo(999);
 
     // iOS Safari: AudioContext muss nach User-Gesture resumed werden
     var ctx = getAudioCtx();
     if (ctx.state === 'suspended') ctx.resume();
 
-    // 1. Mikrofon holen
+    // 1. Mikrofon holen (noetig fuer WebRTC SDP, aber stummgeschaltet)
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
       realtimeStream = stream;
+
+      // Mic-Track SOFORT stummschalten – OpenAI hoert NICHT zu
+      stream.getAudioTracks().forEach(function(track) {
+        track.enabled = false;
+      });
 
       // 2. RTCPeerConnection erstellen
       realtimePc = new RTCPeerConnection({
@@ -2380,47 +2506,59 @@
         ]
       });
 
-      // DataChannel fuer Session-Konfiguration (Voice, Instructions, Sprache)
-      var rtDataChannel = realtimePc.createDataChannel('oai-events');
+      // DataChannel fuer Session-Konfiguration + Voice-Injection
+      rtDataChannel = realtimePc.createDataChannel('oai-events');
       var rtSessionConfigSent = false;
 
       function sendRealtimeConfig() {
         if (rtSessionConfigSent || rtDataChannel.readyState !== 'open') return;
         rtSessionConfigSent = true;
-        console.log('[Realtime] Sende session.update (Deutsch + coral)');
+        console.log('[Hybrid] Sende session.update (Vorleser-Modus, coral, Deutsch)');
         rtDataChannel.send(JSON.stringify({
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
             voice: 'coral',
-            instructions: 'WICHTIG: Du MUSST immer auf Deutsch antworten. Sprich ausschliesslich Deutsch. Du bist Cowan, ein freundlicher Assistent fuer ein Buchprojekt ueber KI-Agenten und OpenClaw. Antworte kurz und hilfreich. Niemals auf Englisch antworten.',
-            input_audio_transcription: { model: 'whisper-1' },
-            turn_detection: { type: 'server_vad' }
+            instructions: 'Du bist Cowan, ein freundlicher Vorleser. Wenn dir Text gegeben wird, lies ihn natuerlich und ausdruecklich auf Deutsch vor. Aendere den Inhalt NICHT – lies ihn genau so vor wie er geschrieben ist. Sprich natuerlich und lebendig, nicht monoton. Du MUSST immer auf Deutsch sprechen. Niemals auf Englisch.',
+            turn_detection: null  // Deaktiviert – wir steuern alles per conversation.item.create
           }
         }));
       }
 
       rtDataChannel.onopen = function() {
-        console.log('[Realtime] DataChannel offen');
-        // Nicht sofort senden – auf session.created warten
+        console.log('[Hybrid] DataChannel offen');
       };
+
       rtDataChannel.onmessage = function(event) {
         try {
           var msg = JSON.parse(event.data);
-          console.log('[Realtime] Event:', msg.type);
+          console.log('[Hybrid] Event:', msg.type);
           if (msg.type === 'session.created') {
-            // Jetzt ist die Session bereit – Config schicken
-            console.log('[Realtime] session.created empfangen – konfiguriere Deutsch');
+            console.log('[Hybrid] session.created – konfiguriere Vorleser');
             sendRealtimeConfig();
           } else if (msg.type === 'session.updated') {
-            console.log('[Realtime] Session konfiguriert:', JSON.stringify(msg.session));
+            console.log('[Hybrid] Session konfiguriert (Vorleser-Modus aktiv)');
+            realtimeReady = true;
+            // UI: Bereit fuer Fragen
+            voSetText('Stimme bereit. Sprich oder tippe deine Frage.');
+            voRevealUpTo(999);
+            showVoiceOverlay('speaking');
+            micBtn.classList.add('mic-realtime');
+            startRealtimeTimer();
+          } else if (msg.type === 'response.done') {
+            console.log('[Hybrid] response.done – Satz vorgelesen');
+            // Naechsten Satz in der Queue verarbeiten
+            rtSpeaking = false;
+            rtProcessNextSentence();
           } else if (msg.type === 'error') {
-            console.error('[Realtime] Server-Event Fehler:', JSON.stringify(msg.error));
+            console.error('[Hybrid] Server-Event Fehler:', JSON.stringify(msg.error));
+            rtSpeaking = false;
+            rtProcessNextSentence();
           }
         } catch(e) {}
       };
 
-      // Mikrofon-Audio zur Connection hinzufuegen
+      // Mikrofon-Audio zur Connection hinzufuegen (stummgeschaltet, noetig fuer SDP)
       stream.getAudioTracks().forEach(function(track) {
         realtimePc.addTrack(track, stream);
       });
@@ -2430,7 +2568,7 @@
         var audio = new Audio();
         audio.srcObject = event.streams[0];
         audio.play().catch(function(e) {
-          console.warn('[Realtime] Audio autoplay blocked:', e.message);
+          console.warn('[Hybrid] Audio autoplay blocked:', e.message);
         });
       };
 
@@ -2444,22 +2582,18 @@
 
       // 5. Connection-State ueberwachen
       realtimePc.onconnectionstatechange = function() {
-        console.log('[Realtime] Connection:', realtimePc.connectionState);
+        console.log('[Hybrid] Connection:', realtimePc.connectionState);
         if (realtimePc.connectionState === 'connected') {
-          // Verbunden! Overlay umschalten
-          voSetText('Sprich jetzt... Tippe zum Beenden.');
-          voRevealUpTo(999);
-          showVoiceOverlay('speaking');
-          startRealtimeTimer();
+          console.log('[Hybrid] WebRTC verbunden – warte auf session.updated');
         } else if (realtimePc.connectionState === 'failed' || realtimePc.connectionState === 'disconnected') {
           if (realtimeReconnects < 3 && realtimeActive) {
             realtimeReconnects++;
-            console.log('[Realtime] Reconnect Versuch ' + realtimeReconnects + '/3');
+            console.log('[Hybrid] Reconnect Versuch ' + realtimeReconnects + '/3');
             voSetText('Verbindung unterbrochen... Reconnect ' + realtimeReconnects + '/3');
             voRevealUpTo(999);
-            // Neuer Handshake
             doRealtimeHandshake();
           } else {
+            realtimeReady = false;
             voSetText('Verbindung fehlgeschlagen. Pruefe dein Netz.');
             voRevealUpTo(999);
             setTimeout(function() { stopRealtimeSession(); }, 2000);
@@ -2471,9 +2605,10 @@
       doRealtimeHandshake();
 
     }).catch(function(err) {
-      console.error('[Realtime] Mikrofon-Fehler:', err.message);
+      console.error('[Hybrid] Mikrofon-Fehler:', err.message);
       realtimeActive = false;
       micBtn.classList.remove('recording');
+      micBtn.classList.remove('mic-realtime');
       closeVoiceOverlay();
       if (err.name === 'NotAllowedError') {
         renderSystemMsg('Mikrofon-Zugriff verweigert. Erlaube den Zugriff in den Browser-Einstellungen.');
@@ -2527,6 +2662,10 @@
 
   function stopRealtimeSession() {
     realtimeActive = false;
+    realtimeReady = false;
+    rtSpeakQueue = [];
+    rtSpeaking = false;
+    rtDataChannel = null;
     stopRealtimeTimer();
 
     // Mikrofon freigeben
@@ -2543,6 +2682,7 @@
 
     // UI zuruecksetzen
     micBtn.classList.remove('recording');
+    micBtn.classList.remove('mic-realtime');
     closeVoiceOverlay();
   }
 
@@ -2584,6 +2724,127 @@
     }
     var timerEl = document.getElementById('rtTimer');
     if (timerEl) timerEl.remove();
+  }
+
+  /* ══════════════════════════════════════════
+     HYBRID VOICE: realtimeSpeak()
+     Text satzweise an OpenAI DataChannel senden.
+     OpenAI liest vor, wir warten auf response.done.
+     ══════════════════════════════════════════ */
+
+  // Oeffentliche Funktion: Text an OpenAI zum Vorlesen schicken
+  function realtimeSpeak(fullText, onDone) {
+    if (!realtimeActive || !realtimeReady || !rtDataChannel || rtDataChannel.readyState !== 'open') {
+      console.warn('[Hybrid] Realtime nicht bereit – Fallback auf TTS');
+      if (onDone) onDone();
+      return false; // Signalisiert: Fallback noetig
+    }
+
+    // Text in Saetze aufteilen
+    var sentences = splitIntoSentences(fullText);
+    if (sentences.length === 0) {
+      if (onDone) onDone();
+      return true;
+    }
+
+    // Saetze in die Queue legen
+    for (var i = 0; i < sentences.length; i++) {
+      rtSpeakQueue.push(sentences[i]);
+    }
+    // onDone-Callback ans Ende der Queue haengen (als Marker)
+    rtSpeakQueue.push({ _done: true, callback: onDone || null });
+
+    // Queue starten falls nicht schon aktiv
+    if (!rtSpeaking) {
+      rtProcessNextSentence();
+    }
+    return true;
+  }
+
+  function splitIntoSentences(text) {
+    // Markdown bereinigen
+    var clean = text
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/\n{2,}/g, '. ')
+      .replace(/\n/g, ' ')
+      .trim();
+
+    // Satzweise aufteilen (an . ! ? :)
+    var parts = [];
+    var remaining = clean;
+    while (remaining.length > 0) {
+      var match = remaining.match(/[.!?:]\s/);
+      if (!match) {
+        if (remaining.trim().length > 2) parts.push(remaining.trim());
+        break;
+      }
+      var end = match.index + 1;
+      var sentence = remaining.slice(0, end).trim();
+      if (sentence.length > 2) parts.push(sentence);
+      remaining = remaining.slice(end).trim();
+    }
+    return parts;
+  }
+
+  function rtProcessNextSentence() {
+    if (!realtimeActive || !rtDataChannel || rtDataChannel.readyState !== 'open') {
+      rtSpeaking = false;
+      rtSpeakQueue = [];
+      return;
+    }
+
+    // Queue leer?
+    if (rtSpeakQueue.length === 0) {
+      rtSpeaking = false;
+      return;
+    }
+
+    var next = rtSpeakQueue.shift();
+
+    // Done-Marker?
+    if (next && next._done) {
+      rtSpeaking = false;
+      if (next.callback) next.callback();
+      // Falls noch mehr in der Queue (neuer realtimeSpeak Aufruf), weitermachen
+      if (rtSpeakQueue.length > 0) rtProcessNextSentence();
+      return;
+    }
+
+    // Satz an OpenAI senden
+    rtSpeaking = true;
+    console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
+
+    // 1. conversation.item.create – Text einspeisen
+    rtDataChannel.send(JSON.stringify({
+      type: 'conversation.item.create',
+      item: {
+        type: 'message',
+        role: 'user',
+        content: [{ type: 'input_text', text: 'Lies vor: ' + next }]
+      }
+    }));
+
+    // 2. response.create – Vorlesen ausloesen
+    rtDataChannel.send(JSON.stringify({
+      type: 'response.create',
+      response: {
+        modalities: ['audio', 'text']
+      }
+    }));
+
+    // Safety-Timeout: Falls response.done nicht kommt (10s)
+    setTimeout(function() {
+      if (rtSpeaking) {
+        console.warn('[Hybrid] Timeout fuer Satz – ueberspringe');
+        rtSpeaking = false;
+        rtProcessNextSentence();
+      }
+    }, 10000);
   }
 
   /* ══════════════════════════════════════════
