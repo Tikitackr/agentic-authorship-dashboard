@@ -1439,9 +1439,27 @@
         // Woerter starten als upcoming – realtimeSpeak deckt sie satzweise auf
 
         var spoke = realtimeSpeak(streamBuffer, function() {
-          // Vorlesen fertig → in Chat uebertragen
+          // Queue logisch fertig – aber Audio-Buffer laeuft noch nach!
+          // Text sofort als Chat-Bubble rendern
           messages.push({ role: 'assistant', text: streamBuffer });
-          voTransferToChat(streamBuffer);
+          renderAssistantBubble(streamBuffer);
+          scrollToBottom();
+
+          // Overlay OFFEN lassen mit Stop-Hinweis (X zum Stoppen)
+          voSetText('[Cowan spricht noch... Tippe X zum Stoppen]');
+          voRevealUpTo(999);
+
+          // Auto-Close nach geschaetzter Restdauer (Wortanzahl × 350ms, min 3s, max 20s)
+          var wordCount = streamBuffer.split(/\s+/).length;
+          var bufferMs = Math.max(wordCount * 350, 3000);
+          bufferMs = Math.min(bufferMs, 20000);
+          console.log('[Hybrid] Audio-Buffer geschaetzt:', bufferMs + 'ms fuer ' + wordCount + ' Woerter');
+          setTimeout(function() {
+            if (realtimeActive && voActive) {
+              console.log('[Hybrid] Auto-Close nach Buffer-Zeit');
+              closeVoiceOverlay();
+            }
+          }, bufferMs);
         });
 
         if (!spoke) {
