@@ -1409,7 +1409,7 @@
     if (useHybrid) {
       // ═══ HYBRID MODUS (Claude denkt, OpenAI spricht) ═══
       showVoiceOverlay('thinking');
-      voSetText('[Hybrid: Claude \u2192 echo] Denkt nach...');
+      voSetText('Denkt nach...');
       voRevealUpTo(999);
       isLoading = true;
       var streamBuffer = '';
@@ -1435,21 +1435,14 @@
         }
         // Claude ist fertig → Text an OpenAI zum Vorlesen mit Karaoke
         showVoiceOverlay('speaking');
-        voSetText('[Hybrid: Claude \u2713 \u2192 echo spricht] ' + streamBuffer);
+        voSetText(streamBuffer);
         // Woerter starten als upcoming – realtimeSpeak deckt sie satzweise auf
 
         var spoke = realtimeSpeak(streamBuffer, function() {
           // Queue logisch fertig – aber Audio-Buffer laeuft noch nach!
-          // Text sofort als Chat-Bubble rendern
-          messages.push({ role: 'assistant', text: streamBuffer });
-          renderAssistantBubble(streamBuffer);
-          scrollToBottom();
-          // currentStreamBuffer leeren damit closeVoiceOverlay nicht nochmal rendert
-          currentStreamBuffer = '';
-
-          // Overlay zeigt: Cowan spricht noch
-          voSetText('Cowan spricht...');
-          voRevealUpTo(999);
+          // Karaoke-Text STEHEN LASSEN (alle Woerter sind aufgedeckt).
+          // Kein Chat-Rendering hier – erst bei X (closeVoiceOverlay).
+          // currentStreamBuffer bleibt erhalten fuer closeVoiceOverlay.
 
           // Nach geschaetzter Sprechdauer: Automatisch wieder zuhoeren (Gespraechsmodus)
           var wordCount = streamBuffer.split(/\s+/).length;
