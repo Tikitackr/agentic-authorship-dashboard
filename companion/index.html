@@ -1194,9 +1194,7 @@
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
   var rtKaraokeTotalWords = 0; // Kumulative Wortanzahl fuer Karaoke-Snap
-  var rtMsPerWord = 400;             // Adaptive ms/Wort (startet bei 400, passt sich an)
-  var rtSentenceStartTime = 0;       // Zeitpunkt wann aktueller Satz gesendet wurde
-  var rtCurrentSentenceWords = 0;    // Wortanzahl des aktuellen Satzes
+  var rtMsPerWord = 400;             // ~150 WPM, nah an OpenAIs Sprechgeschwindigkeit
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
   // Voice Overlay (Comet-Stil)
@@ -2630,15 +2628,7 @@
             showVoiceOverlay('speaking');
             startHybridRecording();
           } else if (msg.type === 'response.done') {
-            // Adaptive Karaoke: echte Sprechdauer messen → ms/Wort fuer naechsten Satz anpassen
-            if (rtSentenceStartTime > 0 && rtCurrentSentenceWords > 0) {
-              var actualDuration = Date.now() - rtSentenceStartTime;
-              var actualMsPerWord = actualDuration / rtCurrentSentenceWords;
-              // Glaetten: 70% neue Messung, 30% alter Wert (verhindert Spruenge)
-              rtMsPerWord = Math.round(actualMsPerWord * 0.7 + rtMsPerWord * 0.3);
-              rtMsPerWord = Math.max(150, Math.min(800, rtMsPerWord)); // Clamp
-              console.log('[Hybrid] response.done – Adaptive ms/Wort:', rtMsPerWord);
-            }
+            console.log('[Hybrid] response.done – Satz generiert');
             // Naechsten Satz in der Queue verarbeiten
             rtSpeaking = false;
             rtProcessNextSentence();
@@ -2930,15 +2920,14 @@
     rtSpeaking = true;
     console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
 
-    // Adaptive Karaoke: ms/Wort aus vorherigen Saetzen (startet bei 400, passt sich an)
+    // Karaoke: ~150 WPM = 400ms/Wort (nah an OpenAIs Sprechgeschwindigkeit)
     var sentenceWords = next.split(/\s+/).length;
     var estimatedDurationMs = sentenceWords * rtMsPerWord;
-    rtSentenceStartTime = Date.now();
-    rtCurrentSentenceWords = sentenceWords;
 
-    // Snap-Forward: Falls vorheriger Karaoke-Timer abgebrochen wurde (response.done
-    // kam schneller als geschaetzt), voCurrentWordIdx auf die richtige Position setzen.
-    // Ohne Snap driftet der Index nach 3-4 Saetzen ab und Karaoke stoppt.
+    // Snap-Forward: voCurrentWordIdx auf die richtige Position setzen,
+    // damit der Index nach 3-4 Saetzen nicht abdriftet.
+    // NICHT sofort aufdecken – voStartKaraoke/voRevealUpTo holt das beim
+    // ersten Timer-Tick nach (sanfter als alles auf einmal).
     var snapIdx = 0;
     var wc = 0;
     for (var si = 0; si < voWords.length; si++) {
@@ -2947,12 +2936,6 @@
         wc++;
       }
       if (si === voWords.length - 1) snapIdx = voWords.length; // alle durch
-    }
-    // Alles vor diesem Satz als "spoken" markieren
-    for (var ri = 0; ri < snapIdx; ri++) {
-      if (voWords[ri] && voWords[ri].classList && voWords[ri].classList.contains('vo-word')) {
-        voWords[ri].className = 'vo-word spoken';
-      }
     }
     voCurrentWordIdx = snapIdx;
 
