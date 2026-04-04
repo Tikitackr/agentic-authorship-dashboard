@@ -1445,20 +1445,23 @@
           renderAssistantBubble(streamBuffer);
           scrollToBottom();
 
-          // Overlay OFFEN lassen mit Stop-Hinweis (X zum Stoppen)
-          voSetText('[Cowan spricht noch... Tippe X zum Stoppen]');
+          // Overlay zeigt: Cowan spricht noch
+          voSetText('Cowan spricht...');
           voRevealUpTo(999);
 
-          // Auto-Close nach geschaetzter Restdauer (Wortanzahl × 350ms, min 3s, max 20s)
+          // Nach geschaetzter Sprechdauer: Automatisch wieder zuhoeren (Gespraechsmodus)
           var wordCount = streamBuffer.split(/\s+/).length;
           var bufferMs = Math.max(wordCount * 350, 3000);
           bufferMs = Math.min(bufferMs, 20000);
-          console.log('[Hybrid] Audio-Buffer geschaetzt:', bufferMs + 'ms fuer ' + wordCount + ' Woerter');
+          console.log('[Hybrid] Audio-Buffer geschaetzt:', bufferMs + 'ms – danach wieder zuhoeren');
           setTimeout(function() {
-            if (realtimeActive && voActive) {
-              console.log('[Hybrid] Auto-Close nach Buffer-Zeit');
-              closeVoiceOverlay();
-            }
+            if (!realtimeActive || !voActive) return;
+            // Gespraechsmodus: Wieder zuhoeren
+            console.log('[Hybrid] Gespraechsmodus – starte Zuhoeren');
+            voSetText('\uD83C\uDFA4 Zuhoeren... (X zum Beenden)');
+            voRevealUpTo(999);
+            showVoiceOverlay('speaking');
+            startHybridRecording();
           }, bufferMs);
         });
 
@@ -2000,6 +2003,13 @@
       micBtn.classList.remove('recording');
       micBtn.classList.remove('mic-realtime');
     }
+    // Laufende Spracherkennung stoppen (Gespraechsmodus)
+    if (recognition) {
+      try { recognition.abort(); } catch(e) {}
+      recognition = null;
+    }
+    isRecording = false;
+    hideListeningDots();
     // Stream abbrechen (Punkt 2: X stoppt ALLES)
     if (currentAbortController) {
       try { currentAbortController.abort(); } catch(e) {}
@@ -2382,6 +2392,11 @@
       speechSent = false;
       micBtn.classList.add('recording');
       showListeningDots();
+      // Gespraechsmodus: Overlay zeigt Zuhoeren-Status
+      if (voActive) {
+        voSetText('\uD83C\uDFA4 Zuhoeren... (X zum Beenden)');
+        voRevealUpTo(999);
+      }
     };
 
     recognition.onresult = function(e) {
@@ -2392,6 +2407,11 @@
       }
       msgInput.value = transcript;
       msgInput.dispatchEvent(new Event('input'));
+      // Live-Transkript im Overlay zeigen
+      if (voActive) {
+        voSetText('\uD83C\uDFA4 ' + transcript);
+        voRevealUpTo(999);
+      }
     };
 
     recognition.onend = function() {
@@ -2402,6 +2422,14 @@
       if (!speechSent && msgInput.value.trim()) {
         speechSent = true;
         sendMessage();
+      } else if (!speechSent && realtimeActive && voActive) {
+        // Gespraechsmodus: Keine Sprache erkannt → weiter zuhoeren
+        console.log('[Hybrid] Stille – hoere weiter zu');
+        voSetText('\uD83C\uDFA4 Zuhoeren... (X zum Beenden)');
+        voRevealUpTo(999);
+        setTimeout(function() {
+          if (realtimeActive && voActive) startHybridRecording();
+        }, 300);
       }
     };
 
@@ -2409,7 +2437,13 @@
       isRecording = false;
       micBtn.classList.remove('recording');
       hideListeningDots();
-      if (e.error !== 'no-speech' && e.error !== 'aborted') {
+      if ((e.error === 'no-speech' || e.error === 'aborted') && realtimeActive && voActive) {
+        // Gespraechsmodus: Stille oder Abbruch → weiter zuhoeren
+        console.log('[Hybrid] Speech-Error "' + e.error + '" – hoere weiter zu');
+        setTimeout(function() {
+          if (realtimeActive && voActive) startHybridRecording();
+        }, 500);
+      } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
         renderSystemMsg('Mikrofon-Fehler: ' + e.error);
       }
     };
