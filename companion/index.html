@@ -2522,6 +2522,7 @@
         rtDataChannel.send(JSON.stringify({
           type: 'session.update',
           session: {
+            type: 'realtime',
             modalities: ['text', 'audio'],
             voice: 'echo',
             instructions: 'Du bist Cowan, ein freundlicher Vorleser. Wenn dir Text gegeben wird, lies ihn natuerlich und ausdruecklich auf Deutsch vor. Aendere den Inhalt NICHT – lies ihn genau so vor wie er geschrieben ist. Sprich natuerlich und lebendig, nicht monoton. Du MUSST immer auf Deutsch sprechen. Niemals auf Englisch.',
