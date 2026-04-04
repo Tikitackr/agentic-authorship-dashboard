@@ -1194,6 +1194,8 @@
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
   var rtKaraokeTotalWords = 0; // Kumulative Wortanzahl fuer Karaoke-Snap
+  var rtTranscriptBuffer = '';      // Akkumulierter Transcript fuer aktuellen Satz
+  var rtSentenceKaraokeStart = 0;   // voWords-Index wo aktueller Satz beginnt
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
   // Voice Overlay (Comet-Stil)
@@ -2596,6 +2598,9 @@
               output: {
                 voice: 'echo'
               }
+            },
+            output_audio_transcription: {
+              model: 'whisper-1'
             }
           }
         }));
@@ -2626,6 +2631,23 @@
             voRevealUpTo(999);
             showVoiceOverlay('speaking');
             startHybridRecording();
+          } else if (msg.type === 'response.audio_transcript.delta') {
+            // Transcript-getriebene Karaoke: Woerter im Takt der echten Sprache aufdecken
+            rtTranscriptBuffer += (msg.delta || '');
+            var spokenWords = rtTranscriptBuffer.trim().split(/\s+/).filter(Boolean).length;
+            // Timer-Karaoke abschalten – Transcript uebernimmt
+            if (voKaraokeTimer) { clearInterval(voKaraokeTimer); voKaraokeTimer = null; }
+            // Richtige voWords-Position finden (spokenWords ab Satzstart)
+            var targetIdx = rtSentenceKaraokeStart;
+            var twc = 0;
+            for (var ti = rtSentenceKaraokeStart; ti < voWords.length; ti++) {
+              if (voWords[ti].classList && voWords[ti].classList.contains('vo-word')) {
+                twc++;
+                if (twc >= spokenWords) { targetIdx = ti; break; }
+              }
+            }
+            voRevealUpTo(targetIdx);
+            voCurrentWordIdx = targetIdx + 1;
           } else if (msg.type === 'response.done') {
             console.log('[Hybrid] response.done – Satz vorgelesen');
             // Naechsten Satz in der Queue verarbeiten
@@ -2917,9 +2939,11 @@
 
     // Satz an OpenAI senden
     rtSpeaking = true;
+    rtTranscriptBuffer = '';  // Transcript-Buffer fuer diesen Satz zuruecksetzen
     console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
 
     // Geschaetzte Karaoke: Woerter im Takt aufdecken (~150 Woerter/Min = 400ms/Wort)
+    // Timer laeuft als Fallback – wird von Transcript-Events ueberschrieben falls verfuegbar
     var sentenceWords = next.split(/\s+/).length;
     var estimatedDurationMs = sentenceWords * 400; // ~150 WPM
 
@@ -2942,6 +2966,7 @@
       }
     }
     voCurrentWordIdx = snapIdx;
+    rtSentenceKaraokeStart = snapIdx;  // Merken wo dieser Satz beginnt (fuer Transcript-Sync)
 
     voStartKaraoke(voCurrentWordIdx, sentenceWords, estimatedDurationMs, null);
     rtKaraokeTotalWords += sentenceWords;
