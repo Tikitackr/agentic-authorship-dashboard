@@ -1196,18 +1196,14 @@
   var rtDataChannel = null;   // Globale Referenz fuer realtimeSpeak()
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
-  var rtMsPerWord = 300;             // Startwert, wird per Auto-Kalibrierung ueberschrieben
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
-  // Auto-Kalibrierung: misst echte Sprechdauer per AudioContext-Analyser
-  var rtCalStart = 0;          // Zeitpunkt Karaoke-Start
-  var rtCalWords = 0;          // Wort-Anzahl der aktuellen Antwort
-  var rtCalInterval = null;    // Mess-Interval
-  var rtCalLastAudio = 0;      // Letzter Zeitpunkt mit hoerbarem Audio
-  var rtCalAudioCtx = null;    // AudioContext (einmal erstellt)
-  var rtCalAnalyser = null;    // AnalyserNode
-  var rtCalSource = null;      // MediaStreamSource (muss bei neuem Stream erneuert werden)
-  var rtCalStreamId = '';      // Aktuelle Stream-ID (um doppelte Verbindung zu vermeiden)
+  // Karaoke-Kalibrierung: misst echte Sprechdauer ueber Satz-Queue-Timing
+  var rtCalSpeakStart = 0;     // Zeitpunkt erster Satz gesendet
+  var rtCalTotalWords = 0;     // Wort-Anzahl der aktuellen Antwort
+  var rtCalSentencesDone = 0;  // Wie viele response.done empfangen
+  var rtCalSentencesTotal = 0; // Wie viele Saetze insgesamt gesendet
+  var rtCalLastDoneTime = 0;   // Zeitpunkt des letzten response.done
 
   // Voice Overlay (Comet-Stil)
   var voiceOverlay, voiceText, voiceDots, voHandle;
@@ -2025,7 +2021,6 @@
       currentAbortController = null;
     }
     stopSpeaking();
-    rtCalStop();
     if (voKaraokeTimer) { clearInterval(voKaraokeTimer); voKaraokeTimer = null; }
 
     // Punkt 3: Bisherigen Text in Chat uebertragen (erst Overlay weg, dann Bubble)
@@ -2642,6 +2637,7 @@
             startHybridRecording();
           } else if (msg.type === 'response.done') {
             console.log('[Hybrid] response.done – Satz generiert');
+            rtCalOnResponseDone();
             // Naechsten Satz in der Queue verarbeiten
             rtSpeaking = false;
             rtProcessNextSentence();
@@ -2843,74 +2839,56 @@
      OpenAI liest vor, wir warten auf response.done.
      ══════════════════════════════════════════ */
 
-  // Auto-Kalibrierung: AudioContext-Analyser an den WebRTC-Stream haengen
-  function rtCalConnect() {
-    if (!realtimeAudioEl || !realtimeAudioEl.srcObject) return;
-    var streamId = realtimeAudioEl.srcObject.id;
-    if (streamId === rtCalStreamId && rtCalAnalyser) return; // Bereits verbunden
-    try {
-      if (!rtCalAudioCtx) rtCalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (rtCalAudioCtx.state === 'suspended') rtCalAudioCtx.resume();
-      rtCalSource = rtCalAudioCtx.createMediaStreamSource(realtimeAudioEl.srcObject);
-      rtCalAnalyser = rtCalAudioCtx.createAnalyser();
-      rtCalAnalyser.fftSize = 256;
-      rtCalSource.connect(rtCalAnalyser);
-      // NICHT an destination connecten – nur messen, nicht doppelt abspielen
-      rtCalStreamId = streamId;
-      console.log('[Karaoke-Cal] Analyser verbunden');
-    } catch(e) { console.warn('[Karaoke-Cal] Analyser-Fehler:', e.message); }
+  // Adaptives Karaoke-Timing basierend auf Wortanzahl.
+  // OpenAI echo-Stimme spricht kurze Texte langsamer, lange schneller.
+  // Wird durch rtCalUpdate() mit echten Messwerten nachkalibriert.
+  var rtCalSlowMs = 370;   // ms/Wort bei kurzen Texten (<=15 Woerter)
+  var rtCalFastMs = 260;   // ms/Wort bei langen Texten (>=80 Woerter)
+
+  function rtGetMsPerWord(wordCount) {
+    if (wordCount <= 15) return rtCalSlowMs;
+    if (wordCount >= 80) return rtCalFastMs;
+    var t = (wordCount - 15) / (80 - 15);
+    return Math.round(rtCalSlowMs - t * (rtCalSlowMs - rtCalFastMs));
   }
 
-  // Kalibrierung starten: misst wann OpenAI aufhoert zu sprechen
-  function rtCalStart_fn(wordCount) {
-    rtCalConnect();
-    rtCalStart = Date.now();
-    rtCalWords = wordCount;
-    rtCalLastAudio = Date.now();
-    if (rtCalInterval) clearInterval(rtCalInterval);
-    if (!rtCalAnalyser) return; // Kein Analyser → kein Messen moeglich
+  // Kalibrierung starten (wird in realtimeSpeak aufgerufen)
+  function rtCalStart_fn(wordCount, sentenceCount) {
+    rtCalSpeakStart = Date.now();
+    rtCalTotalWords = wordCount;
+    rtCalSentencesDone = 0;
+    rtCalSentencesTotal = sentenceCount;
+    rtCalLastDoneTime = 0;
+  }
 
-    var dataArray = new Uint8Array(rtCalAnalyser.frequencyBinCount);
-    var speechDetected = false;
+  // Bei jedem response.done aufrufen – zaehlt Saetze und misst Zeit
+  function rtCalOnResponseDone() {
+    rtCalSentencesDone++;
+    rtCalLastDoneTime = Date.now();
 
-    rtCalInterval = setInterval(function() {
-      if (!rtCalAnalyser) { clearInterval(rtCalInterval); return; }
-      rtCalAnalyser.getByteFrequencyData(dataArray);
-      var sum = 0;
-      for (var i = 0; i < dataArray.length; i++) sum += dataArray[i];
-      var avg = sum / dataArray.length;
+    // Wenn ALLE Saetze generiert: Kalibrierung auswerten
+    if (rtCalSentencesDone >= rtCalSentencesTotal && rtCalSpeakStart > 0 && rtCalTotalWords > 0) {
+      // response.done = Audio-Generierung fertig.
+      // Playback dauert laenger. Schaetzung: generationTime + (Woerter * 200ms) Puffer
+      var genDuration = rtCalLastDoneTime - rtCalSpeakStart;
+      // Grobe Schaetzung: Playback dauert ~3x laenger als Generierung bei langen Texten
+      var estimatedPlayback = genDuration + (rtCalTotalWords * 180);
+      var measured = Math.round(estimatedPlayback / rtCalTotalWords);
 
-      if (avg > 3) {
-        rtCalLastAudio = Date.now();
-        speechDetected = true;
-      }
-
-      // Stille fuer 1.5s NACH erkannter Sprache = Sprechen vorbei
-      var elapsed = Date.now() - rtCalStart;
-      if (speechDetected && (Date.now() - rtCalLastAudio > 1500) && elapsed > 1000) {
-        clearInterval(rtCalInterval);
-        rtCalInterval = null;
-        var speechDuration = rtCalLastAudio - rtCalStart;
-        var measured = Math.round(speechDuration / rtCalWords);
-        // Sanity-Check: nur Werte zwischen 150ms und 500ms akzeptieren
-        if (measured >= 150 && measured <= 500) {
-          // Gleitender Durchschnitt mit altem Wert (70% neu, 30% alt)
-          var oldMs = rtMsPerWord;
-          rtMsPerWord = Math.round(0.7 * measured + 0.3 * rtMsPerWord);
-          console.log('[Karaoke-Cal] GEMESSEN: ' + measured + 'ms/Wort → rtMsPerWord: ' + oldMs + ' → ' + rtMsPerWord + ' (' + Math.round(60000/rtMsPerWord) + ' WPM)');
-          // Debug-Badge aktualisieren
-          var dbg = document.getElementById('voDbgInfo');
-          if (dbg) dbg.textContent = '✓ ' + rtCalWords + 'W · ' + rtMsPerWord + 'ms · ' + Math.round(60000/rtMsPerWord) + ' WPM';
-        } else {
-          console.log('[Karaoke-Cal] Messwert verworfen: ' + measured + 'ms (ausserhalb 150-500)');
+      // Sanity-Check
+      if (measured >= 180 && measured <= 500) {
+        // Werte aktualisieren basierend auf Textlaenge
+        if (rtCalTotalWords <= 25) {
+          rtCalSlowMs = Math.round(0.6 * measured + 0.4 * rtCalSlowMs);
+        } else if (rtCalTotalWords >= 60) {
+          rtCalFastMs = Math.round(0.6 * measured + 0.4 * rtCalFastMs);
         }
+        console.log('[Karaoke-Cal] ' + rtCalTotalWords + 'W, ' + rtCalSentencesTotal + ' Saetze → ~' + measured + 'ms/Wort. Kurve: ' + rtCalSlowMs + '/' + rtCalFastMs + 'ms');
+        var dbg = document.getElementById('voDbgInfo');
+        if (dbg) dbg.textContent = '✓ ' + rtCalTotalWords + 'W · ~' + measured + 'ms · ' + rtCalSlowMs + '/' + rtCalFastMs;
       }
-    }, 150);
-  }
-
-  // Kalibrierung stoppen (z.B. bei X oder Overlay-Close)
-  function rtCalStop() {
-    if (rtCalInterval) { clearInterval(rtCalInterval); rtCalInterval = null; }
+      rtCalSpeakStart = 0; // Messung abgeschlossen
+    }
   }
 
   // Oeffentliche Funktion: Text an OpenAI zum Vorlesen schicken
@@ -2943,16 +2921,16 @@
       if (voWords[vi].classList && voWords[vi].classList.contains('vo-word')) totalVoWords++;
     }
     if (totalVoWords > 0) {
-      // rtMsPerWord wird automatisch per Kalibrierung angepasst (nach 1. Antwort)
-      console.log('[Karaoke] ' + totalVoWords + ' Woerter → ' + rtMsPerWord + 'ms/Wort (' + Math.round(60000/rtMsPerWord) + ' WPM)');
+      var msPerWord = rtGetMsPerWord(totalVoWords);
+      console.log('[Karaoke] ' + totalVoWords + ' Woerter → ' + msPerWord + 'ms/Wort (' + Math.round(60000/msPerWord) + ' WPM). Kurve: ' + rtCalSlowMs + '/' + rtCalFastMs);
       // Debug-Badge im Overlay anzeigen
       var dbg = document.getElementById('voDbgInfo');
       var badge = document.getElementById('voDebugBadge');
-      if (dbg) dbg.textContent = totalVoWords + 'W · ' + rtMsPerWord + 'ms · ' + Math.round(60000/rtMsPerWord) + ' WPM';
+      if (dbg) dbg.textContent = totalVoWords + 'W · ' + msPerWord + 'ms · ' + Math.round(60000/msPerWord) + ' WPM';
       if (badge) badge.style.display = 'block';
-      voStartKaraoke(0, totalVoWords, totalVoWords * rtMsPerWord, null);
-      // Auto-Kalibrierung starten: misst echte Sprechdauer
-      rtCalStart_fn(totalVoWords);
+      voStartKaraoke(0, totalVoWords, totalVoWords * msPerWord, null);
+      // Kalibrierung starten (zaehlt response.done Events)
+      rtCalStart_fn(totalVoWords, sentences.length);
     }
 
     // Queue starten falls nicht schon aktiv
