@@ -1413,13 +1413,18 @@
       isLoading = true;
       var streamBuffer = '';
       currentStreamBuffer = '';
+      var hybridStreamStarted = false;
 
       callClaudeStream(text, userMsg.image, function onChunk(delta) {
+        if (!hybridStreamStarted) {
+          hybridStreamStarted = true;
+          // Overlay bleibt auf "thinking" – Woerter kommen rein aber als upcoming
+        }
         streamBuffer += delta;
         currentStreamBuffer = streamBuffer;
-        // Karaoke-Text live aktualisieren
+        // Text live anzeigen – Woerter als "upcoming" (nicht aufgedeckt)
         voSetText(streamBuffer);
-        voRevealUpTo(999);
+        // NICHT voRevealUpTo(999)! Woerter bleiben gedimmt bis OpenAI vorliest
       }).then(function() {
         isLoading = false;
         if (!streamBuffer.trim()) {
@@ -1427,10 +1432,10 @@
           renderSystemMsg('Leere Antwort von Claude');
           return;
         }
-        // Claude ist fertig → Text an OpenAI zum Vorlesen
+        // Claude ist fertig → Text an OpenAI zum Vorlesen mit Karaoke
         showVoiceOverlay('speaking');
         voSetText(streamBuffer);
-        voRevealUpTo(0); // Zuruecksetzen fuer Karaoke
+        // Woerter starten als upcoming – realtimeSpeak deckt sie satzweise auf
 
         var spoke = realtimeSpeak(streamBuffer, function() {
           // Vorlesen fertig → in Chat uebertragen
@@ -2818,6 +2823,11 @@
     // Satz an OpenAI senden
     rtSpeaking = true;
     console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
+
+    // Geschaetzte Karaoke: Woerter im Takt aufdecken (~150 Woerter/Min = 400ms/Wort)
+    var sentenceWords = next.split(/\s+/).length;
+    var estimatedDurationMs = sentenceWords * 400; // ~150 WPM
+    voStartKaraoke(voCurrentWordIdx, sentenceWords, estimatedDurationMs, null);
 
     // 1. conversation.item.create – Text einspeisen
     rtDataChannel.send(JSON.stringify({
