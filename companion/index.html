@@ -1194,8 +1194,9 @@
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
   var rtKaraokeTotalWords = 0; // Kumulative Wortanzahl fuer Karaoke-Snap
-  var rtTranscriptBuffer = '';      // Akkumulierter Transcript fuer aktuellen Satz
-  var rtSentenceKaraokeStart = 0;   // voWords-Index wo aktueller Satz beginnt
+  var rtMsPerWord = 400;             // Adaptive ms/Wort (startet bei 400, passt sich an)
+  var rtSentenceStartTime = 0;       // Zeitpunkt wann aktueller Satz gesendet wurde
+  var rtCurrentSentenceWords = 0;    // Wortanzahl des aktuellen Satzes
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
   // Voice Overlay (Comet-Stil)
@@ -2598,9 +2599,6 @@
               output: {
                 voice: 'echo'
               }
-            },
-            output_audio_transcription: {
-              model: 'whisper-1'
             }
           }
         }));
@@ -2631,25 +2629,16 @@
             voRevealUpTo(999);
             showVoiceOverlay('speaking');
             startHybridRecording();
-          } else if (msg.type === 'response.audio_transcript.delta') {
-            // Transcript-getriebene Karaoke: Woerter im Takt der echten Sprache aufdecken
-            rtTranscriptBuffer += (msg.delta || '');
-            var spokenWords = rtTranscriptBuffer.trim().split(/\s+/).filter(Boolean).length;
-            // Timer-Karaoke abschalten – Transcript uebernimmt
-            if (voKaraokeTimer) { clearInterval(voKaraokeTimer); voKaraokeTimer = null; }
-            // Richtige voWords-Position finden (spokenWords ab Satzstart)
-            var targetIdx = rtSentenceKaraokeStart;
-            var twc = 0;
-            for (var ti = rtSentenceKaraokeStart; ti < voWords.length; ti++) {
-              if (voWords[ti].classList && voWords[ti].classList.contains('vo-word')) {
-                twc++;
-                if (twc >= spokenWords) { targetIdx = ti; break; }
-              }
-            }
-            voRevealUpTo(targetIdx);
-            voCurrentWordIdx = targetIdx + 1;
           } else if (msg.type === 'response.done') {
-            console.log('[Hybrid] response.done – Satz vorgelesen');
+            // Adaptive Karaoke: echte Sprechdauer messen → ms/Wort fuer naechsten Satz anpassen
+            if (rtSentenceStartTime > 0 && rtCurrentSentenceWords > 0) {
+              var actualDuration = Date.now() - rtSentenceStartTime;
+              var actualMsPerWord = actualDuration / rtCurrentSentenceWords;
+              // Glaetten: 70% neue Messung, 30% alter Wert (verhindert Spruenge)
+              rtMsPerWord = Math.round(actualMsPerWord * 0.7 + rtMsPerWord * 0.3);
+              rtMsPerWord = Math.max(150, Math.min(800, rtMsPerWord)); // Clamp
+              console.log('[Hybrid] response.done – Adaptive ms/Wort:', rtMsPerWord);
+            }
             // Naechsten Satz in der Queue verarbeiten
             rtSpeaking = false;
             rtProcessNextSentence();
@@ -2939,13 +2928,13 @@
 
     // Satz an OpenAI senden
     rtSpeaking = true;
-    rtTranscriptBuffer = '';  // Transcript-Buffer fuer diesen Satz zuruecksetzen
     console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
 
-    // Geschaetzte Karaoke: Woerter im Takt aufdecken (~150 Woerter/Min = 400ms/Wort)
-    // Timer laeuft als Fallback – wird von Transcript-Events ueberschrieben falls verfuegbar
+    // Adaptive Karaoke: ms/Wort aus vorherigen Saetzen (startet bei 400, passt sich an)
     var sentenceWords = next.split(/\s+/).length;
-    var estimatedDurationMs = sentenceWords * 400; // ~150 WPM
+    var estimatedDurationMs = sentenceWords * rtMsPerWord;
+    rtSentenceStartTime = Date.now();
+    rtCurrentSentenceWords = sentenceWords;
 
     // Snap-Forward: Falls vorheriger Karaoke-Timer abgebrochen wurde (response.done
     // kam schneller als geschaetzt), voCurrentWordIdx auf die richtige Position setzen.
@@ -2966,7 +2955,6 @@
       }
     }
     voCurrentWordIdx = snapIdx;
-    rtSentenceKaraokeStart = snapIdx;  // Merken wo dieser Satz beginnt (fuer Transcript-Sync)
 
     voStartKaraoke(voCurrentWordIdx, sentenceWords, estimatedDurationMs, null);
     rtKaraokeTotalWords += sentenceWords;
