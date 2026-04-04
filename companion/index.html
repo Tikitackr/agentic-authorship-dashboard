@@ -1193,6 +1193,7 @@
   var rtDataChannel = null;   // Globale Referenz fuer realtimeSpeak()
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
+  var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
   // Voice Overlay (Comet-Stil)
   var voiceOverlay, voiceText, voiceDots, voHandle;
@@ -1408,7 +1409,7 @@
     if (useHybrid) {
       // ═══ HYBRID MODUS (Claude denkt, OpenAI spricht) ═══
       showVoiceOverlay('thinking');
-      voSetText('Denkt nach...');
+      voSetText('[Hybrid: Claude \u2192 echo] Denkt nach...');
       voRevealUpTo(999);
       isLoading = true;
       var streamBuffer = '';
@@ -1434,7 +1435,7 @@
         }
         // Claude ist fertig → Text an OpenAI zum Vorlesen mit Karaoke
         showVoiceOverlay('speaking');
-        voSetText(streamBuffer);
+        voSetText('[Hybrid: Claude \u2713 \u2192 echo spricht] ' + streamBuffer);
         // Woerter starten als upcoming – realtimeSpeak deckt sie satzweise auf
 
         var spoke = realtimeSpeak(streamBuffer, function() {
@@ -1964,6 +1965,12 @@
       rtSpeaking = false;
       rtDataChannel = null;
       stopRealtimeTimer();
+      // Audio sofort stoppen
+      if (realtimeAudioEl) {
+        realtimeAudioEl.pause();
+        realtimeAudioEl.srcObject = null;
+        realtimeAudioEl = null;
+      }
       if (realtimeStream) {
         realtimeStream.getTracks().forEach(function(t) { t.stop(); });
         realtimeStream = null;
@@ -2524,7 +2531,7 @@
           session: {
             type: 'realtime',
             output_modalities: ['audio'],
-            instructions: 'Du bist Cowan, ein freundlicher Vorleser. Wenn dir Text gegeben wird, lies ihn natuerlich und ausdruecklich auf Deutsch vor. Aendere den Inhalt NICHT – lies ihn genau so vor wie er geschrieben ist. Sprich natuerlich und lebendig, nicht monoton. Du MUSST immer auf Deutsch sprechen. Niemals auf Englisch.',
+            instructions: 'Du bist ein reiner Vorleser. Deine EINZIGE Aufgabe: Den Text nach "Lies vor:" EXAKT wiedergeben. NICHTS hinzufuegen, NICHTS weglassen, NICHTS kommentieren, NICHTS erklaeren. Kein "Gerne!", kein "Hier ist der Text:", keine Einleitung, kein Abschluss. Nur den reinen Text vorlesen. Auf Deutsch. Wenn der Text 2 Saetze hat, sagst du genau 2 Saetze. Punkt.',
             audio: {
               input: {
                 turn_detection: { type: 'server_vad' }
@@ -2583,9 +2590,14 @@
 
       // 3. Remote-Audio empfangen (OpenAI spricht)
       realtimePc.ontrack = function(event) {
-        var audio = new Audio();
-        audio.srcObject = event.streams[0];
-        audio.play().catch(function(e) {
+        // Altes Audio-Element aufraeumen
+        if (realtimeAudioEl) {
+          realtimeAudioEl.pause();
+          realtimeAudioEl.srcObject = null;
+        }
+        realtimeAudioEl = new Audio();
+        realtimeAudioEl.srcObject = event.streams[0];
+        realtimeAudioEl.play().catch(function(e) {
           console.warn('[Hybrid] Audio autoplay blocked:', e.message);
         });
       };
@@ -2687,6 +2699,13 @@
     rtSpeaking = false;
     rtDataChannel = null;
     stopRealtimeTimer();
+
+    // Audio sofort stoppen
+    if (realtimeAudioEl) {
+      realtimeAudioEl.pause();
+      realtimeAudioEl.srcObject = null;
+      realtimeAudioEl = null;
+    }
 
     // Mikrofon freigeben
     if (realtimeStream) {
