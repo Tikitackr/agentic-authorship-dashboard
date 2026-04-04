@@ -2518,12 +2518,12 @@
       function sendRealtimeConfig() {
         if (rtSessionConfigSent || rtDataChannel.readyState !== 'open') return;
         rtSessionConfigSent = true;
-        console.log('[Hybrid] Sende session.update (Vorleser-Modus, coral, Deutsch)');
+        console.log('[Hybrid] Sende session.update (Vorleser-Modus, echo, Deutsch)');
         rtDataChannel.send(JSON.stringify({
           type: 'session.update',
           session: {
             modalities: ['text', 'audio'],
-            voice: 'coral',
+            voice: 'echo',
             instructions: 'Du bist Cowan, ein freundlicher Vorleser. Wenn dir Text gegeben wird, lies ihn natuerlich und ausdruecklich auf Deutsch vor. Aendere den Inhalt NICHT – lies ihn genau so vor wie er geschrieben ist. Sprich natuerlich und lebendig, nicht monoton. Du MUSST immer auf Deutsch sprechen. Niemals auf Englisch.',
             turn_detection: null  // Deaktiviert – wir steuern alles per conversation.item.create
           }
