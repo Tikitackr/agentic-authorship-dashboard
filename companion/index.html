@@ -2835,10 +2835,10 @@
   // laengere Texte beschleunigen auf ~190 WPM (~315ms/Wort).
   // Lineare Interpolation zwischen 400ms (<=20 Woerter) und 310ms (>=100 Woerter).
   function rtAdaptiveMsPerWord(wordCount) {
-    var slow = 400;  // ms bei kurzen Texten (~150 WPM)
-    var fast = 310;  // ms bei langen Texten (~195 WPM)
-    var minWords = 20;
-    var maxWords = 100;
+    var slow = 350;  // ms bei kurzen Texten (~170 WPM)
+    var fast = 260;  // ms bei langen Texten (~230 WPM)
+    var minWords = 15;
+    var maxWords = 80;
     if (wordCount <= minWords) return slow;
     if (wordCount >= maxWords) return fast;
     // Lineare Interpolation
