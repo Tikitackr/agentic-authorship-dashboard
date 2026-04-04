@@ -2854,11 +2854,11 @@
       }
     }));
 
-    // 2. response.create – Vorlesen ausloesen
+    // 2. response.create – Vorlesen ausloesen (GA-Format)
     rtDataChannel.send(JSON.stringify({
       type: 'response.create',
       response: {
-        modalities: ['audio', 'text']
+        output_modalities: ['audio', 'text']
       }
     }));
 
