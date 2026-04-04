@@ -1193,7 +1193,7 @@
   var rtDataChannel = null;   // Globale Referenz fuer realtimeSpeak()
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
-  var rtMsPerWord = 400;             // ~150 WPM, nah an OpenAIs Sprechgeschwindigkeit
+  var rtMsPerWord = 400;             // Basis-Wert, wird adaptiv angepasst (siehe rtAdaptiveMsPerWord)
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
   // Voice Overlay (Comet-Stil)
@@ -2829,6 +2829,22 @@
      OpenAI liest vor, wir warten auf response.done.
      ══════════════════════════════════════════ */
 
+  // Adaptives Karaoke-Timing: Kurze Texte langsamer, lange schneller.
+  // OpenAI spricht kurze Saetze bei ~150 WPM (400ms/Wort),
+  // laengere Texte beschleunigen auf ~190 WPM (~315ms/Wort).
+  // Lineare Interpolation zwischen 400ms (<=20 Woerter) und 310ms (>=100 Woerter).
+  function rtAdaptiveMsPerWord(wordCount) {
+    var slow = 400;  // ms bei kurzen Texten (~150 WPM)
+    var fast = 310;  // ms bei langen Texten (~195 WPM)
+    var minWords = 20;
+    var maxWords = 100;
+    if (wordCount <= minWords) return slow;
+    if (wordCount >= maxWords) return fast;
+    // Lineare Interpolation
+    var t = (wordCount - minWords) / (maxWords - minWords);
+    return Math.round(slow - t * (slow - fast));
+  }
+
   // Oeffentliche Funktion: Text an OpenAI zum Vorlesen schicken
   function realtimeSpeak(fullText, onDone) {
     if (!realtimeActive || !realtimeReady || !rtDataChannel || rtDataChannel.readyState !== 'open') {
@@ -2859,7 +2875,10 @@
       if (voWords[vi].classList && voWords[vi].classList.contains('vo-word')) totalVoWords++;
     }
     if (totalVoWords > 0) {
-      voStartKaraoke(0, totalVoWords, totalVoWords * rtMsPerWord, null);
+      // Adaptives Timing: OpenAI spricht laengere Texte schneller
+      var msPerWord = rtAdaptiveMsPerWord(totalVoWords);
+      console.log('[Karaoke] ' + totalVoWords + ' Woerter → ' + msPerWord + 'ms/Wort (' + Math.round(60000/msPerWord) + ' WPM)');
+      voStartKaraoke(0, totalVoWords, totalVoWords * msPerWord, null);
     }
 
     // Queue starten falls nicht schon aktiv
