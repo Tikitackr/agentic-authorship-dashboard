@@ -1444,6 +1444,8 @@
           messages.push({ role: 'assistant', text: streamBuffer });
           renderAssistantBubble(streamBuffer);
           scrollToBottom();
+          // currentStreamBuffer leeren damit closeVoiceOverlay nicht nochmal rendert
+          currentStreamBuffer = '';
 
           // Overlay zeigt: Cowan spricht noch
           voSetText('Cowan spricht...');
@@ -2349,23 +2351,32 @@
      WEB SPEECH API (Mikrofon)
      ══════════════════════════════════════════ */
   window.toggleMic = function() {
-    // Hybrid-Modus: Realtime-Verbindung steht im Hintergrund
-    // Mic nutzt Web Speech API (transkribiert), dann Claude, dann realtimeSpeak()
-    if (realtimeEnabled) {
-      // Erste Benutzung: Realtime-Session aufbauen
-      if (!realtimeActive) {
-        startRealtimeSession();
-        return;
-      }
-      // Session aktiv: Web Speech API fuer Transkription
-      if (isRecording) {
-        stopRecording();
-      } else {
-        startHybridRecording();
-      }
+    // Wenn Realtime laeuft und gerade aufnimmt → stoppen
+    if (realtimeActive && isRecording) {
+      stopRecording();
       return;
     }
-    // Standard: Web Speech API
+    // Wenn Realtime laeuft → zuhoeren
+    if (realtimeActive && realtimeReady) {
+      startHybridRecording();
+      return;
+    }
+
+    // Ein-Klick-Start: Mic aktiviert automatisch Hybrid-Modus
+    // (wenn realtimeUrl verfuegbar → Hybrid, sonst normales Speech)
+    if (realtimeUrl && !realtimeActive) {
+      // Voice-Setting automatisch auf OpenAI umschalten
+      if (!realtimeEnabled) {
+        console.log('[Hybrid] Mic aktiviert automatisch Hybrid-Modus');
+        applyVoiceSetting('openai');
+        localStorage.setItem('companion-voice', 'openai');
+      }
+      // Realtime-Session aufbauen (startet nach Verbindung automatisch Zuhoeren)
+      startRealtimeSession();
+      return;
+    }
+
+    // Fallback: Standard Web Speech API (kein Realtime verfuegbar)
     if (isRecording) {
       stopRecording();
     } else {
@@ -2612,14 +2623,15 @@
             voRevealUpTo(999);
             sendRealtimeConfig();
           } else if (msg.type === 'session.updated') {
-            console.log('[Hybrid] Session konfiguriert (Vorleser-Modus aktiv)');
+            console.log('[Hybrid] Session konfiguriert – starte Zuhoeren automatisch');
             realtimeReady = true;
-            // UI: Bereit fuer Fragen
-            voSetText('Stimme bereit. Sprich oder tippe deine Frage.');
-            voRevealUpTo(999);
-            showVoiceOverlay('speaking');
             micBtn.classList.add('mic-realtime');
             startRealtimeTimer();
+            // Sofort zuhoeren starten (kein zweiter Mic-Klick noetig!)
+            voSetText('\uD83C\uDFA4 Zuhoeren... (X zum Beenden)');
+            voRevealUpTo(999);
+            showVoiceOverlay('speaking');
+            startHybridRecording();
           } else if (msg.type === 'response.done') {
             console.log('[Hybrid] response.done – Satz vorgelesen');
             // Naechsten Satz in der Queue verarbeiten
