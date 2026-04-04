@@ -1193,7 +1193,6 @@
   var rtDataChannel = null;   // Globale Referenz fuer realtimeSpeak()
   var rtSpeakQueue = [];      // Satz-Queue fuer realtimeSpeak()
   var rtSpeaking = false;     // Gerade am Vorlesen?
-  var rtKaraokeTotalWords = 0; // Kumulative Wortanzahl fuer Karaoke-Snap
   var rtMsPerWord = 400;             // ~150 WPM, nah an OpenAIs Sprechgeschwindigkeit
   var realtimeAudioEl = null;  // Remote-Audio-Element (OpenAI spricht)
 
@@ -2838,9 +2837,6 @@
       return false; // Signalisiert: Fallback noetig
     }
 
-    // Karaoke-Snap-Zaehler zuruecksetzen (neuer Text = von vorne)
-    rtKaraokeTotalWords = 0;
-
     // Text in Saetze aufteilen
     var sentences = splitIntoSentences(fullText);
     if (sentences.length === 0) {
@@ -2848,12 +2844,23 @@
       return true;
     }
 
-    // Saetze in die Queue legen
+    // Saetze in die Queue legen (fuer OpenAI Audio-Generierung)
     for (var i = 0; i < sentences.length; i++) {
       rtSpeakQueue.push(sentences[i]);
     }
     // onDone-Callback ans Ende der Queue haengen (als Marker)
     rtSpeakQueue.push({ _done: true, callback: onDone || null });
+
+    // EINE Karaoke fuer den GANZEN Text starten (unabhaengig von Satz-Queue).
+    // voWords wurde bereits von voSetText() befuellt. Wir zaehlen die echten
+    // Wort-Spans und lassen die Karaoke gleichmaessig durchlaufen.
+    var totalVoWords = 0;
+    for (var vi = 0; vi < voWords.length; vi++) {
+      if (voWords[vi].classList && voWords[vi].classList.contains('vo-word')) totalVoWords++;
+    }
+    if (totalVoWords > 0) {
+      voStartKaraoke(0, totalVoWords, totalVoWords * rtMsPerWord, null);
+    }
 
     // Queue starten falls nicht schon aktiv
     if (!rtSpeaking) {
@@ -2916,31 +2923,9 @@
       return;
     }
 
-    // Satz an OpenAI senden
+    // Satz an OpenAI senden (Karaoke laeuft unabhaengig in realtimeSpeak)
     rtSpeaking = true;
     console.log('[Hybrid] Sende Satz:', next.slice(0, 60) + (next.length > 60 ? '...' : ''));
-
-    // Karaoke: ~150 WPM = 400ms/Wort (nah an OpenAIs Sprechgeschwindigkeit)
-    var sentenceWords = next.split(/\s+/).length;
-    var estimatedDurationMs = sentenceWords * rtMsPerWord;
-
-    // Snap-Forward: voCurrentWordIdx auf die richtige Position setzen,
-    // damit der Index nach 3-4 Saetzen nicht abdriftet.
-    // NICHT sofort aufdecken – voStartKaraoke/voRevealUpTo holt das beim
-    // ersten Timer-Tick nach (sanfter als alles auf einmal).
-    var snapIdx = 0;
-    var wc = 0;
-    for (var si = 0; si < voWords.length; si++) {
-      if (voWords[si].classList && voWords[si].classList.contains('vo-word')) {
-        if (wc >= rtKaraokeTotalWords) { snapIdx = si; break; }
-        wc++;
-      }
-      if (si === voWords.length - 1) snapIdx = voWords.length; // alle durch
-    }
-    voCurrentWordIdx = snapIdx;
-
-    voStartKaraoke(voCurrentWordIdx, sentenceWords, estimatedDurationMs, null);
-    rtKaraokeTotalWords += sentenceWords;
 
     // 1. conversation.item.create – Text einspeisen
     rtDataChannel.send(JSON.stringify({
