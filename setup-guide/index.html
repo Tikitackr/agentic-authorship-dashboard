@@ -260,32 +260,39 @@
     }
 
     .setup-var-missing {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background-color: rgba(245, 158, 11, 0.15);
-      padding: 2px 8px;
-      border-radius: 5px;
-      border: 1px dashed rgba(245, 158, 11, 0.4);
       color: var(--amber);
+      font-style: italic;
       font-weight: 600;
+    }
+
+    .setup-missing-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: -0.75rem 0 1.5rem 0;
+      padding: 8px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px dashed rgba(245, 158, 11, 0.35);
+      border-radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
       cursor: pointer;
       transition: background-color 0.2s, border-color 0.2s;
     }
-    .setup-var-missing:hover {
-      background-color: rgba(245, 158, 11, 0.25);
+    .setup-missing-hint:hover {
+      background: rgba(245, 158, 11, 0.15);
       border-color: var(--amber);
+      color: var(--text);
     }
-    .setup-var-missing .missing-label {
+    .setup-missing-hint .hint-fields {
       color: var(--amber);
-      font-style: italic;
+      font-weight: 500;
     }
-    .setup-var-missing .missing-hint {
-      color: var(--text-dim);
-      font-weight: 400;
-      font-size: 0.8em;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-style: normal;
+    .setup-missing-hint .hint-arrow {
+      margin-left: auto;
+      color: var(--amber);
+      font-weight: 600;
       white-space: nowrap;
     }
 
@@ -1136,57 +1143,53 @@
 
     // === INTERPOLATION ===
 
-    function interpolate(template) {
-      const vars = {
-        'SERVER_IP': { value: getSetting('serverIp'), type: 'safe', label: 'deine Server-IP' },
-        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), type: 'safe', label: 'deine Tailscale IP' },
-        'HOSTNAME': { value: getSetting('tailscaleHostname'), type: 'safe', label: 'dein Tailscale Hostname' },
-        'API_KEY': { value: getSetting('apiKey'), type: 'sensitive', label: 'dein API Key' },
-        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), type: 'sensitive', label: 'dein Gateway Token' },
-        'SYNC_TOKEN': { value: getSetting('syncToken'), type: 'sensitive', label: 'dein Sync Token' },
-        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), type: 'sensitive', label: 'dein Telegram Token' },
-        'TELEGRAM_ID': { value: getSetting('telegramId'), type: 'safe', label: 'deine Telegram ID' },
-        'CONTAINER_NAME': { value: getSetting('containerName'), type: 'safe', label: 'dein Container Name' },
-        'PORT': { value: getSetting('port'), type: 'safe', label: 'dein Gateway Port' },
-      };
+    const SETUP_VARS = {
+      'SERVER_IP': { setting: 'serverIp', type: 'safe', label: 'Server-IP' },
+      'TAILSCALE_IP': { setting: 'tailscaleIp', type: 'safe', label: 'Tailscale IP' },
+      'HOSTNAME': { setting: 'tailscaleHostname', type: 'safe', label: 'Tailscale Hostname' },
+      'API_KEY': { setting: 'apiKey', type: 'sensitive', label: 'API Key' },
+      'GATEWAY_TOKEN': { setting: 'gatewayToken', type: 'sensitive', label: 'Gateway Token' },
+      'SYNC_TOKEN': { setting: 'syncToken', type: 'sensitive', label: 'Sync Token' },
+      'TELEGRAM_TOKEN': { setting: 'telegramToken', type: 'sensitive', label: 'Telegram Token' },
+      'TELEGRAM_ID': { setting: 'telegramId', type: 'safe', label: 'Telegram ID' },
+      'CONTAINER_NAME': { setting: 'containerName', type: 'safe', label: 'Container Name' },
+      'PORT': { setting: 'port', type: 'safe', label: 'Gateway Port' },
+    };
 
+    function interpolate(template) {
       let result = template;
-      for (const [key, info] of Object.entries(vars)) {
+      for (const [key, info] of Object.entries(SETUP_VARS)) {
         const placeholder = '${' + key + '}';
         if (result.includes(placeholder)) {
-          if (info.value) {
+          const value = getSetting(info.setting);
+          if (value) {
             const cls = info.type === 'sensitive' ? 'setup-var-sensitive' : 'setup-var-safe';
-            result = result.replaceAll(placeholder, '<span class="' + cls + '">' + escapeHtml(info.value) + '</span>');
+            result = result.replaceAll(placeholder, '<span class="' + cls + '">' + escapeHtml(value) + '</span>');
           } else {
             result = result.replaceAll(placeholder,
-              '<span class="setup-var-missing" onclick="loadMeineDaten()" title="Klick um das Feld in Meine Daten auszufuellen">' +
-              '<span class="missing-label">' + escapeHtml(info.label) + '</span>' +
-              '<span class="missing-hint">\u2190 Meine Daten</span>' +
-              '</span>');
+              '<span class="setup-var-missing">dein ' + escapeHtml(info.label) + '</span>');
           }
         }
       }
       return result;
     }
 
-    function getPlainText(template) {
-      const vars = {
-        'SERVER_IP': { value: getSetting('serverIp'), label: 'DEINE-SERVER-IP' },
-        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), label: 'DEINE-TAILSCALE-IP' },
-        'HOSTNAME': { value: getSetting('tailscaleHostname'), label: 'DEIN-TAILSCALE-HOSTNAME' },
-        'API_KEY': { value: getSetting('apiKey'), label: 'DEIN-API-KEY' },
-        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), label: 'DEIN-GATEWAY-TOKEN' },
-        'SYNC_TOKEN': { value: getSetting('syncToken'), label: 'DEIN-SYNC-TOKEN' },
-        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), label: 'DEIN-TELEGRAM-TOKEN' },
-        'TELEGRAM_ID': { value: getSetting('telegramId'), label: 'DEINE-TELEGRAM-ID' },
-        'CONTAINER_NAME': { value: getSetting('containerName'), label: 'DEIN-CONTAINER-NAME' },
-        'PORT': { value: getSetting('port'), label: 'DEIN-GATEWAY-PORT' },
-      };
+    function getMissingFields(template) {
+      const missing = [];
+      for (const [key, info] of Object.entries(SETUP_VARS)) {
+        if (template.includes('${' + key + '}') && !getSetting(info.setting)) {
+          missing.push(info.label);
+        }
+      }
+      return missing;
+    }
 
+    function getPlainText(template) {
       let result = template;
-      for (const [key, info] of Object.entries(vars)) {
+      for (const [key, info] of Object.entries(SETUP_VARS)) {
         const placeholder = '${' + key + '}';
-        result = result.replaceAll(placeholder, info.value || info.label);
+        const value = getSetting(info.setting);
+        result = result.replaceAll(placeholder, value || 'DEIN-' + key.replace(/_/g, '-'));
       }
       return result;
     }
@@ -1194,14 +1197,39 @@
     // === RENDERING ===
 
     function renderCodeBlocks() {
+      // Alte Hinweise entfernen
+      document.querySelectorAll('.setup-missing-hint').forEach(h => h.remove());
+
       document.querySelectorAll('[id^="code-"]').forEach(el => {
-        const template = el.textContent;
+        const template = el.getAttribute('data-template') || el.textContent;
+        el.setAttribute('data-template', template);
         el.innerHTML = interpolate(template);
+
+        // Fehlende Felder pruefen und Hinweis unter Code-Block setzen
+        const missing = getMissingFields(template);
+        const codeBlock = el.closest('.setup-code-block');
+        if (codeBlock) {
+          const existingHint = codeBlock.nextElementSibling;
+          if (existingHint && existingHint.classList.contains('setup-missing-hint')) {
+            existingHint.remove();
+          }
+          if (missing.length > 0) {
+            const hint = document.createElement('div');
+            hint.className = 'setup-missing-hint';
+            hint.onclick = loadMeineDaten;
+            hint.innerHTML =
+              '<span class="hint-fields">' + missing.map(f => '\u201E' + f + '\u201C').join(', ') + '</span>' +
+              ' fehlt \u2013 trag es zuerst bei Meine Daten ein' +
+              '<span class="hint-arrow">Meine Daten \u2192</span>';
+            codeBlock.after(hint);
+          }
+        }
       });
     }
 
     function renderCodeBlock(el) {
-      const template = el.textContent;
+      const template = el.getAttribute('data-template') || el.textContent;
+      el.setAttribute('data-template', template);
       el.innerHTML = interpolate(template);
     }
 
