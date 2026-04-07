@@ -597,6 +597,9 @@
               1. OpenClaw im Hostinger Docker Manager deployen
             </div>
             <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Hostinger Panel &rarr; Docker Manager &rarr; Katalog &rarr; OpenClaw &rarr; „Bereitstellen". Trag deinen API-Key und Gateway Token ein. Merk dir den Port (z.B. 52127).</p>
+            <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0 0 1.5rem 0;font-size:0.85rem;color:var(--text-dim);">
+              <strong style="color:var(--amber);">Wichtig:</strong> Dein Agent laeuft jetzt auf dem Server, aber du kannst ihn noch nicht oeffnen. Hostinger liefert nur HTTP, dein Browser braucht aber eine sichere HTTPS-Verbindung. In den naechsten Schritten richten wir das mit Tailscale ein (kostenlos, 2 Minuten).
+            </div>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
@@ -660,7 +663,10 @@
               </button>
               <code id="code-2-5">https://${HOSTNAME}/</code>
             </div>
-            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Du siehst das Gateway-UI? Glueckwunsch, dein Agent laeuft!</p>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.5rem 2.25rem;">Du siehst das Gateway-UI? Glueckwunsch, dein Agent laeuft!</p>
+            <div style="background:rgba(34,197,94,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
+              <strong style="color:var(--green);">Lesezeichen setzen!</strong> Diese HTTPS-Adresse ist ab jetzt dein taeglicher Zugang zu OpenClaw. Setz ein Lesezeichen im Browser und auf dem Handy. Gib beim ersten Mal deinen Gateway Token ein, danach merkt sich der Browser die Verbindung.
+            </div>
           </div>
 
           <div class="setup-path-steps" data-for="local" style="display:none;">
