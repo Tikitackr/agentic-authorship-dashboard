@@ -1443,20 +1443,29 @@
           renderSystemMsg('Leere Antwort von Claude');
           return;
         }
-        // Claude ist fertig → Text an OpenAI zum Vorlesen mit Karaoke
+        // Claude ist fertig → in REDE + NOTIZ aufteilen
+        var parsed = parseRedeNotiz(streamBuffer);
+        console.log('[Hybrid] REDE: ' + parsed.rede.slice(0, 80) + '... | NOTIZ: ' + (parsed.notiz || '(keine)').slice(0, 60));
+
+        // Overlay zeigt NUR den Rede-Text (wird vorgelesen)
         showVoiceOverlay('speaking');
-        voSetText(streamBuffer);
+        voSetText(parsed.rede);
         // Woerter starten als upcoming – realtimeSpeak deckt sie satzweise auf
 
-        var spoke = realtimeSpeak(streamBuffer, function() {
-          // Queue logisch fertig – aber Audio-Buffer laeuft noch nach!
-          // Karaoke-Text STEHEN LASSEN (alle Woerter sind aufgedeckt).
-          // Kein Chat-Rendering hier – erst bei X (closeVoiceOverlay).
-          // currentStreamBuffer bleibt erhalten fuer closeVoiceOverlay.
+        var spoke = realtimeSpeak(parsed.rede, function() {
+          // Queue logisch fertig – Audio-Buffer laeuft noch nach.
+          // NOTIZ sofort als Chat-Bubble rendern ("erst reden, dann notieren")
+          var notizText = parsed.notiz || parsed.rede;
+          messages.push({ role: 'assistant', text: notizText });
+          renderAssistantBubble(notizText);
+          scrollToBottom();
+          // currentStreamBuffer leeren → verhindert doppeltes Rendering bei X
+          currentStreamBuffer = '';
 
           // Nach geschaetzter Sprechdauer: Automatisch wieder zuhoeren (Gespraechsmodus)
-          var wordCount = streamBuffer.split(/\s+/).length;
-          var bufferMs = Math.max(wordCount * 350, 3000);
+          var wordCount = parsed.rede.split(/\s+/).length;
+          var msPerWord = rtGetMsPerWord(wordCount);
+          var bufferMs = Math.max(wordCount * msPerWord, 3000);
           bufferMs = Math.min(bufferMs, 20000);
           console.log('[Hybrid] Audio-Buffer geschaetzt:', bufferMs + 'ms – danach wieder zuhoeren');
           setTimeout(function() {
@@ -1471,10 +1480,11 @@
         });
 
         if (!spoke) {
-          // Fallback: Realtime nicht bereit → als Chat-Bubble rendern
+          // Fallback: Realtime nicht bereit → NOTIZ als Chat-Bubble
           console.warn('[Hybrid] Fallback – Realtime nicht bereit');
-          messages.push({ role: 'assistant', text: streamBuffer });
-          voTransferToChat(streamBuffer);
+          var fallbackText = parsed.notiz || parsed.rede;
+          messages.push({ role: 'assistant', text: fallbackText });
+          voTransferToChat(fallbackText);
         }
       }).catch(function(err) {
         isLoading = false;
@@ -1697,7 +1707,7 @@
       },
       body: JSON.stringify({
         model: selectedModel,
-        max_tokens: 200,
+        max_tokens: (realtimeEnabled && realtimeActive && realtimeReady) ? 400 : 200,
         stream: true,
         system: systemPrompt,
         messages: apiMessages
@@ -1788,6 +1798,26 @@
       '- Aber nicht bei jeder Antwort. Nur wenn es wirklich passt.'
     ];
 
+    // Voice-Modus: Zwei-Teil-Ausgabe (REDE zum Vorlesen, NOTIZ fuer Chat)
+    if (realtimeEnabled && realtimeActive && realtimeReady) {
+      parts.push('');
+      parts.push('VOICE-MODUS – ZWEI-TEIL-FORMAT (PFLICHT!):');
+      parts.push('Deine Antwort hat IMMER zwei Teile mit diesen Markern:');
+      parts.push('');
+      parts.push('[REDE]');
+      parts.push('Dein natuerlicher, gesprochener Text. So als wuerdest du es jemandem persoenlich erzaehlen. Ganze Saetze, kein Aufzaehlungs-Stil, keine Stichpunkte. Das wird laut vorgelesen!');
+      parts.push('[NOTIZ]');
+      parts.push('NUR die harten Fakten als kompakte Stichpunkte. Ports, Befehle, Pfade, Zahlen – das Wichtigste auf einen Blick. Kurz und knapp.');
+      parts.push('');
+      parts.push('Beispiel:');
+      parts.push('[REDE]');
+      parts.push('Der Sync-Server laeuft auf Port 3456. Den hast du in deiner Docker-Config festgelegt, und ueber Tailscale erreichst du ihn auch vom Handy aus.');
+      parts.push('[NOTIZ]');
+      parts.push('Sync-Server: Port 3456 · Docker-Config · Tailscale-erreichbar');
+      parts.push('');
+      parts.push('WICHTIG: Schreib IMMER beide Marker. Die [REDE] wird vorgelesen, die [NOTIZ] erscheint als kompakte Info im Chat.');
+    }
+
     // Kapitel-Kontext
     if (currentChapter) {
       parts.push('');
@@ -1808,6 +1838,20 @@
     }
 
     return parts.join('\n');
+  }
+
+  // Parser: Claude-Output in REDE (zum Vorlesen) und NOTIZ (fuer Chat) aufteilen
+  function parseRedeNotiz(text) {
+    var redeMatch = text.match(/\[REDE\]\s*([\s\S]*?)(?:\[NOTIZ\]|$)/);
+    var notizMatch = text.match(/\[NOTIZ\]\s*([\s\S]*?)$/);
+    if (redeMatch && redeMatch[1].trim()) {
+      return {
+        rede: redeMatch[1].trim(),
+        notiz: notizMatch ? notizMatch[1].trim() : ''
+      };
+    }
+    // Fallback: kein Format erkannt → ganzer Text als REDE, keine separate NOTIZ
+    return { rede: text.trim(), notiz: '' };
   }
 
   /* ══════════════════════════════════════════
@@ -2035,8 +2079,11 @@
 
     // Nur wenn Text vorhanden, als Chat-Bubble rendern
     if (textToTransfer && textToTransfer.trim()) {
-      messages.push({ role: 'assistant', text: textToTransfer });
-      renderAssistantBubble(textToTransfer);
+      // Falls [REDE]/[NOTIZ]-Marker vorhanden: nur NOTIZ (oder REDE als Fallback) in den Chat
+      var parsed = parseRedeNotiz(textToTransfer);
+      var chatText = parsed.notiz || parsed.rede;
+      messages.push({ role: 'assistant', text: chatText });
+      renderAssistantBubble(chatText);
       scrollToBottom();
     }
     currentStreamBuffer = '';
@@ -2844,6 +2891,14 @@
   // Wird durch rtCalUpdate() mit echten Messwerten nachkalibriert.
   var rtCalSlowMs = 370;   // ms/Wort bei kurzen Texten (<=15 Woerter)
   var rtCalFastMs = 260;   // ms/Wort bei langen Texten (>=80 Woerter)
+  // Kalibrierung aus localStorage laden (persistiert ueber Sessions)
+  try {
+    var _cs = localStorage.getItem('rtCalSlowMs');
+    var _cf = localStorage.getItem('rtCalFastMs');
+    if (_cs && parseInt(_cs) >= 180 && parseInt(_cs) <= 500) rtCalSlowMs = parseInt(_cs);
+    if (_cf && parseInt(_cf) >= 180 && parseInt(_cf) <= 500) rtCalFastMs = parseInt(_cf);
+    if (_cs || _cf) console.log('[Karaoke-Cal] Aus localStorage geladen: ' + rtCalSlowMs + '/' + rtCalFastMs + 'ms');
+  } catch(e) {}
 
   function rtGetMsPerWord(wordCount) {
     if (wordCount <= 15) return rtCalSlowMs;
@@ -2884,6 +2939,8 @@
           rtCalFastMs = Math.round(0.6 * measured + 0.4 * rtCalFastMs);
         }
         console.log('[Karaoke-Cal] ' + rtCalTotalWords + 'W, ' + rtCalSentencesTotal + ' Saetze → ~' + measured + 'ms/Wort. Kurve: ' + rtCalSlowMs + '/' + rtCalFastMs + 'ms');
+        // Kalibrierte Werte persistieren
+        try { localStorage.setItem('rtCalSlowMs', rtCalSlowMs); localStorage.setItem('rtCalFastMs', rtCalFastMs); } catch(e) {}
         var dbg = document.getElementById('voDbgInfo');
         if (dbg) dbg.textContent = '✓ ' + rtCalTotalWords + 'W · ~' + measured + 'ms · ' + rtCalSlowMs + '/' + rtCalFastMs;
       }
