@@ -592,6 +592,9 @@
         });
         contentArea.appendChild(fragment);
 
+        // Standalone-Nav entfernen (wird nur im Standalone-Modus gebraucht)
+        contentArea.querySelectorAll('.standalone-nav').forEach(function(el) { el.remove(); });
+
         scripts.forEach(function(oldScript) {
           // Redirect-Script ueberspringen (enthaelt __shellLoaded)
           if (oldScript.textContent && oldScript.textContent.indexOf('__shellLoaded') !== -1) return;
