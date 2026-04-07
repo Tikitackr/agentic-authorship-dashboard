@@ -646,7 +646,7 @@
     var fahrplan = {
       chapters: [
         { num: 'Vorwort', title: 'Vorwort', desc: 'Warum du dieses Buch nicht alleine lesen wirst', links: [], detail: 'onboarding' },
-        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [] },
+        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [], detail: 'kap1-architektur' },
         { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'] },
         { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'] },
         { num: '4', title: 'Agent-Konzepte', desc: 'Verstehe die theoretischen Grundlagen', links: [] },
@@ -738,6 +738,52 @@
         '</div>';
       },
 
+      getKap1Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Die vier Bausteine von OpenClaw</h3>' +
+          '<p>OpenClaw besteht aus vier Teilen, die zusammenspielen. Wenn du diese vier verstehst, verstehst du das ganze System.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/>' +
+                '<path d="M8 12h8"/><path d="M12 8v8"/>' +
+              '</svg>' +
+              '<h4>Gateway</h4>' +
+              '<p>Der Dirigent. Laeuft auf deinem Server, koordiniert Agenten, Kanaele und Nachrichten.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>' +
+                '<circle cx="12" cy="7" r="4"/>' +
+              '</svg>' +
+              '<h4>Agent</h4>' +
+              '<p>Dein KI-Assistent. Hat eine SOUL.md, einen Workspace und eigene Werkzeuge.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/>' +
+              '</svg>' +
+              '<h4>Channels</h4>' +
+              '<p>Verbinden den Agenten mit Telegram, WhatsApp, Web. Jeder Kanal ist ein Plugin.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/>' +
+                '<path d="M12 14v2"/>' +
+              '</svg>' +
+              '<h4>KI-Modell</h4>' +
+              '<p>Austauschbar. Heute Claude, morgen GPT, uebermorgen lokal. Du entscheidest.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.scrollToChapter(\'2\')">Weiter zu Kapitel 2: Installation &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -759,6 +805,8 @@
           var detailHtml = '';
           if (ch.detail === 'onboarding') {
             detailHtml = this.getOnboardingHtml();
+          } else if (ch.detail === 'kap1-architektur') {
+            detailHtml = this.getKap1Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
