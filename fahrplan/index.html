@@ -840,7 +840,13 @@
             }
           }
           if (found) {
+            // QR-Code am Kapitelende gescannt → Kapitel wurde gelesen → automatisch abhaken
+            var storageKey = 'aa-progress.kap-' + this.expandedChapter;
+            if (localStorage.getItem(storageKey) !== 'true') {
+              localStorage.setItem(storageKey, 'true');
+            }
             this.renderChapters();
+            this.updateProgress();
             var self = this;
             setTimeout(function() {
               var el = document.getElementById('fahrplan-card-' + self.expandedChapter);
