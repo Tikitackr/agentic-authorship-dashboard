@@ -527,6 +527,13 @@
         <p class="m03-label-hint">Die oeffentliche IP deines VPS (findest du im Hostinger Panel)</p>
       </div>
 
+      <!-- Gateway Port (VPS-relevant) -->
+      <div class="m03-field">
+        <label class="m03-label">Gateway Port <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <input class="m03-input mono" id="m03-gateway-port" type="text" placeholder="z.B. 52127">
+        <p class="m03-label-hint">Der Port, auf dem OpenClaw laeuft. Wird im Hostinger Docker Manager angezeigt.</p>
+      </div>
+
       <!-- Sync Token -->
       <div class="m03-field">
         <label class="m03-label">Sync Token</label>
@@ -624,6 +631,7 @@
     tailscaleIp: '100.123.45.67',
     syncToken: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
     syncPort: '3456',
+    port: '52127',
     gatewayToken: 'gw_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
     containerName: 'openclaw',
     browser: 'chrome',
@@ -654,6 +662,7 @@
       tailscaleIp: load('tailscaleIp'),
       syncToken: load('syncToken'),
       syncPort: load('syncPort') || '3456',
+      port: load('port'),
       gatewayToken: load('gatewayToken'),
       containerName: load('containerName') || 'openclaw',
       browser: load('browser') || 'chrome',
@@ -669,6 +678,7 @@
     save('tailscaleIp', data.tailscaleIp);
     save('syncToken', data.syncToken);
     save('syncPort', data.syncPort);
+    save('port', data.port);
     save('gatewayToken', data.gatewayToken);
     save('containerName', data.containerName);
     save('browser', data.browser);
@@ -684,6 +694,7 @@
       tailscaleIp: document.getElementById('m03-tailscale-ip').value.trim(),
       syncToken: document.getElementById('m03-token').value.trim(),
       syncPort: document.getElementById('m03-port').value.trim() || '3456',
+      port: document.getElementById('m03-gateway-port').value.trim(),
       gatewayToken: document.getElementById('m03-gateway-token').value.trim(),
       containerName: document.getElementById('m03-container-name').value.trim() || 'openclaw',
       browser: document.getElementById('m03-browser').value,
@@ -699,6 +710,7 @@
     document.getElementById('m03-tailscale-ip').value = data.tailscaleIp || '';
     document.getElementById('m03-token').value = data.syncToken || '';
     document.getElementById('m03-port').value = data.syncPort || '3456';
+    document.getElementById('m03-gateway-port').value = data.port || '';
     document.getElementById('m03-gateway-token').value = data.gatewayToken || '';
     document.getElementById('m03-container-name').value = data.containerName || 'openclaw';
     document.getElementById('m03-browser').value = data.browser || 'chrome';
@@ -877,6 +889,7 @@
       tailscaleIp: DEMO.tailscaleIp,
       syncToken: DEMO.syncToken,
       syncPort: DEMO.syncPort,
+      port: DEMO.port,
       gatewayToken: DEMO.gatewayToken,
       containerName: DEMO.containerName,
       browser: DEMO.browser,
@@ -901,7 +914,7 @@
     keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
 
     // Reset form
-    var empty = { name: '', apiKey: '', serverIp: '', tailscaleHostname: '', tailscaleIp: '', syncToken: '', syncPort: '3456', gatewayToken: '', containerName: 'openclaw', browser: 'chrome', isDemo: false };
+    var empty = { name: '', apiKey: '', serverIp: '', tailscaleHostname: '', tailscaleIp: '', syncToken: '', syncPort: '3456', port: '', gatewayToken: '', containerName: 'openclaw', browser: 'chrome', isDemo: false };
     fillForm(empty);
     updateOverview(empty);
 
@@ -916,7 +929,7 @@
   document.getElementById('m03-test-btn').addEventListener('click', testConnection);
 
   // ── Auto-Save on Input ──
-  var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-token, #m03-container-name, #m03-browser');
+  var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-port, #m03-gateway-token, #m03-container-name, #m03-browser');
   var autoSaveTimer = null;
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('input', function() {

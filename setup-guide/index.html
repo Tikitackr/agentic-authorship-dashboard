@@ -532,8 +532,8 @@
               <path d="M2 17h20"></path>
               <path d="M6 20h12"></path>
             </svg>
-            <div class="setup-section-title">Kapitel 2: Server-Setup (Installation)</div>
-            <div class="setup-section-count">6 Schritte</div>
+            <div class="setup-section-title">Kapitel 2: Installation & Setup</div>
+            <div class="setup-section-count" id="kap2-step-count">7 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -561,9 +561,17 @@
           </div>
 
           <div class="setup-path-steps" data-for="vps">
+            <p style="color:var(--text-dim);margin:0.5rem 0 1rem;font-size:0.9rem;">Schritt 1 machst du im Hostinger-Panel (Browser). Ab Schritt 2 per SSH auf dem VPS.</p>
+
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              1. SSH verbinden
+              1. OpenClaw im Hostinger Docker Manager deployen
+            </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Hostinger Panel &rarr; Docker Manager &rarr; Katalog &rarr; OpenClaw &rarr; „Bereitstellen". Trag deinen API-Key und Gateway Token ein. Merk dir den Port (z.B. 52127).</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              2. Per SSH mit dem VPS verbinden
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
@@ -574,58 +582,56 @@
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              2. System aktualisieren
+              3. Tailscale installieren
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-2">apt update && apt upgrade -y</code>
+              <code id="code-2-2">curl -fsSL https://tailscale.com/install.sh | sh</code>
             </div>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              3. Docker installieren
+              4. Tailscale starten &amp; authentifizieren
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-3">curl -fsSL https://get.docker.com | sh</code>
+              <code id="code-2-3">sudo tailscale up</code>
             </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Kopiere den angezeigten Link, oeffne ihn im Browser, melde dich bei Tailscale an und klicke „Connect".</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              4. OpenClaw starten
+              5. Tailscale Serve (HTTPS fuer deinen Server)
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-4">docker run -d --name ${CONTAINER_NAME} --restart unless-stopped -p 8443:8443 -v /docker/${CONTAINER_NAME}/data:/data ghcr.io/openclaw/openclaw:latest</code>
+              <code id="code-2-4">sudo tailscale serve --bg http://localhost:${PORT}</code>
             </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Notiere dir die angezeigte HTTPS-Adresse (z.B. https://srv1192770.tail755c12.ts.net/) und trage sie unter „Meine Daten" ein.</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              5. Gateway prüfen
+              6. Tailscale auf Mac/Handy installieren
             </div>
-            <div class="setup-code-block">
-              <button class="setup-code-copy" onclick="copyCode(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-              </button>
-              <code id="code-2-5">docker logs ${CONTAINER_NAME} --tail 50</code>
-            </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">App Store &rarr; „Tailscale" &rarr; installieren &rarr; mit demselben Account anmelden. Auf dem Handy genauso.</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              6. API-Key setzen
+              7. Testen: HTTPS-Adresse im Browser oeffnen
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-6">docker exec ${CONTAINER_NAME} openclaw config set anthropic.apiKey "${API_KEY}"</code>
+              <code id="code-2-5">https://${HOSTNAME}/</code>
             </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 1rem 2.25rem;">Du siehst das Gateway-UI? Glueckwunsch, dein Agent laeuft!</p>
           </div>
 
           <div class="setup-path-steps" data-for="local" style="display:none;">
@@ -1119,6 +1125,7 @@
         'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), type: 'sensitive' },
         'TELEGRAM_ID': { value: getSetting('telegramId'), type: 'safe' },
         'CONTAINER_NAME': { value: getSetting('containerName'), type: 'safe' },
+        'PORT': { value: getSetting('port'), type: 'safe' },
       };
 
       let result = template;
@@ -1147,6 +1154,7 @@
         'TELEGRAM_TOKEN': getSetting('telegramToken'),
         'TELEGRAM_ID': getSetting('telegramId'),
         'CONTAINER_NAME': getSetting('containerName'),
+        'PORT': getSetting('port'),
       };
 
       let result = template;
