@@ -260,11 +260,33 @@
     }
 
     .setup-var-missing {
-      background-color: rgba(245, 158, 11, 0.2);
-      padding: 0 4px;
-      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(245, 158, 11, 0.15);
+      padding: 2px 8px;
+      border-radius: 5px;
+      border: 1px dashed rgba(245, 158, 11, 0.4);
       color: var(--amber);
       font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .setup-var-missing:hover {
+      background-color: rgba(245, 158, 11, 0.25);
+      border-color: var(--amber);
+    }
+    .setup-var-missing .missing-label {
+      color: var(--amber);
+      font-style: italic;
+    }
+    .setup-var-missing .missing-hint {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 0.8em;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-style: normal;
+      white-space: nowrap;
     }
 
     /* Snippet Title */
@@ -1116,16 +1138,16 @@
 
     function interpolate(template) {
       const vars = {
-        'SERVER_IP': { value: getSetting('serverIp'), type: 'safe' },
-        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), type: 'safe' },
-        'HOSTNAME': { value: getSetting('tailscaleHostname'), type: 'safe' },
-        'API_KEY': { value: getSetting('apiKey'), type: 'sensitive' },
-        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), type: 'sensitive' },
-        'SYNC_TOKEN': { value: getSetting('syncToken'), type: 'sensitive' },
-        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), type: 'sensitive' },
-        'TELEGRAM_ID': { value: getSetting('telegramId'), type: 'safe' },
-        'CONTAINER_NAME': { value: getSetting('containerName'), type: 'safe' },
-        'PORT': { value: getSetting('port'), type: 'safe' },
+        'SERVER_IP': { value: getSetting('serverIp'), type: 'safe', label: 'deine Server-IP' },
+        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), type: 'safe', label: 'deine Tailscale IP' },
+        'HOSTNAME': { value: getSetting('tailscaleHostname'), type: 'safe', label: 'dein Tailscale Hostname' },
+        'API_KEY': { value: getSetting('apiKey'), type: 'sensitive', label: 'dein API Key' },
+        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), type: 'sensitive', label: 'dein Gateway Token' },
+        'SYNC_TOKEN': { value: getSetting('syncToken'), type: 'sensitive', label: 'dein Sync Token' },
+        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), type: 'sensitive', label: 'dein Telegram Token' },
+        'TELEGRAM_ID': { value: getSetting('telegramId'), type: 'safe', label: 'deine Telegram ID' },
+        'CONTAINER_NAME': { value: getSetting('containerName'), type: 'safe', label: 'dein Container Name' },
+        'PORT': { value: getSetting('port'), type: 'safe', label: 'dein Gateway Port' },
       };
 
       let result = template;
@@ -1136,7 +1158,11 @@
             const cls = info.type === 'sensitive' ? 'setup-var-sensitive' : 'setup-var-safe';
             result = result.replaceAll(placeholder, '<span class="' + cls + '">' + escapeHtml(info.value) + '</span>');
           } else {
-            result = result.replaceAll(placeholder, '<span class="setup-var-missing">&lt;' + key + '&gt;</span>');
+            result = result.replaceAll(placeholder,
+              '<span class="setup-var-missing" onclick="loadMeineDaten()" title="Klick um das Feld in Meine Daten auszufuellen">' +
+              '<span class="missing-label">' + escapeHtml(info.label) + '</span>' +
+              '<span class="missing-hint">\u2190 Meine Daten</span>' +
+              '</span>');
           }
         }
       }
@@ -1145,22 +1171,22 @@
 
     function getPlainText(template) {
       const vars = {
-        'SERVER_IP': getSetting('serverIp'),
-        'TAILSCALE_IP': getSetting('tailscaleIp'),
-        'HOSTNAME': getSetting('tailscaleHostname'),
-        'API_KEY': getSetting('apiKey'),
-        'GATEWAY_TOKEN': getSetting('gatewayToken'),
-        'SYNC_TOKEN': getSetting('syncToken'),
-        'TELEGRAM_TOKEN': getSetting('telegramToken'),
-        'TELEGRAM_ID': getSetting('telegramId'),
-        'CONTAINER_NAME': getSetting('containerName'),
-        'PORT': getSetting('port'),
+        'SERVER_IP': { value: getSetting('serverIp'), label: 'DEINE-SERVER-IP' },
+        'TAILSCALE_IP': { value: getSetting('tailscaleIp'), label: 'DEINE-TAILSCALE-IP' },
+        'HOSTNAME': { value: getSetting('tailscaleHostname'), label: 'DEIN-TAILSCALE-HOSTNAME' },
+        'API_KEY': { value: getSetting('apiKey'), label: 'DEIN-API-KEY' },
+        'GATEWAY_TOKEN': { value: getSetting('gatewayToken'), label: 'DEIN-GATEWAY-TOKEN' },
+        'SYNC_TOKEN': { value: getSetting('syncToken'), label: 'DEIN-SYNC-TOKEN' },
+        'TELEGRAM_TOKEN': { value: getSetting('telegramToken'), label: 'DEIN-TELEGRAM-TOKEN' },
+        'TELEGRAM_ID': { value: getSetting('telegramId'), label: 'DEINE-TELEGRAM-ID' },
+        'CONTAINER_NAME': { value: getSetting('containerName'), label: 'DEIN-CONTAINER-NAME' },
+        'PORT': { value: getSetting('port'), label: 'DEIN-GATEWAY-PORT' },
       };
 
       let result = template;
-      for (const [key, value] of Object.entries(vars)) {
+      for (const [key, info] of Object.entries(vars)) {
         const placeholder = '${' + key + '}';
-        result = result.replaceAll(placeholder, value || '');
+        result = result.replaceAll(placeholder, info.value || info.label);
       }
       return result;
     }
