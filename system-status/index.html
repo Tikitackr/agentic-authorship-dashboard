@@ -14,13 +14,18 @@
   <link rel="canonical" href="https://openclaw-buch.de/system-status/">
 </head>
 <body>
-  <script>
-    if (!window.__shellLoaded) {
-      window.location.href = '/?module=system-status';
-    }
-  </script>
 <!-- M12: System Status — Agentic Authorship Dashboard -->
 <style>
+  /* Fallback: CSS-Variablen fuer Standalone-Ansicht (Shell ueberschreibt diese) */
+  :root {
+    --bg: #0a0a0f; --bg-card: #12121a; --bg-card-hover: #1a1a28;
+    --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.15); --amber-glow: rgba(245,158,11,0.08);
+    --text: #e0e0e0; --text-dim: #888;
+    --border: rgba(245,158,11,0.2); --border-hover: rgba(245,158,11,0.5);
+    --green: #22c55e; --blue: #3b82f6; --red: #ef4444; --purple: #a78bfa; --cyan: #22d3ee; --pink: #f472b6;
+    --radius: 14px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1.5rem; line-height: 1.5; }
   .m12 { max-width: 100%; }
 
   .m12-hero {
