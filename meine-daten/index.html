@@ -169,6 +169,8 @@
 
   .m03-input:focus { border-color: var(--amber); }
   .m03-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+  .m03-input.filled { border-color: rgba(34,197,94,0.4); }
+  .m03-input.filled:not(:focus) { border-color: rgba(34,197,94,0.4); }
   .m03-input.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; letter-spacing: 0.5px; }
 
   /* Password Toggle */
@@ -899,6 +901,7 @@
     } catch(e) {}
 
     showToast('Gespeichert');
+    updateFieldStates();
   });
 
   // Demo
@@ -922,6 +925,7 @@
     fillForm(demoData);
     updateOverview(demoData);
     showToast('Demo-Daten geladen');
+    updateFieldStates();
   });
 
   // Clear
@@ -946,10 +950,24 @@
     document.getElementById('m03-test-result').textContent = '';
 
     showToast('Daten geloescht');
+    updateFieldStates();
   });
 
   // Test
   document.getElementById('m03-test-btn').addEventListener('click', testConnection);
+
+  // ── Field State (filled/empty) ──
+  function updateFieldStates() {
+    var fields = document.querySelectorAll('.m03-input');
+    for (var i = 0; i < fields.length; i++) {
+      var val = fields[i].value.trim();
+      if (val && val !== fields[i].placeholder) {
+        fields[i].classList.add('filled');
+      } else {
+        fields[i].classList.remove('filled');
+      }
+    }
+  }
 
   // ── Auto-Save on Input ──
   var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-openai-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-port, #m03-gateway-token, #m03-container-name, #m03-browser');
@@ -961,12 +979,14 @@
         var data = readForm();
         saveAll(data);
         updateOverview(data);
+        updateFieldStates();
       }, 800);
     });
     inputs[i].addEventListener('change', function() {
       var data = readForm();
       saveAll(data);
       updateOverview(data);
+      updateFieldStates();
     });
   }
 
@@ -1007,6 +1027,7 @@
 
   fillForm(data);
   updateOverview(data);
+  updateFieldStates();
   checkDemoParam();
 
 })();
