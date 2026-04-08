@@ -231,6 +231,28 @@
       transition: background-color 0.2s;
     }
 
+    .setup-code-open {
+      position: absolute;
+      top: 0.75rem;
+      right: calc(0.75rem + 40px);
+      background-color: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--blue);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .setup-code-open:hover {
+      background-color: rgba(59,130,246,0.3);
+    }
+
     .setup-code-copy:hover {
       background-color: #2563eb;
     }
@@ -659,13 +681,13 @@
             </div>
             <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.75rem 2.25rem;">Klick auf den Link oder kopiere die Adresse in deinen Browser:</p>
             <div class="setup-code-block" style="position:relative;">
+              <a id="openclaw-link" href="#" target="_blank" title="OpenClaw öffnen" class="setup-code-open">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-5">https://${HOSTNAME}:${TAILSCALE_PORT}/#token=${GATEWAY_TOKEN}</code>
-              <a id="openclaw-link" href="#" target="_blank" title="OpenClaw öffnen" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:rgba(59,130,246,0.15);color:var(--blue);text-decoration:none;flex-shrink:0;margin-left:4px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              </a>
+              <code id="code-2-5" data-copy-prefix="https://">${HOSTNAME}:${TAILSCALE_PORT}/#token=${GATEWAY_TOKEN}</code>
             </div>
             <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0.5rem 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
               <strong style="color:var(--amber);">Gateway Token bereithalten!</strong> Du landest auf einer Login-Seite. Kopiere deinen Gateway Token vorher in den Zwischenspeicher (Auge-Symbol bei „Meine Daten" → markieren → kopieren). Den Token auf der Login-Seite einfügen und auf „Login" klicken.
@@ -1343,7 +1365,8 @@
 
     function copyCode(btn) {
       const codeEl = btn.nextElementSibling;
-      const plainText = getPlainText(codeEl.textContent);
+      const prefix = codeEl.getAttribute('data-copy-prefix') || '';
+      const plainText = prefix + getPlainText(codeEl.textContent);
 
       navigator.clipboard.writeText(plainText).then(() => {
         const icon = btn.querySelector('svg');
