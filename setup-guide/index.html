@@ -657,16 +657,19 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
               7. OpenClaw im Browser oeffnen
             </div>
-            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.75rem 2.25rem;">Kopier diese Adresse in deinen Browser. Dein Gateway Token ist schon eingebaut, du landest direkt im Dashboard:</p>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.75rem 2.25rem;">Kopier diese Adresse in deinen Browser:</p>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-5">https://${HOSTNAME}/#token=${GATEWAY_TOKEN}</code>
+              <code id="code-2-5">https://${HOSTNAME}:${PORT}/#token=${GATEWAY_TOKEN}</code>
+            </div>
+            <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0.5rem 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
+              <strong style="color:var(--amber);">Gateway Token bereithalten!</strong> Du landest auf einer Login-Seite. Kopiere deinen Gateway Token vorher in den Zwischenspeicher (Auge-Symbol bei "Meine Daten" &rarr; markieren &rarr; kopieren). Den Token auf der Login-Seite einfuegen und auf "Login" klicken.
             </div>
             <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.5rem 2.25rem;">Du siehst das OpenClaw-Dashboard? Glueckwunsch, dein Agent laeuft!</p>
             <div style="background:rgba(34,197,94,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
-              <strong style="color:var(--green);">Lesezeichen setzen!</strong> Diese Adresse mit Token ist ab jetzt dein taeglicher Zugang zu OpenClaw. Setz ein Lesezeichen im Browser und auf dem Handy. Der Token in der URL meldet dich automatisch an.
+              <strong style="color:var(--green);">Lesezeichen setzen!</strong> Diese Adresse ist ab jetzt dein taeglicher Zugang zu OpenClaw. Setz ein Lesezeichen im Browser und auf dem Handy.
             </div>
           </div>
 
