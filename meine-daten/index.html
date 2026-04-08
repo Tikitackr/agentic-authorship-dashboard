@@ -493,17 +493,34 @@
       <span>Diese Daten brauchst du nur, wenn du einen eigenen VPS mit OpenClaw hast. Ohne VPS kannst du alles manuell per <strong>Copy &amp; Paste</strong> machen &ndash; die Verbindung ist optional.</span>
     </div>
 
+    <div class="m03-info" style="margin-bottom: 16px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>Im Buch nutzen wir <strong>Anthropic (Claude)</strong> als Hauptmodell fuer deinen Agent. Fuer Sprach-Features wie den Companion brauchst du zusaetzlich einen <strong>OpenAI-Key</strong>.</span>
+    </div>
+
     <div class="m03-card">
-      <!-- API Key (immer sichtbar) -->
+      <!-- Anthropic API Key -->
       <div class="m03-field">
-        <label class="m03-label">API Key</label>
+        <label class="m03-label">Anthropic API Key</label>
         <div class="m03-password-wrapper">
-          <input class="m03-input mono" id="m03-api-key" type="password" placeholder="sk-ant-... oder sk-...">
+          <input class="m03-input mono" id="m03-api-key" type="password" placeholder="sk-ant-...">
           <button type="button" class="m03-password-toggle" data-target="m03-api-key">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </div>
-        <p class="m03-label-hint">Dein Anthropic- oder OpenAI-Key. Bleibt nur in deinem Browser.</p>
+        <p class="m03-label-hint">Fuer deinen OpenClaw-Agent. Beginnt mit sk-ant-... Pflichtfeld.</p>
+      </div>
+
+      <!-- OpenAI API Key -->
+      <div class="m03-field">
+        <label class="m03-label">OpenAI API Key <span style="color: var(--text-dim); font-weight: 400;">(optional)</span></label>
+        <div class="m03-password-wrapper">
+          <input class="m03-input mono" id="m03-openai-key" type="password" placeholder="sk-...">
+          <button type="button" class="m03-password-toggle" data-target="m03-openai-key">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+        <p class="m03-label-hint">Fuer Realtime Voice und OpenAI-Modelle. Beginnt mit sk-... Optional.</p>
       </div>
 
       <!-- Tailscale Hostname (VPS-relevant) -->
@@ -626,6 +643,7 @@
   var DEMO = {
     name: 'Max Mustermann',
     apiKey: 'sk-ant-d1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
+    openaiKey: 'sk-proj-abc123def456ghi789jkl012mno345',
     serverIp: '123.456.78.90',
     tailscaleHostname: 'srv1192770.tail755c12.ts.net',
     tailscaleIp: '100.123.45.67',
@@ -657,6 +675,7 @@
     return {
       name: load('name'),
       apiKey: load('apiKey'),
+      openaiKey: load('openaiKey'),
       serverIp: load('serverIp'),
       tailscaleHostname: load('tailscaleHostname'),
       tailscaleIp: load('tailscaleIp'),
@@ -673,6 +692,7 @@
   function saveAll(data) {
     save('name', data.name);
     save('apiKey', data.apiKey);
+    save('openaiKey', data.openaiKey);
     save('serverIp', data.serverIp);
     save('tailscaleHostname', data.tailscaleHostname);
     save('tailscaleIp', data.tailscaleIp);
@@ -689,6 +709,7 @@
     return {
       name: document.getElementById('m03-name').value.trim(),
       apiKey: document.getElementById('m03-api-key').value.trim(),
+      openaiKey: document.getElementById('m03-openai-key').value.trim(),
       serverIp: document.getElementById('m03-server-ip').value.trim(),
       tailscaleHostname: document.getElementById('m03-tailscale-hostname').value.trim(),
       tailscaleIp: document.getElementById('m03-tailscale-ip').value.trim(),
@@ -705,6 +726,7 @@
   function fillForm(data) {
     document.getElementById('m03-name').value = data.name || '';
     document.getElementById('m03-api-key').value = data.apiKey || '';
+    document.getElementById('m03-openai-key').value = data.openaiKey || '';
     document.getElementById('m03-server-ip').value = data.serverIp || '';
     document.getElementById('m03-tailscale-hostname').value = data.tailscaleHostname || '';
     document.getElementById('m03-tailscale-ip').value = data.tailscaleIp || '';
@@ -884,6 +906,7 @@
     var demoData = {
       name: DEMO.name,
       apiKey: DEMO.apiKey,
+      openaiKey: DEMO.openaiKey,
       serverIp: DEMO.serverIp,
       tailscaleHostname: DEMO.tailscaleHostname,
       tailscaleIp: DEMO.tailscaleIp,
@@ -914,7 +937,7 @@
     keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
 
     // Reset form
-    var empty = { name: '', apiKey: '', serverIp: '', tailscaleHostname: '', tailscaleIp: '', syncToken: '', syncPort: '3456', port: '', gatewayToken: '', containerName: 'openclaw', browser: 'chrome', isDemo: false };
+    var empty = { name: '', apiKey: '', openaiKey: '', serverIp: '', tailscaleHostname: '', tailscaleIp: '', syncToken: '', syncPort: '3456', port: '', gatewayToken: '', containerName: 'openclaw', browser: 'chrome', isDemo: false };
     fillForm(empty);
     updateOverview(empty);
 
@@ -929,7 +952,7 @@
   document.getElementById('m03-test-btn').addEventListener('click', testConnection);
 
   // ── Auto-Save on Input ──
-  var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-port, #m03-gateway-token, #m03-container-name, #m03-browser');
+  var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-openai-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-port, #m03-gateway-token, #m03-container-name, #m03-browser');
   var autoSaveTimer = null;
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('input', function() {
