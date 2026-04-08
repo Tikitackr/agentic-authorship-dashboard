@@ -231,27 +231,6 @@
       transition: background-color 0.2s;
     }
 
-    .setup-code-open {
-      position: absolute;
-      top: 0.75rem;
-      right: calc(0.75rem + 40px);
-      background-color: rgba(59,130,246,0.15);
-      border: 1px solid rgba(59,130,246,0.3);
-      color: var(--blue);
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      transition: background-color 0.2s;
-    }
-
-    .setup-code-open:hover {
-      background-color: rgba(59,130,246,0.3);
-    }
 
     .setup-code-copy:hover {
       background-color: #2563eb;
@@ -679,19 +658,20 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
               7. OpenClaw im Browser öffnen
             </div>
-            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.75rem 2.25rem;">Klick auf den Link oder kopiere die Adresse in deinen Browser:</p>
-            <div class="setup-code-block" style="position:relative;">
-              <a id="openclaw-link" href="#" target="_blank" title="OpenClaw öffnen" class="setup-code-open">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              </a>
-              <button class="setup-code-copy" onclick="copyCode(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.75rem 2.25rem;">Zwei Klicks bis zu deinem Dashboard:</p>
+            <div style="display:flex;gap:0.75rem;margin:0.5rem 0 1rem 0;">
+              <button id="copy-token-btn" onclick="copyGatewayToken(this)" style="flex:1;display:flex;align-items:center;gap:0.6rem;padding:0.75rem 1rem;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:10px;color:var(--text);cursor:pointer;font-size:0.85rem;font-family:inherit;transition:all 0.2s;">
+                <span style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;">1</span>
+                <span>Token kopieren</span>
+                <svg style="margin-left:auto;flex-shrink:0;opacity:0.5;" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-5" data-copy-prefix="https://">${HOSTNAME}:${TAILSCALE_PORT}/#token=${GATEWAY_TOKEN}</code>
+              <a id="openclaw-link" href="#" target="_blank" style="flex:1;display:flex;align-items:center;gap:0.6rem;padding:0.75rem 1rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;color:var(--text);text-decoration:none;font-size:0.85rem;font-family:inherit;transition:all 0.2s;">
+                <span style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;">2</span>
+                <span>Dashboard öffnen</span>
+                <svg style="margin-left:auto;flex-shrink:0;opacity:0.5;" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
             </div>
-            <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0.5rem 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
-              <strong style="color:var(--amber);">Gateway Token bereithalten!</strong> Du landest auf einer Login-Seite. Kopiere deinen Gateway Token vorher in den Zwischenspeicher (Auge-Symbol bei „Meine Daten" → markieren → kopieren). Den Token auf der Login-Seite einfügen und auf „Login" klicken.
-            </div>
+            <p style="color:var(--text-dim);font-size:0.8rem;margin:-0.25rem 0 1rem 0;">Auf der Login-Seite den Token einfügen und auf „Login" klicken. Danach Lesezeichen setzen!</p>
             <p style="color:var(--text-dim);font-size:0.85rem;margin:0.25rem 0 0.5rem 2.25rem;">Du siehst das OpenClaw-Dashboard? Glückwunsch, dein Agent läuft!</p>
             <div style="background:rgba(34,197,94,0.08);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
               <strong style="color:var(--green);">Lesezeichen setzen!</strong> Diese Adresse ist ab jetzt dein täglicher Zugang zu OpenClaw. Setz ein Lesezeichen im Browser und auf dem Handy.
@@ -1229,6 +1209,29 @@
         result = result.replaceAll(placeholder, value || 'DEIN-' + key.replace(/_/g, '-'));
       }
       return result;
+    }
+
+    function copyGatewayToken(btn) {
+      const token = localStorage.getItem('aa-settings.gatewayToken') || '';
+      if (!token) {
+        btn.querySelector('span:nth-child(2)').textContent = 'Kein Token!';
+        btn.style.borderColor = 'rgba(239,68,68,0.5)';
+        setTimeout(() => {
+          btn.querySelector('span:nth-child(2)').textContent = 'Token kopieren';
+          btn.style.borderColor = 'rgba(59,130,246,0.25)';
+        }, 2000);
+        return;
+      }
+      navigator.clipboard.writeText(token).then(() => {
+        btn.querySelector('span:nth-child(2)').textContent = 'Kopiert!';
+        btn.style.borderColor = 'rgba(34,197,94,0.5)';
+        btn.style.background = 'rgba(34,197,94,0.08)';
+        setTimeout(() => {
+          btn.querySelector('span:nth-child(2)').textContent = 'Token kopieren';
+          btn.style.borderColor = 'rgba(59,130,246,0.25)';
+          btn.style.background = 'rgba(59,130,246,0.08)';
+        }, 2000);
+      });
     }
 
     // === RENDERING ===
