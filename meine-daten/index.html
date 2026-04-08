@@ -630,6 +630,12 @@
       <button class="m03-btn-blue m03-btn" id="m03-demo-btn">Demo-Daten laden</button>
       <button class="m03-btn-red m03-btn" id="m03-clear-btn">Alle Daten loeschen</button>
     </div>
+    <div class="m03-btn-row" style="margin-top: 0.5rem;">
+      <button class="m03-btn" id="m03-backup-btn" style="background:rgba(59,130,246,0.15);color:var(--blue);">Backup speichern</button>
+      <label class="m03-btn" id="m03-restore-label" style="background:rgba(59,130,246,0.15);color:var(--blue);cursor:pointer;text-align:center;">Backup laden
+        <input type="file" id="m03-restore-input" accept=".txt" style="display:none;">
+      </label>
+    </div>
   </div>
 
 </div>
@@ -968,6 +974,76 @@
       }
     }
   }
+
+  // ── Backup: Export ──
+  document.getElementById('m03-backup-btn').addEventListener('click', function() {
+    var data = readForm();
+    var now = new Date();
+    var dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+    var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+    var lines = [];
+    lines.push('OpenClaw Meine Daten – Backup');
+    lines.push('==============================');
+    lines.push('Erstellt am: ' + dateStr + ' um ' + timeStr);
+    lines.push('');
+    lines.push('Name:               ' + (data.name || '(nicht gesetzt)'));
+    lines.push('Anthropic API Key:  ' + (data.apiKey ? data.apiKey.substring(0,12) + '...' : '(nicht gesetzt)'));
+    lines.push('OpenAI API Key:     ' + (data.openaiKey ? data.openaiKey.substring(0,12) + '...' : '(nicht gesetzt)'));
+    lines.push('Tailscale Hostname: ' + (data.tailscaleHostname || '(nicht gesetzt)'));
+    lines.push('Tailscale IP:       ' + (data.tailscaleIp || '(nicht gesetzt)'));
+    lines.push('Server IP:          ' + (data.serverIp || '(nicht gesetzt)'));
+    lines.push('Gateway Port:       ' + (data.port || '(nicht gesetzt)'));
+    lines.push('Sync Token:         ' + (data.syncToken ? data.syncToken.substring(0,12) + '...' : '(nicht gesetzt)'));
+    lines.push('Sync Port:          ' + (data.syncPort || '3456'));
+    lines.push('Gateway Token:      ' + (data.gatewayToken ? data.gatewayToken.substring(0,12) + '...' : '(nicht gesetzt)'));
+    lines.push('Container Name:     ' + (data.containerName || 'openclaw'));
+    lines.push('Browser:            ' + (data.browser || 'chrome'));
+    lines.push('');
+    lines.push('─────────────────────────────');
+    lines.push('WICHTIG: Diese Datei enthaelt sensible Daten (API-Keys, Tokens).');
+    lines.push('Sicher aufbewahren und nicht teilen!');
+    lines.push('─────────────────────────────');
+    lines.push('');
+    lines.push('<!-- BACKUP_DATA');
+    lines.push(JSON.stringify(data));
+    lines.push('BACKUP_DATA -->');
+
+    var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'openclaw-meine-daten-backup-' + dateStr + '.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Backup gespeichert');
+  });
+
+  // ── Backup: Import ──
+  document.getElementById('m03-restore-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var text = ev.target.result;
+      var match = text.match(/<!-- BACKUP_DATA\n([\s\S]*?)\nBACKUP_DATA -->/);
+      if (!match) {
+        showToast('Kein gueltiges Backup gefunden');
+        return;
+      }
+      try {
+        var data = JSON.parse(match[1]);
+        saveAll(data);
+        fillForm(data);
+        updateOverview(data);
+        updateFieldStates();
+        showToast('Backup wiederhergestellt');
+      } catch(err) {
+        showToast('Fehler beim Lesen des Backups');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
 
   // ── Auto-Save on Input ──
   var inputs = document.querySelectorAll('#m03-name, #m03-api-key, #m03-openai-key, #m03-server-ip, #m03-tailscale-hostname, #m03-tailscale-ip, #m03-token, #m03-port, #m03-gateway-port, #m03-gateway-token, #m03-container-name, #m03-browser');
