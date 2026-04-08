@@ -662,7 +662,7 @@
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-2-5"><a id="openclaw-link" href="#" target="_blank" style="color:var(--blue);text-decoration:none;">https://${HOSTNAME}:${PORT}/#token=${GATEWAY_TOKEN}</a></code>
+              <code id="code-2-5"><a id="openclaw-link" href="#" target="_blank" style="color:var(--blue);text-decoration:none;">https://${HOSTNAME}:${TAILSCALE_PORT}/#token=${GATEWAY_TOKEN}</a></code>
             </div>
             <div style="background:rgba(245,158,11,0.08);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0.5rem 0 1rem 0;font-size:0.85rem;color:var(--text-dim);">
               <strong style="color:var(--amber);">Gateway Token bereithalten!</strong> Du landest auf einer Login-Seite. Kopiere deinen Gateway Token vorher in den Zwischenspeicher (Auge-Symbol bei „Meine Daten" → markieren → kopieren). Den Token auf der Login-Seite einfügen und auf „Login" klicken.
@@ -1159,6 +1159,7 @@
       'HOSTNAME': { setting: 'tailscaleHostname', type: 'safe', label: 'Tailscale Hostname' },
       'API_KEY': { setting: 'apiKey', type: 'sensitive', label: 'Anthropic API Key' },
       'OPENAI_KEY': { setting: 'openaiKey', type: 'sensitive', label: 'OpenAI API Key' },
+      'TAILSCALE_PORT': { setting: 'tailscalePort', type: 'safe', label: 'Tailscale Port' },
       'GATEWAY_TOKEN': { setting: 'gatewayToken', type: 'sensitive', label: 'Gateway Token' },
       'SYNC_TOKEN': { setting: 'syncToken', type: 'sensitive', label: 'Sync Token' },
       'TELEGRAM_TOKEN': { setting: 'telegramToken', type: 'sensitive', label: 'Telegram Token' },
@@ -1211,10 +1212,10 @@
       const link = document.getElementById('openclaw-link');
       if (!link) return;
       const hostname = localStorage.getItem('aa-settings.tailscaleHostname') || '';
-      const port = localStorage.getItem('aa-settings.port') || '';
+      const tsPort = localStorage.getItem('aa-settings.tailscalePort') || '';
       const token = localStorage.getItem('aa-settings.gatewayToken') || '';
-      if (hostname && port) {
-        link.href = 'https://' + hostname + ':' + port + '/#token=' + token;
+      if (hostname && tsPort && tsPort !== '443') {
+        link.href = 'https://' + hostname + ':' + tsPort + '/#token=' + token;
       } else if (hostname) {
         link.href = 'https://' + hostname + '/#token=' + token;
       } else {
