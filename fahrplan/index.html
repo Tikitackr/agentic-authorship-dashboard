@@ -649,7 +649,7 @@
         { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [], detail: 'kap1-architektur' },
         { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'], detail: 'kap2-installation' },
         { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
-        { num: '4', title: 'Agent-Konzepte', desc: 'Verstehe die theoretischen Grundlagen', links: [] },
+        { num: '4', title: 'Agent-Konzepte', desc: 'Workspace-Dateien, Automatisierung und Skills', links: ['soul-gallery', 'workspace-wizard'], detail: 'kap4-agenten' },
         { num: '5', title: 'Multi-Channel Setup', desc: 'Verbinde mehrere Kanaele und Plattformen', links: ['setup-guide'] },
         { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'] },
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz'] },
@@ -857,6 +857,44 @@
         '</div>';
       },
 
+      getKap4Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Dein Agent: Dateien, Kontext, Automatisierung</h3>' +
+          '<p>Kapitel 4 zeigt dir, woraus ein Agent besteht. Acht Workspace-Dateien, ein Gedaechtnis-Ordner, und drei Wege zur Automatisierung. Hier lernst du, wie du deinem Agenten Persoenlichkeit, Aufgaben und Faehigkeiten gibst.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="cursor:pointer; border-color: #f59e0b;" onclick="fahrplan.handleQuickAccess(\'soul-gallery\')">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">SOUL.md Gallery</h4>' +
+              '<p>Fertige Vorlagen fuer verschiedene Agenten-Persoenlichkeiten: vom sachlichen Assistenten bis zum kreativen Sparringspartner. Anpassen und uebernehmen.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card" style="cursor:pointer;" onclick="fahrplan.handleQuickAccess(\'workspace-wizard\')">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' +
+              '</svg>' +
+              '<h4>Workspace Wizard</h4>' +
+              '<p>Generiert dir AGENTS.md und TOOLS.md passend zu deinem Setup. Beantworte ein paar Fragen, der Wizard baut deine Dateien.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/>' +
+                '<polyline points="12 6 12 12 16 14"/>' +
+              '</svg>' +
+              '<h4>Automatisierung</h4>' +
+              '<p>Heartbeat (regelmaessige Checks), Hooks (Event-basiert) und Cron-Jobs (zeitgesteuert). Drei Wege, deinen Agenten proaktiv arbeiten zu lassen.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Ein Agent ist kein Programm, sondern ein Workspace aus Textdateien. SOUL.md (wer er ist), AGENTS.md (was er tut), TOOLS.md (wo was liegt). Wer diese drei Dateien versteht, kontrolliert seinen Agenten.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'soul-gallery\')">SOUL.md Gallery oeffnen &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -884,6 +922,8 @@
             detailHtml = this.getKap2Html();
           } else if (ch.detail === 'kap3-docker') {
             detailHtml = this.getKap3Html();
+          } else if (ch.detail === 'kap4-agenten') {
+            detailHtml = this.getKap4Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
