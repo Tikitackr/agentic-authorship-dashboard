@@ -913,64 +913,110 @@
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
             <div class="setup-section-title">Kapitel 5: Multi-Channel Setup</div>
-            <div class="setup-section-count">Chat-Weg</div>
+            <div class="setup-section-count">6 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
         <div class="setup-section-content">
-          <p style="margin-top: 1rem;">Messaging-Kan&auml;le richtest du per Chat mit deinem Agenten ein. Kein Terminal n&ouml;tig. Sag deinem Agent einfach, was du willst.</p>
+          <p style="margin-top: 1rem;">Messaging-Kan&auml;le richtest du per Chat mit deinem Agenten ein. Hier das Telegram-Tutorial Schritt f&uuml;r Schritt.</p>
 
-          <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0;">
-            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.75rem;">Der einfache Weg (empfohlen)</div>
-            <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 0.5rem 0;">Schreib deinem Agent im Gateway oder per Telegram:</p>
+          <!-- Telegram Tutorial - ausführlich -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <span class="setup-path-badge">Buch-Empfehlung</span>
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">Telegram einrichten (der einfache Weg)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Telegram ist der Goldstandard. Offizielles Bot-API, stabil, schnell. Alles per Chat, kein Terminal.</p>
 
-            <div class="setup-code-block" style="margin: 0.75rem 0;">
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              1. Bot-Token holen bei @BotFather
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">&Ouml;ffne Telegram, suche <strong style="color:#fff;">@BotFather</strong> und schick ihm:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-5-1">Richte mir Telegram ein.</code>
+              <code id="code-5-1">/newbot</code>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0 0;">Der Agent f&uuml;hrt dich Schritt f&uuml;r Schritt durch: Bot-Token von @BotFather holen, eingeben, Pairing best&auml;tigen. Fertig.</p>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">BotFather fragt nach einem Namen (z.B. &bdquo;Mein OpenClaw Agent&ldquo;) und einem Username (muss auf <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">bot</code> enden). Dann bekommst du den Token &ndash; sieht aus wie <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">1234567890:ABCdef...</code></p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              2. Token deinem Agent geben
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Schreib deinem Agent (im Gateway-UI):</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-5-2">Richte mir Telegram ein. Mein Token ist: DEIN_TOKEN_HIER</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">Der Agent speichert den Token und sagt dir, was als n&auml;chstes kommt.</p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              3. Bot finden und Nachricht schicken
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0 0;">Suche deinen Bot in Telegram (den Username von Schritt 1) und schick ihm irgendwas, z.B. &bdquo;Hallo&ldquo;. Er antwortet: <em>&bdquo;Access not configured. Pairing required.&ldquo;</em></p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              4. Pairing best&auml;tigen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Im Gateway siehst du eine Pairing-Anfrage mit einem Code. Sag dem Agent:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-5-3">Genehmige die Kopplung.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">Ab jetzt antwortet der Bot dir auf Telegram.</p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              5. ID dauerhaft eintragen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Damit die Kopplung einen Container-Restart &uuml;berlebt:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-5-4">Trag meine Telegram-ID fest in die Config ein.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">Der Agent liest deine ID aus dem Pairing und speichert sie dauerhaft. Fertig!</p>
           </div>
 
-          <div class="setup-snippet-title">
+          <!-- Weitere Kanäle - kurz -->
+          <div class="setup-snippet-title" style="margin-top: 1.5rem;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            Weitere Chat-Prompts
+            6. Weitere Kan&auml;le (gleicher Weg)
           </div>
+          <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.75rem 0;">Das Prinzip ist immer gleich: Agent fragen, er f&uuml;hrt dich durch.</p>
 
           <div class="setup-code-block" style="margin: 0.5rem 0;">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-2">Trag meine Telegram-ID fest in die Config ein.</code>
+            <code id="code-5-5">Richte mir WhatsApp ein.</code>
           </div>
-          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Dauerhafte Kopplung, damit du nach Container-Restart nicht neu pairen musst.</p>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">⚠️ Nutze eine separate Nummer! Kein offizielles API, Account-Sperre m&ouml;glich.</p>
 
           <div class="setup-code-block" style="margin: 0.5rem 0;">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-3">Richte mir WhatsApp ein.</code>
+            <code id="code-5-6">Richte mir Discord ein.</code>
           </div>
-          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Nutze eine separate Nummer! Agent zeigt dir den QR-Code zum Scannen.</p>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">F&uuml;r Communities und Teams. Bot im Developer Portal erstellen, Agent macht den Rest.</p>
 
           <div class="setup-code-block" style="margin: 0.5rem 0;">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-4">Richte mir Discord ein.</code>
+            <code id="code-5-7">F&uuml;hre den Doktor-Check aus.</code>
           </div>
-          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Agent erkl&auml;rt dir das Developer Portal, Token und Intents.</p>
-
-          <div class="setup-code-block" style="margin: 0.5rem 0;">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-5">F&uuml;hre den Doktor-Check aus.</code>
-          </div>
-          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Diagnose bei Problemen. Pr&uuml;ft Tokens, IDs, Config.</p>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">Bei Problemen. Pr&uuml;ft Tokens, IDs, Config und repariert automatisch.</p>
 
           <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic;">Terminal-Befehle f&uuml;r Fortgeschrittene findest du im Buch unter Kapitel 5.2 / 5.3.</p>
 
