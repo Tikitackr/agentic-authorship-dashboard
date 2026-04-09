@@ -476,7 +476,7 @@
     </div>
     <div class="m03-card">
       <div class="m03-field">
-        <label class="m03-label">Dein Name</label>
+        <label class="m03-label" style="color: #f59e0b;">Dein Name <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input" id="m03-name" type="text" placeholder="z.B. Max">
         <p class="m03-label-hint">Wird in Prompts und Willkommensnachrichten verwendet.</p>
       </div>
@@ -503,7 +503,7 @@
     <div class="m03-card">
       <!-- Anthropic API Key -->
       <div class="m03-field">
-        <label class="m03-label">Anthropic API Key</label>
+        <label class="m03-label" style="color: #f59e0b;">Anthropic API Key <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <div class="m03-password-wrapper">
           <input class="m03-input mono" id="m03-api-key" type="password" placeholder="sk-ant-...">
           <button type="button" class="m03-password-toggle" data-target="m03-api-key">
@@ -515,7 +515,7 @@
 
       <!-- OpenAI API Key -->
       <div class="m03-field">
-        <label class="m03-label">OpenAI API Key <span style="color: var(--text-dim); font-weight: 400;">(optional)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">OpenAI API Key <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 13.2, optional)</span></label>
         <div class="m03-password-wrapper">
           <input class="m03-input mono" id="m03-openai-key" type="password" placeholder="sk-...">
           <button type="button" class="m03-password-toggle" data-target="m03-openai-key">
@@ -527,42 +527,42 @@
 
       <!-- Tailscale Hostname (VPS-relevant) -->
       <div class="m03-field">
-        <label class="m03-label">Tailscale Hostname <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Tailscale Hostname <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input mono" id="m03-tailscale-hostname" type="text" placeholder="z.B. mein-server.tail1234.ts.net">
         <p class="m03-label-hint">Die HTTPS-Adresse von Tailscale Serve (ohne https://)</p>
       </div>
 
       <!-- Tailscale IP (fallback, VPS-relevant) -->
       <div class="m03-field">
-        <label class="m03-label">Tailscale IP (Fallback) <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Tailscale IP (Fallback) <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input mono" id="m03-tailscale-ip" type="text" placeholder="z.B. 100.123.45.67">
         <p class="m03-label-hint">Deine Tailscale IPv4-Adresse (beginnt mit 100.). Findest du im Tailscale Admin Panel unter "Tailscale IPv4" oder auf dem VPS via <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">tailscale ip -4</code>. Wird als Fallback genutzt, falls der Hostname nicht auflöst.</p>
       </div>
 
       <!-- Server IP (VPS-relevant) -->
       <div class="m03-field">
-        <label class="m03-label">Server IP <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Server IP <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input mono" id="m03-server-ip" type="text" placeholder="z.B. 123.456.78.90">
         <p class="m03-label-hint">Die oeffentliche IP deines VPS (findest du im Hostinger Panel)</p>
       </div>
 
       <!-- Gateway Port (VPS-relevant) -->
       <div class="m03-field">
-        <label class="m03-label">Gateway Port <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Gateway Port <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input mono" id="m03-gateway-port" type="text" placeholder="z.B. 52127">
         <p class="m03-label-hint">Der interne Port, auf dem OpenClaw im Docker-Container läuft. Wird im Hostinger Docker Manager angezeigt.</p>
       </div>
 
       <!-- Tailscale Port (VPS-relevant) -->
       <div class="m03-field">
-        <label class="m03-label">Tailscale Port <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Tailscale Port <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <input class="m03-input mono" id="m03-tailscale-port" type="text" placeholder="z.B. 443">
         <p class="m03-label-hint">Der HTTPS-Port von Tailscale Serve. Standard ist 443. Falls du mehrere Dienste hast, findest du deinen Port mit <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">sudo tailscale serve status</code> auf dem VPS. Das ist der Port für die Browser-URL.</p>
       </div>
 
       <!-- Sync Token -->
       <div class="m03-field">
-        <label class="m03-label">Sync Token</label>
+        <label class="m03-label" style="color: #f59e0b;">Sync Token <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 13)</span></label>
         <div class="m03-password-wrapper">
           <input class="m03-input mono" id="m03-token" type="password" placeholder="64-stelliger Hex-Token">
           <button type="button" class="m03-password-toggle" data-target="m03-token">
@@ -574,14 +574,14 @@
 
       <!-- Sync Port -->
       <div class="m03-field">
-        <label class="m03-label">Sync Port <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Sync Port <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 13)</span></label>
         <input class="m03-input mono" id="m03-port" type="text" placeholder="3456" value="3456">
         <p class="m03-label-hint">Standard: 3456. Nur aendern, wenn du den Port angepasst hast.</p>
       </div>
 
       <!-- Gateway Token -->
       <div class="m03-field">
-        <label class="m03-label">Gateway Token <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Gateway Token <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 2)</span></label>
         <div class="m03-password-wrapper">
           <input class="m03-input mono" id="m03-gateway-token" type="password" placeholder="Token aus dem Hostinger Docker Manager">
           <button type="button" class="m03-password-toggle" data-target="m03-gateway-token">
@@ -593,13 +593,13 @@
 
       <!-- Container Name -->
       <div class="m03-field">
-        <label class="m03-label">Container Name <span class="m03-vps-only" data-feature="vps-only">(Nur fuer VPS-Setup noetig)</span></label>
+        <label class="m03-label" style="color: #f59e0b;">Container Name <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 3)</span></label>
         <input class="m03-input mono" id="m03-container-name" type="text" placeholder="openclaw">
         <p class="m03-label-hint">Der exakte Name deines Docker-Containers aus dem Hostinger Docker Manager (z.B. openclaw-k4od). Nicht den Standardnamen raten, sondern im Docker Manager nachschauen!</p>
       </div>
 
       <!-- Telegram (Kapitel 5) -->
-      <div class="m03-field" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
+      <div class="m03-field">
         <label class="m03-label" style="color: #f59e0b;">Telegram Bot Token <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 5)</span></label>
         <div style="display:flex;gap:0.5rem;align-items:center;">
           <input class="m03-input mono" id="m03-telegram-token" type="password" placeholder="1234567890:ABCdef..." style="flex:1;">
