@@ -1290,7 +1290,7 @@
           if (value) {
             const cls = info.type === 'sensitive' ? 'setup-var-sensitive' : 'setup-var-safe';
             const display = info.type === 'sensitive' && value.length > 10
-              ? '🔒 ' + escapeHtml(value.substring(0, 8)) + '…'
+              ? '🔒 ' + escapeHtml(value.substring(0, 4)) + '.....' + escapeHtml(value.substring(value.length - 4))
               : escapeHtml(value);
             result = result.replaceAll(placeholder, '<span class="' + cls + '">' + display + '</span>');
           } else {
