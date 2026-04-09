@@ -254,10 +254,10 @@
     }
 
     .setup-var-sensitive {
-      background-color: rgba(239, 68, 68, 0.2);
+      background-color: rgba(245, 158, 11, 0.15);
       padding: 0 4px;
       border-radius: 3px;
-      color: #fca5a5;
+      color: var(--amber);
     }
 
     .setup-var-missing {
@@ -1289,7 +1289,10 @@
           const value = getSetting(info.setting);
           if (value) {
             const cls = info.type === 'sensitive' ? 'setup-var-sensitive' : 'setup-var-safe';
-            result = result.replaceAll(placeholder, '<span class="' + cls + '">' + escapeHtml(value) + '</span>');
+            const display = info.type === 'sensitive' && value.length > 10
+              ? '🔒 ' + escapeHtml(value.substring(0, 8)) + '…'
+              : escapeHtml(value);
+            result = result.replaceAll(placeholder, '<span class="' + cls + '">' + display + '</span>');
           } else {
             result = result.replaceAll(placeholder,
               '<span class="setup-var-missing">deine ' + escapeHtml(info.label) + '</span>');
