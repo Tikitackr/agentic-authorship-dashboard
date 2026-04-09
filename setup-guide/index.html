@@ -913,62 +913,66 @@
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
             <div class="setup-section-title">Kapitel 5: Multi-Channel Setup</div>
-            <div class="setup-section-count">4 Schritte</div>
+            <div class="setup-section-count">Chat-Weg</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
         <div class="setup-section-content">
-          <p style="margin-top: 1rem;">Verbinde deinen Agenten mit Telegram, WhatsApp oder Discord. Per Chat oder per CLI.</p>
+          <p style="margin-top: 1rem;">Messaging-Kan&auml;le richtest du per Chat mit deinem Agenten ein. Kein Terminal n&ouml;tig. Sag deinem Agent einfach, was du willst.</p>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            1. Telegram-Bot Token setzen
-          </div>
-          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Token bekommst du von <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">@BotFather</code> in Telegram.</p>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-1">docker exec ${CONTAINER_NAME} openclaw config set telegram.botToken "${TELEGRAM_TOKEN}"</code>
-          </div>
+          <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.75rem;">Der einfache Weg (empfohlen)</div>
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 0.5rem 0;">Schreib deinem Agent im Gateway oder per Telegram:</p>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            2. Telegram erlaubte User
-          </div>
-          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Deine numerische Telegram-ID. Findest du per Pairing oder bei <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">@userinfobot</code>.</p>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-2">docker exec ${CONTAINER_NAME} openclaw config set telegram.allowFrom '["${TELEGRAM_ID}"]'</code>
+            <div class="setup-code-block" style="margin: 0.75rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-5-1">Richte mir Telegram ein.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0 0;">Der Agent f&uuml;hrt dich Schritt f&uuml;r Schritt durch: Bot-Token von @BotFather holen, eingeben, Pairing best&auml;tigen. Fertig.</p>
           </div>
 
           <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            3. WhatsApp verbinden (optional)
-          </div>
-          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Nutze eine separate Nummer! QR-Code erscheint im Terminal.</p>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-3">docker exec ${CONTAINER_NAME} openclaw channels login --channel whatsapp</code>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Weitere Chat-Prompts
           </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            4. Discord verbinden (optional)
-          </div>
-          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Bot im Discord Developer Portal erstellen, Token hier eingeben.</p>
-          <div class="setup-code-block">
+          <div class="setup-code-block" style="margin: 0.5rem 0;">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-4">docker exec ${CONTAINER_NAME} openclaw channels add --channel discord --token DEIN_DISCORD_TOKEN</code>
+            <code id="code-5-2">Trag meine Telegram-ID fest in die Config ein.</code>
           </div>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Dauerhafte Kopplung, damit du nach Container-Restart nicht neu pairen musst.</p>
+
+          <div class="setup-code-block" style="margin: 0.5rem 0;">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-3">Richte mir WhatsApp ein.</code>
+          </div>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Nutze eine separate Nummer! Agent zeigt dir den QR-Code zum Scannen.</p>
+
+          <div class="setup-code-block" style="margin: 0.5rem 0;">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-4">Richte mir Discord ein.</code>
+          </div>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Agent erkl&auml;rt dir das Developer Portal, Token und Intents.</p>
+
+          <div class="setup-code-block" style="margin: 0.5rem 0;">
+            <button class="setup-code-copy" onclick="copyCode(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </button>
+            <code id="code-5-5">F&uuml;hre den Doktor-Check aus.</code>
+          </div>
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 1rem 0;">Diagnose bei Problemen. Pr&uuml;ft Tokens, IDs, Config.</p>
+
+          <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic;">Terminal-Befehle f&uuml;r Fortgeschrittene findest du im Buch unter Kapitel 5.2 / 5.3.</p>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
             <input type="checkbox" id="check-kap5-1" class="setup-checkbox" onchange="updateProgress()">
