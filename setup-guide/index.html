@@ -905,89 +905,69 @@
         </div>
       </div>
 
-      <!-- Kapitel 5: Tailscale & Multi-Channel -->
+      <!-- Kapitel 5: Multi-Channel Setup -->
       <div class="setup-section" data-chapter="5">
         <div class="setup-section-header" onclick="toggleSection(this)">
           <div class="setup-section-header-left">
             <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
-              <path d="M12 6v6m3-3H9"></path>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <div class="setup-section-title">Kapitel 5: Tailscale & Multi-Channel</div>
-            <div class="setup-section-count">6 Schritte</div>
+            <div class="setup-section-title">Kapitel 5: Multi-Channel Setup</div>
+            <div class="setup-section-count">4 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
         <div class="setup-section-content">
-          <p style="margin-top: 1rem;">Verbinde deinen Server über Tailscale und konfiguriere Telegram-Integration.</p>
+          <p style="margin-top: 1rem;">Verbinde deinen Agenten mit Telegram, WhatsApp oder Discord. Per Chat oder per CLI.</p>
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            1. Tailscale installieren
+            1. Telegram-Bot Token setzen
           </div>
+          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Token bekommst du von <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">@BotFather</code> in Telegram.</p>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-1">curl -fsSL https://tailscale.com/install.sh | sh</code>
+            <code id="code-5-1">docker exec ${CONTAINER_NAME} openclaw config set telegram.botToken "${TELEGRAM_TOKEN}"</code>
           </div>
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            2. Tailscale starten
+            2. Telegram erlaubte User
           </div>
+          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Deine numerische Telegram-ID. Findest du per Pairing oder bei <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">@userinfobot</code>.</p>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-2">tailscale up --hostname=${HOSTNAME}</code>
+            <code id="code-5-2">docker exec ${CONTAINER_NAME} openclaw config set telegram.allowFrom '["${TELEGRAM_ID}"]'</code>
           </div>
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            3. Tailscale Status prüfen
+            3. WhatsApp verbinden (optional)
           </div>
+          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Nutze eine separate Nummer! QR-Code erscheint im Terminal.</p>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-3">tailscale status</code>
+            <code id="code-5-3">docker exec ${CONTAINER_NAME} openclaw channels login --channel whatsapp</code>
           </div>
 
           <div class="setup-snippet-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            4. Tailscale Serve aktivieren (HTTPS für Dashboard)
+            4. Discord verbinden (optional)
           </div>
-          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Macht deinen Sync-Server über HTTPS erreichbar. Den Hostnamen (z.B. <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">srv1234.tail5678.ts.net</code>) trägst du unter "Meine Daten" ein.</p>
+          <p style="margin: 0.5rem 0; color: var(--text-dim); font-size: 0.85rem;">Bot im Discord Developer Portal erstellen, Token hier eingeben.</p>
           <div class="setup-code-block">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-5-4a">tailscale serve --bg 3456</code>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            5. Telegram-Bot konfigurieren (optional)
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-4">docker exec ${CONTAINER_NAME} openclaw config set telegram.botToken "${TELEGRAM_TOKEN}"</code>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            6. Telegram erlaubte User
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-5-5">docker exec ${CONTAINER_NAME} openclaw config set telegram.allowFrom '["${TELEGRAM_ID}"]'</code>
+            <code id="code-5-4">docker exec ${CONTAINER_NAME} openclaw channels add --channel discord --token DEIN_DISCORD_TOKEN</code>
           </div>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
