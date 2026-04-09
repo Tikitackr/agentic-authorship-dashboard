@@ -598,6 +598,24 @@
         <p class="m03-label-hint">Der exakte Name deines Docker-Containers aus dem Hostinger Docker Manager (z.B. openclaw-k4od). Nicht den Standardnamen raten, sondern im Docker Manager nachschauen!</p>
       </div>
 
+      <!-- Telegram (Kapitel 5) -->
+      <div class="m03-field" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
+        <label class="m03-label" style="color: #f59e0b;">Telegram Bot Token <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 5)</span></label>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <input class="m03-input mono" id="m03-telegram-token" type="password" placeholder="1234567890:ABCdef..." style="flex:1;">
+          <button type="button" class="m03-password-toggle" data-target="m03-telegram-token">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <p class="m03-label-hint">Von @BotFather in Telegram. Sieht aus wie <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">1234567890:ABCdef...</code></p>
+      </div>
+
+      <div class="m03-field">
+        <label class="m03-label" style="color: #f59e0b;">Telegram User ID <span style="color: var(--text-dim); font-weight: 400;">(Kapitel 5)</span></label>
+        <input class="m03-input mono" id="m03-telegram-id" type="text" placeholder="123456789">
+        <p class="m03-label-hint">Deine numerische Telegram-ID. Findest du per Pairing oder bei @userinfobot in Telegram.</p>
+      </div>
+
       <div class="m03-btn-row">
         <button class="m03-btn-green m03-btn" id="m03-test-btn">Verbindung testen</button>
       </div>
@@ -668,6 +686,8 @@
     tailscalePort: '443',
     gatewayToken: 'demo_token_abc123def456ghi789jkl012',
     containerName: 'openclaw',
+    telegramToken: '1234567890:ABCdefGHIjklMNOpqrsTUVwxyz',
+    telegramId: '987654321',
     browser: 'chrome',
     isDemo: 'true'
   };
@@ -701,6 +721,8 @@
       tailscalePort: load('tailscalePort'),
       gatewayToken: load('gatewayToken'),
       containerName: load('containerName') || 'openclaw',
+      telegramToken: load('telegramToken'),
+      telegramId: load('telegramId'),
       browser: load('browser') || 'chrome',
       isDemo: load('isDemo') === 'true'
     };
@@ -719,6 +741,8 @@
     save('tailscalePort', data.tailscalePort);
     save('gatewayToken', data.gatewayToken);
     save('containerName', data.containerName);
+    save('telegramToken', data.telegramToken);
+    save('telegramId', data.telegramId);
     save('browser', data.browser);
     save('isDemo', data.isDemo ? 'true' : '');
   }
@@ -737,6 +761,8 @@
       tailscalePort: document.getElementById('m03-tailscale-port').value.trim(),
       gatewayToken: document.getElementById('m03-gateway-token').value.trim(),
       containerName: document.getElementById('m03-container-name').value.trim() || 'openclaw',
+      telegramToken: document.getElementById('m03-telegram-token').value.trim(),
+      telegramId: document.getElementById('m03-telegram-id').value.trim(),
       browser: document.getElementById('m03-browser').value,
       isDemo: false
     };
@@ -755,6 +781,8 @@
     document.getElementById('m03-tailscale-port').value = data.tailscalePort || '';
     document.getElementById('m03-gateway-token').value = data.gatewayToken || '';
     document.getElementById('m03-container-name').value = data.containerName || 'openclaw';
+    document.getElementById('m03-telegram-token').value = data.telegramToken || '';
+    document.getElementById('m03-telegram-id').value = data.telegramId || '';
     document.getElementById('m03-browser').value = data.browser || 'chrome';
   }
 
@@ -1011,6 +1039,8 @@
     lines.push('Sync Port:          ' + (data.syncPort || '3456'));
     lines.push('Gateway Token:      ' + (data.gatewayToken ? data.gatewayToken.substring(0,12) + '...' : '(nicht gesetzt)'));
     lines.push('Container Name:     ' + (data.containerName || 'openclaw'));
+    lines.push('Telegram Token:     ' + (data.telegramToken ? data.telegramToken.substring(0,12) + '...' : '(nicht gesetzt)'));
+    lines.push('Telegram ID:        ' + (data.telegramId || '(nicht gesetzt)'));
     lines.push('Browser:            ' + (data.browser || 'chrome'));
     lines.push('');
     lines.push('─────────────────────────────');
