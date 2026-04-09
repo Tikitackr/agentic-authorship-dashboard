@@ -648,7 +648,7 @@
         { num: 'Vorwort', title: 'Vorwort', desc: 'Warum du dieses Buch nicht alleine lesen wirst', links: [], detail: 'onboarding' },
         { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [], detail: 'kap1-architektur' },
         { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'], detail: 'kap2-installation' },
-        { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'] },
+        { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
         { num: '4', title: 'Agent-Konzepte', desc: 'Verstehe die theoretischen Grundlagen', links: [] },
         { num: '5', title: 'Multi-Channel Setup', desc: 'Verbinde mehrere Kanaele und Plattformen', links: ['setup-guide'] },
         { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'] },
@@ -824,6 +824,38 @@
         '</div>';
       },
 
+      getKap3Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Docker: Lokal vs. Hostinger</h3>' +
+          '<p>Kapitel 3 erklaert, was Docker unter der Haube macht. Bei einer lokalen Installation musst du das alles selbst steuern. Bei Hostinger uebernimmt der Docker Manager das meiste per Klick.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="2" y="3" width="20" height="14" rx="2"/>' +
+                '<path d="M8 21h8M12 17v4"/>' +
+              '</svg>' +
+              '<h4>Lokal installiert?</h4>' +
+              '<p>Du brauchst alle 12 Docker-Befehle aus dem Setup-Guide: Container starten, stoppen, Logs pruefen, Updates einspielen, Diagnose laufen lassen. Lies dieses Kapitel gruendlich.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+                '<polyline points="22 4 12 14.01 9 11.01"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Hostinger VPS?</h4>' +
+              '<p>Der Docker Manager im hPanel erledigt Container-Verwaltung, Updates und Logs per Klick. Lies das Kapitel fuers Verstaendnis, aber du tippst keinen dieser Befehle.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Was du mitnimmst:</strong> Egal welchen Weg du gehst &ndash; nach diesem Kapitel verstehst du, was ein Container ist, warum Volumes dein Gedaechtnis sichern und wie Updates funktionieren, ohne Daten zu verlieren.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\')">Setup-Guide: Docker-Befehle &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -849,6 +881,8 @@
             detailHtml = this.getKap1Html();
           } else if (ch.detail === 'kap2-installation') {
             detailHtml = this.getKap2Html();
+          } else if (ch.detail === 'kap3-docker') {
+            detailHtml = this.getKap3Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
