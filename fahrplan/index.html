@@ -650,7 +650,7 @@
         { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'], detail: 'kap2-installation' },
         { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
         { num: '4', title: 'Agent-Konzepte', desc: 'Workspace-Dateien, Automatisierung und Skills', links: ['soul-gallery', 'workspace-wizard'], detail: 'kap4-agenten' },
-        { num: '5', title: 'Multi-Channel Setup', desc: 'Verbinde mehrere Kanaele und Plattformen', links: ['setup-guide'] },
+        { num: '5', title: 'Multi-Channel Setup', desc: 'Telegram, WhatsApp, Discord und mehr per Chat einrichten', links: ['setup-guide'], detail: 'kap5-channels' },
         { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'] },
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz'] },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
@@ -895,6 +895,46 @@
         '</div>';
       },
 
+      getKap5Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Dein Agent auf allen Kan&auml;len</h3>' +
+          '<p>Kapitel 5 zeigt dir, wie du deinen Agenten per Chat mit Telegram, WhatsApp und Discord verbindest. Kein Terminal, kein Config-File. Du redest mit deinem Agenten, er richtet sich selbst ein.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Telegram</h4>' +
+              '<p>Der Goldstandard. Offizielles Bot-API, stabil, schnell eingerichtet. Bot-Token von @BotFather holen, dem Agenten geben, fertig.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>' +
+              '</svg>' +
+              '<h4>WhatsApp</h4>' +
+              '<p>Fast drei Milliarden Nutzer, aber kein offizielles Bot-API. Baileys als Bridge. Risiko: Account-Sperre m&ouml;glich. Eigene Nummer verwenden!</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>' +
+                '<circle cx="9" cy="7" r="4"/>' +
+                '<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>' +
+                '<path d="M16 3.13a4 4 0 0 1 0 7.75"/>' +
+              '</svg>' +
+              '<h4>Discord</h4>' +
+              '<p>F&uuml;r Communities und Teams. Offizielles API, Rollen, Channels, Permissions. Ideal wenn dein Agent &ouml;ffentlich erreichbar sein soll.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Dein Agent soll dort sein, wo DU bist. Ein Agent, alle Kan&auml;le, keine Barrieren. Pairing sichert die Verbindung, Routing stellt die Nachrichten zu.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\')">Setup-Guide: Channel-Befehle &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -924,6 +964,8 @@
             detailHtml = this.getKap3Html();
           } else if (ch.detail === 'kap4-agenten') {
             detailHtml = this.getKap4Html();
+          } else if (ch.detail === 'kap5-channels') {
+            detailHtml = this.getKap5Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
