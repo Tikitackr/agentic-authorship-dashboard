@@ -651,7 +651,7 @@
         { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
         { num: '4', title: 'Agent-Konzepte', desc: 'Workspace-Dateien, Automatisierung und Skills', links: ['soul-gallery', 'workspace-wizard'], detail: 'kap4-agenten' },
         { num: '5', title: 'Multi-Channel Setup', desc: 'Telegram, WhatsApp, Discord und mehr per Chat einrichten', links: ['setup-guide'], detail: 'kap5-channels' },
-        { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'] },
+        { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz'] },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
@@ -935,6 +935,55 @@
         '</div>';
       },
 
+      getKap6Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Defense in Depth: Vier Schutzschichten</h3>' +
+          '<p>Kapitel 6 zeigt dir, warum Security bei einem KI-Agenten nicht optional ist. Dein Gateway hat Zugriff auf Shell, Dateien und API-Keys. Vier Schichten schuetzen dich davor, dass das zum Problem wird.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Netzwerk-Isolation</h4>' +
+              '<p>Tailscale macht deinen Gateway unsichtbar. Nur Geraete in deinem Tailnet koennen ihn erreichen. Von aussen: Totenstille.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>' +
+                '<path d="M7 11V7a5 5 0 0 1 10 0v4"/>' +
+              '</svg>' +
+              '<h4>Token &amp; Pairing</h4>' +
+              '<p>Ohne Token keine Verbindung. Neue Geraete muessen gepairt werden. Du entscheidest, wer Zugang bekommt.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="2" y="2" width="20" height="20" rx="2"/>' +
+                '<path d="M9 2v20"/><path d="M14 2v20"/><path d="M2 9h20"/><path d="M2 14h20"/>' +
+              '</svg>' +
+              '<h4>Sandbox</h4>' +
+              '<p>Dein Agent laeuft im Docker-Container. Wenn er Mist baut, bleibt der Schaden drin. Drei Modi: off, non-main, all.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' +
+              '</svg>' +
+              '<h4>Tool-Policies</h4>' +
+              '<p>Legt fest, was ein Agent darf: minimal, coding oder full. Wie Zugangskarten in einem Labor.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Du musst nichts konfigurieren. Tailscale, Token, Sandbox und Tool-Policies sind schon aktiv. Aber du solltest verstehen, was im Hintergrund laeuft. Denn wenn etwas schiefgeht, willst du wissen, welche Schleuse aufgegangen ist.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\')">Setup-Guide: Security-Befehle &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -966,6 +1015,8 @@
             detailHtml = this.getKap4Html();
           } else if (ch.detail === 'kap5-channels') {
             detailHtml = this.getKap5Html();
+          } else if (ch.detail === 'kap6-security') {
+            detailHtml = this.getKap6Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +

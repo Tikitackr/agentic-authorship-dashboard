@@ -1041,57 +1041,99 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
             <div class="setup-section-title">Kapitel 6: Security</div>
-            <div class="setup-section-count">4 Schritte</div>
+            <div class="setup-section-count">5 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
         <div class="setup-section-content">
-          <p style="margin-top: 1rem;">Sichere deine OpenClaw-Installation mit Firewall und Authentifizierung.</p>
+          <p style="margin-top: 1rem;">Dein Setup bringt vier Schutzschichten mit: Tailscale, Token, Sandbox, Tool-Policies. Hier pr&uuml;fst du, ob alles sauber l&auml;uft.</p>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            1. Firewall einrichten
+          <!-- Security-Routine Box -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <span class="setup-path-badge">Security-Routine</span>
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">Alles per Chat, kein Terminal</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Auf deinem Hostinger VPS l&auml;uft alles im Docker Manager. Die Security-Checks machst du per Chat mit deinem Agenten.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              1. Bind-Config pr&uuml;fen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Pr&uuml;ft, ob dein Gateway nur im Tailnet lauscht (und nicht &ouml;ffentlich erreichbar ist):</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-6-1">Zeig mir die aktuelle Bind-Config.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">&#x1F4A1; <strong style="color:var(--text-dim);">Erwartet:</strong> <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">tailnet</code> oder <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">loopback</code>. Steht dort <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">0.0.0.0</code>? Sofort &auml;ndern!</p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              2. Token rotieren
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Alle paar Monate oder wenn du unsicher bist, ob dein Token irgendwo sichtbar war:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-6-2">Generiere mir einen neuen Gateway-Token und trag ihn in die Config ein.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0 0;">Drei Sekunden. Alter Token wertlos, neuer Token aktiv. Danach unter <strong style="color:#fff;">Meine Daten</strong> aktualisieren.</p>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              3. Doktor-Check
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Pr&uuml;ft Config, Permissions und Dependencies. Nach jedem Update oder einmal im Monat:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-6-3">F&uuml;hre den Doktor-Check aus und behebe alle Probleme.</code>
+            </div>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              4. Security-Audit
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Geht tiefer als der Doktor-Check. Pr&uuml;ft Bind, Auth, File-Permissions, Sandbox:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-6-4">F&uuml;hre einen Security-Audit durch.</code>
+            </div>
+
+            <div class="setup-snippet-title" style="margin-top: 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              5. Update pr&uuml;fen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.5rem 0;">Updates enthalten Security-Fixes. Regelm&auml;&szlig;ig pr&uuml;fen:</p>
+            <div class="setup-code-block" style="margin: 0.5rem 0;">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-6-5">Gibt es ein OpenClaw-Update? Wenn ja, installiere es.</code>
+            </div>
           </div>
-          <div class="setup-code-block">
+
+          <!-- Pairing-Check -->
+          <div class="setup-snippet-title" style="margin-top: 1.5rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Bonus: Verbundene Ger&auml;te pr&uuml;fen
+          </div>
+          <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0.25rem 0 0.75rem 0;">Falls du pr&uuml;fen willst, welche Ger&auml;te Zugang haben:</p>
+          <div class="setup-code-block" style="margin: 0.5rem 0;">
             <button class="setup-code-copy" onclick="copyCode(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </button>
-            <code id="code-6-1">ufw allow 22/tcp && ufw allow 41641/udp && ufw enable</code>
+            <code id="code-6-6">Zeig mir alle wartenden Pairing-Anfragen.</code>
           </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            2. Gateway-Token setzen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-6-2">docker exec ${CONTAINER_NAME} openclaw config set gateway.token "${GATEWAY_TOKEN}"</code>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            3. Bind-Modus prüfen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-6-3">docker exec ${CONTAINER_NAME} openclaw config get gateway.bind</code>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            4. CORS-Whitelist
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-6-4">docker exec ${CONTAINER_NAME} openclaw config set gateway.cors '["https://openclaw-buch.de"]'</code>
+          <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 0.75rem; margin-top: 1.25rem;">
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0;"><strong style="color:#f59e0b;">Hostinger-Tipp:</strong> UFW (Firewall) musst du auf Hostinger nicht manuell einrichten. Der Docker Manager regelt die Netzwerk-Isolation. Tailscale sorgt daf&uuml;r, dass dein Gateway nur in deinem Tailnet erreichbar ist.</p>
           </div>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
