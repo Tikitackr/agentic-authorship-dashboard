@@ -653,7 +653,7 @@
         { num: '5', title: 'Multi-Channel Setup', desc: 'Telegram, WhatsApp, Discord und mehr per Chat einrichten', links: ['setup-guide'], detail: 'kap5-channels' },
         { num: '6', title: 'Security Best Practices', desc: 'Sch&uuml;tze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'L&ouml;sungen f&uuml;r h&auml;ufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
-        { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
+        { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: ['cost-calculator'], detail: 'kap8-vision' },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
         { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
@@ -1038,6 +1038,53 @@
         '</div>';
       },
 
+      getKap8Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Dein Buch-Projekt planen</h3>' +
+          '<p>Kapitel 8 zeigt dir, wie dieses Buch entstanden ist: von der Idee &uuml;ber die Tool-Auswahl bis zu den gr&ouml;&szlig;ten Fehlern. Vier Perspektiven, die dir bei deinem eigenen Projekt helfen.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Die 4 S&auml;ulen</h4>' +
+              '<p>Buch + Agent + Dashboard + Companion = &Ouml;kosystem. Jede S&auml;ule unterst&uuml;tzt die andere. Das Buch erkl&auml;rt, der Agent produziert, das Dashboard zeigt den Fortschritt, der Companion macht alles mobil.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' +
+              '</svg>' +
+              '<h4>Tool-Stack</h4>' +
+              '<p>OpenClaw + Claude API (3 Modelle: Opus, Sonnet, Haiku) + GitHub + Telegram + VPS f&uuml;r 4,99&euro;/Monat. Bewusst NICHT: Notion, Google Docs, Zapier, ChatGPT Plus. Jedes Tool ist ersetzbar.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Kosten-Realit&auml;t</h4>' +
+              '<p>~10$/Kapitel nach Optimierung (vorher ~19$). Goldene Regel: <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code> vor jedem Pipeline-Schritt. VPS 4,99&euro;/Monat. Gesamtes Manuskript: ~100$ API-Kosten. Kein Abo, kein Aufschlag.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' +
+              '</svg>' +
+              '<h4>Lessons Learned</h4>' +
+              '<p>Sub-Agenten laden kein SOUL.md (alles ins Briefing!). rsync nie auf den ganzen .openclaw-Ordner. Context Engineering &gt; Prompt Engineering. Die ersten Entw&uuml;rfe werden schlecht sein. Das ist normal.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Der Autor der Zukunft ist ein Regisseur. Er gibt die Richtung vor, w&auml;hlt die Modelle, schneidet den Output. Die Kreativit&auml;t liegt im Briefing, nicht im Tippen.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'cost-calculator\')">Kosten-Rechner &ouml;ffnen &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -1073,6 +1120,8 @@
             detailHtml = this.getKap6Html();
           } else if (ch.detail === 'kap7-troubleshooting') {
             detailHtml = this.getKap7Html();
+          } else if (ch.detail === 'kap8-vision') {
+            detailHtml = this.getKap8Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
