@@ -655,7 +655,7 @@
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'L&ouml;sungen f&uuml;r h&auml;ufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: ['cost-calculator'], detail: 'kap8-vision' },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'], detail: 'kap9-architektur' },
-        { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
+        { num: '10', title: 'Multi-Agent: Vom Einzelagenten zum Team', desc: 'Vier Agenten, eine Pipeline, klare Rollen', links: ['config-builder', 'workspace-wizard', 'template-packs'], detail: 'kap10-multi-agent' },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
         { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'] },
         { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Personalisierung und Konfiguration', links: ['meine-daten', 'system-status'] },
@@ -1085,6 +1085,53 @@
         '</div>';
       },
 
+      getKap10Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Vom Einzelagenten zum spezialisierten Team</h3>' +
+          '<p>Kapitel 10 zeigt, warum ein Agent nicht alles gleichzeitig kann und wie vier spezialisierte Agenten bessere Texte liefern als ein Allrounder.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Spezialisierung statt Modi</h4>' +
+              '<p>Ein Agent mit drei H&uuml;ten vermischt die Rollen. Kreativit&auml;t braucht Offenheit, Qualit&auml;tskontrolle braucht Distanz. Spezialisierte Agenten mit eigenem Kontext l&ouml;sen das Problem.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' +
+              '</svg>' +
+              '<h4>n8n raus, Hauptagent orchestriert</h4>' +
+              '<p>Externer Orchestrator (n8n) durch den Hauptagenten ersetzt: 500 MB RAM zur&uuml;ck, kein doppeltes Error-Handling, eine Abh&auml;ngigkeit weniger. Migration in 8 Phasen, 3 Tage.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Das 4-Agenten-Team</h4>' +
+              '<p>Hauptagent (Opus, Chefredakteur), Autor (Sonnet), Lektor (Sonnet), Pr&uuml;fer (Haiku). Jeder isoliert per <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">sessions_spawn</code>, jeder mit eigener AGENTS.md.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' +
+              '</svg>' +
+              '<h4>Pipeline &amp; Learnings</h4>' +
+              '<p>3.000 W&ouml;rter in 20 Minuten. ~10$/Kapitel (mit <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code>). 6 Fehler, 6 L&ouml;sungen. Humanizer-Score: 24 &rarr; 14 &rarr; 9. Klare Rollen schlagen komplexe Systeme.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Vier Agenten sind besser als zehn. Einer orchestriert, drei produzieren. Jeder macht nur eine Sache &ndash; die daf&uuml;r richtig.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'11\')">Weiter zu Kapitel 11: Kosten, Zeit &amp; Learnings &rarr;</button>' +
+        '</div>';
+      },
+
       getKap8Html: function() {
         return '<div class="fahrplan-onboarding">' +
           '<h3>Dein Buch-Projekt planen</h3>' +
@@ -1171,6 +1218,8 @@
             detailHtml = this.getKap8Html();
           } else if (ch.detail === 'kap9-architektur') {
             detailHtml = this.getKap9Html();
+          } else if (ch.detail === 'kap10-multi-agent') {
+            detailHtml = this.getKap10Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
