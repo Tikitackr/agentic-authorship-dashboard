@@ -751,151 +751,205 @@
               <path d="M9 8h6M9 12h6M9 16h6"></path>
             </svg>
             <div class="setup-section-title">Kapitel 3: Docker-Befehle</div>
-            <div class="setup-section-count">12 Befehle</div>
+            <div class="setup-section-count"><span class="setup-path-steps" data-for="vps" style="display:inline;">3 Chat-Befehle</span><span class="setup-path-steps" data-for="local" style="display:inline;">12 Befehle</span></div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
         <div class="setup-section-content">
-          <div style="background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0 1.5rem 0;">
-            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="width:18px;height:18px;flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              <strong style="color:#f59e0b;">Hostinger-Nutzer?</strong>
+          <p style="margin-top: 1rem;">Docker verwaltet deinen OpenClaw-Container. Wie du ihn steuerst, h&auml;ngt von deinem Setup ab.</p>
+
+          <!-- VPS-Pfad -->
+          <div class="setup-path-steps" data-for="vps">
+            <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+              <span class="setup-path-badge">Hostinger VPS</span>
+              <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">Der Docker Manager erledigt das f&uuml;r dich</div>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Im hPanel findest du den Docker Manager unter &bdquo;VPS&ldquo; → &bdquo;Docker&ldquo;. Kein Terminal, kein Tippen. Alles per Klick.</p>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.75rem;">
+                  <div style="color:#f59e0b;font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">Container starten/stoppen</div>
+                  <p style="color:var(--text-dim);font-size:0.8rem;margin:0;">Start/Stop-Button im Docker Manager</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.75rem;">
+                  <div style="color:#f59e0b;font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">Logs ansehen</div>
+                  <p style="color:var(--text-dim);font-size:0.8rem;margin:0;">Logs-Tab im Docker Manager</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.75rem;">
+                  <div style="color:#f59e0b;font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">Updates einspielen</div>
+                  <p style="color:var(--text-dim);font-size:0.8rem;margin:0;">Neues Image pullen im Docker Manager</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:0.75rem;">
+                  <div style="color:#f59e0b;font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">Container neustarten</div>
+                  <p style="color:var(--text-dim);font-size:0.8rem;margin:0;">Restart-Button im Docker Manager</p>
+                </div>
+              </div>
+
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.75rem 0;">F&uuml;r alles andere fragst du deinen Agenten per Chat:</p>
+
+              <div class="setup-code-block" style="margin: 0.5rem 0;">
+                <button class="setup-code-copy" onclick="copyCode(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </button>
+                <code id="code-3v-1">Zeig mir den aktuellen Status.</code>
+              </div>
+
+              <div class="setup-code-block" style="margin: 0.5rem 0;">
+                <button class="setup-code-copy" onclick="copyCode(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </button>
+                <code id="code-3v-2">F&uuml;hre den Doktor-Check aus und behebe alle Probleme.</code>
+              </div>
+
+              <div class="setup-code-block" style="margin: 0.5rem 0;">
+                <button class="setup-code-copy" onclick="copyCode(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </button>
+                <code id="code-3v-3">Welche OpenClaw-Version l&auml;uft gerade?</code>
+              </div>
             </div>
-            <p style="color:var(--text-dim);font-size:0.85rem;margin:0;">Der Docker Manager im hPanel erledigt das meiste per Klick: Container starten, stoppen, Logs ansehen, Updates einspielen. Die folgenden 12 Terminal-Befehle brauchst du vor allem bei einer <strong style="color:var(--text);">lokalen Installation</strong> oder wenn du tiefer einsteigen willst. Sie zeigen, was Docker unter der Haube macht.</p>
+
+            <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 0.75rem; margin-top: 1rem;">
+              <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0;"><strong style="color:#f59e0b;">Tipp:</strong> Lies Kapitel 3 trotzdem. Du musst die Befehle nicht tippen, aber verstehen was ein Container ist, warum Volumes dein Ged&auml;chtnis sichern und wie Updates funktionieren.</p>
+            </div>
           </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            1. Container-Status
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-1">docker ps</code>
-          </div>
+          <!-- Lokal-Pfad -->
+          <div class="setup-path-steps" data-for="local">
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 1rem 0;">Bei einer lokalen Installation brauchst du alle 12 Docker-Befehle. Kopieren, einf&uuml;gen, fertig.</p>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            2. Logs anzeigen (Live)
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-2">docker compose logs -f</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              1. Container-Status
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-1">docker ps</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            3. Container neustarten
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-3">docker compose restart</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              2. Logs anzeigen (Live)
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-2">docker compose logs -f</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            4. In Container einsteigen (Bash)
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-4">docker exec -it ${CONTAINER_NAME} bash</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              3. Container neustarten
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-3">docker compose restart</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            5. Docker Compose starten
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-5">docker compose up -d</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              4. In Container einsteigen (Bash)
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-4">docker exec -it ${CONTAINER_NAME} bash</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            6. Docker Compose stoppen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-6">docker compose down</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              5. Docker Compose starten
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-5">docker compose up -d</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            7. OpenClaw Version pruefen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-7">docker exec -it ${CONTAINER_NAME} openclaw version</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              6. Docker Compose stoppen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-6">docker compose down</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            8. OpenClaw Status
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-8">docker exec -it ${CONTAINER_NAME} openclaw status</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              7. OpenClaw Version pruefen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-7">docker exec -it ${CONTAINER_NAME} openclaw version</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            9. Diagnose (openclaw doctor)
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-9">docker exec -it ${CONTAINER_NAME} openclaw doctor</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              8. OpenClaw Status
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-8">docker exec -it ${CONTAINER_NAME} openclaw status</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            10. Auto-Reparatur
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-10">docker exec -it ${CONTAINER_NAME} openclaw doctor --fix</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              9. Diagnose (openclaw doctor)
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-9">docker exec -it ${CONTAINER_NAME} openclaw doctor</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            11. Update: Neues Image ziehen + Container neu erstellen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-11">docker compose pull && docker compose up -d --force-recreate</code>
-          </div>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              10. Auto-Reparatur
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-10">docker exec -it ${CONTAINER_NAME} openclaw doctor --fix</code>
+            </div>
 
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            12. Aufraeumen: Alte Images entfernen
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-3-12">docker system prune -f</code>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              11. Update: Neues Image ziehen + Container neu erstellen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-11">docker compose pull && docker compose up -d --force-recreate</code>
+            </div>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              12. Aufraeumen: Alte Images entfernen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-3-12">docker system prune -f</code>
+            </div>
           </div>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
