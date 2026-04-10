@@ -646,22 +646,22 @@
     var fahrplan = {
       chapters: [
         { num: 'Vorwort', title: 'Vorwort', desc: 'Warum du dieses Buch nicht alleine lesen wirst', links: [], detail: 'onboarding' },
-        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das Oekosystem', links: [], detail: 'kap1-architektur' },
-        { num: '2', title: 'Installation & Setup', desc: 'Schritt fuer Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'], detail: 'kap2-installation' },
-        { num: '3', title: 'Docker fuer OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
+        { num: '1', title: 'Was ist OpenClaw?', desc: 'Die Grundlagen und das &Ouml;kosystem', links: [], detail: 'kap1-architektur' },
+        { num: '2', title: 'Installation & Setup', desc: 'Schritt f&uuml;r Schritt zur ersten Installation', links: ['setup-guide', 'meine-daten'], detail: 'kap2-installation' },
+        { num: '3', title: 'Docker f&uuml;r OpenClaw', desc: 'Containerisierung und Deployment', links: ['setup-guide'], detail: 'kap3-docker' },
         { num: '4', title: 'Agent-Konzepte', desc: 'Workspace-Dateien, Automatisierung und Skills', links: ['soul-gallery', 'workspace-wizard'], detail: 'kap4-agenten' },
         { num: '5', title: 'Multi-Channel Setup', desc: 'Telegram, WhatsApp, Discord und mehr per Chat einrichten', links: ['setup-guide'], detail: 'kap5-channels' },
-        { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
-        { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
+        { num: '6', title: 'Security Best Practices', desc: 'Sch&uuml;tze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
+        { num: '7', title: 'Troubleshooting & FAQ', desc: 'L&ouml;sungen f&uuml;r h&auml;ufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
         { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
-        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollstaendige Workflow', links: ['buch-dashboard'] },
+        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'] },
         { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Personalisierung und Konfiguration', links: ['meine-daten', 'system-status'] },
         { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: ['publishing'] },
         { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide', links: ['buch-dashboard', 'setup-guide'] },
-        { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Veroeffentlichung erfolgreich sein', links: ['publishing'] }
+        { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Ver&ouml;ffentlichung erfolgreich sein', links: ['publishing'] }
       ],
 
       techStack: [
@@ -1032,7 +1032,7 @@
           '</div>' +
 
           '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
-            '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\')">Setup-Guide: Troubleshooting &rarr;</button>' +
+            '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\', {chapter: \'7\'})">Setup-Guide: Troubleshooting &rarr;</button>' +
             '<button class="fahrplan-next-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onclick="fahrplan.handleQuickAccess(\'cli-referenz\')">CLI-Referenz &rarr;</button>' +
           '</div>' +
         '</div>';
@@ -1247,11 +1247,20 @@
         document.getElementById('fahrplan-progress-bar').style.width = percentage + '%';
       },
 
-      handleQuickAccess: function(module) {
+      handleQuickAccess: function(module, params) {
         if (typeof loadModule === 'function') {
+          if (params) {
+            window.__moduleParams = params;
+          }
           loadModule(module);
         } else {
-          window.location.href = '/?module=' + module;
+          var url = '/?module=' + module;
+          if (params) {
+            for (var key in params) {
+              url += '&' + key + '=' + params[key];
+            }
+          }
+          window.location.href = url;
         }
       }
     };
