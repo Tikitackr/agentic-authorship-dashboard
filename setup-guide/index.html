@@ -1689,22 +1689,26 @@
       });
 
       // Deeplink: ?chapter=7 oeffnet Kapitel 7 direkt (auch via Shell __moduleParams)
-      var params = new URLSearchParams(window.location.search);
-      var chapParam = params.get('chapter');
-      if (!chapParam && window.__moduleParams && window.__moduleParams.chapter) {
-        chapParam = window.__moduleParams.chapter;
-        delete window.__moduleParams;
-      }
-      if (chapParam) {
-        var section = document.querySelector('.setup-section[data-chapter="' + chapParam + '"]');
-        if (section) {
-          var content = section.querySelector('.setup-section-content');
-          if (content) content.style.display = 'block';
-          setTimeout(function() {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 200);
+      function openChapterDeeplink() {
+        var params = new URLSearchParams(window.location.search);
+        var chapParam = params.get('chapter');
+        if (!chapParam && window.__moduleParams && window.__moduleParams.chapter) {
+          chapParam = window.__moduleParams.chapter;
+          delete window.__moduleParams;
+        }
+        if (chapParam) {
+          var section = document.querySelector('.setup-section[data-chapter="' + chapParam + '"]');
+          if (section) {
+            var content = section.querySelector('.setup-section-content');
+            if (content) content.style.display = 'block';
+            setTimeout(function() {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 400);
+          }
         }
       }
+      // Kurz warten damit Shell die URL aktualisieren kann
+      setTimeout(openChapterDeeplink, 100);
     }
 
     if (document.readyState === 'loading') {

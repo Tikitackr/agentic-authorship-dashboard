@@ -1253,6 +1253,14 @@
             window.__moduleParams = params;
           }
           loadModule(module);
+          // URL mit Parametern aktualisieren damit init() sie findet
+          if (params) {
+            var url = '?module=' + module;
+            for (var key in params) {
+              url += '&' + key + '=' + params[key];
+            }
+            history.replaceState({ module: module }, '', url);
+          }
         } else {
           var url = '/?module=' + module;
           if (params) {
