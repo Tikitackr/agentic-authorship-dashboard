@@ -656,7 +656,7 @@
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: ['cost-calculator'], detail: 'kap8-vision' },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'], detail: 'kap9-architektur' },
         { num: '10', title: 'Multi-Agent: Vom Einzelagenten zum Team', desc: 'Vier Agenten, eine Pipeline, klare Rollen', links: ['config-builder', 'workspace-wizard', 'template-packs'], detail: 'kap10-multi-agent' },
-        { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
+        { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'], detail: 'kap11-kosten' },
         { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'] },
         { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Personalisierung und Konfiguration', links: ['meine-daten', 'system-status'] },
         { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: ['publishing'] },
@@ -1132,6 +1132,53 @@
         '</div>';
       },
 
+      getKap11Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Was ein KI-Buch wirklich kostet</h3>' +
+          '<p>Kapitel 11 ist die ehrliche Abrechnung: echte Zahlen, echte Timelines, echte Learnings. Keine Sch&ouml;nrechnerei.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Die echten Kosten</h4>' +
+              '<p>~9&euro;/Kapitel API (Opus als Chefredakteur). Sub-Agenten nur 0,21&euro;. Der <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code>-Hebel halbiert die Kosten von 18 auf 9&euro;. Gesamt: ~120&ndash;140&euro; f&uuml;r 15 Kapitel.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' +
+              '</svg>' +
+              '<h4>6 Kostenstrategien</h4>' +
+              '<p>Prompt Caching (90% Ersparnis), Smart Model Routing (Haiku/Sonnet/Opus je nach Aufgabe), Batch API (50% Rabatt), Lean Init, Fast Mode. Und die Heartbeat-Falle: 420$/Monat f&uuml;r nichts.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Die echte Timeline</h4>' +
+              '<p>5 Wochen, 125 Sessions, ~60 Stunden. Kapitelproduktion: 45&ndash;90 Min pro Kapitel. Aber die Finding Phase (Architektur, Pipeline, Prompts) dauerte l&auml;nger als das Schreiben selbst.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' +
+              '</svg>' +
+              '<h4>Die gr&ouml;&szlig;ten Learnings</h4>' +
+              '<p>Context Engineering schl&auml;gt teure Modelle. Automatisierung lohnt sich ab Kapitel 3. Qualit&auml;ts-Review nach 5 Kapiteln ist Pflicht. Und: KI schreibt nicht f&uuml;r dich, du orchestrierst.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Qualit&auml;t hat ihren Preis, aber der Preis ist planbar. 9&euro; pro Kapitel, 60 Stunden f&uuml;r ein ganzes Buch. Das zweite Buch wird 20 Stunden kosten.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'12\')">Weiter zu Kapitel 12: Von der Idee zum fertigen Buch &rarr;</button>' +
+        '</div>';
+      },
+
       getKap8Html: function() {
         return '<div class="fahrplan-onboarding">' +
           '<h3>Dein Buch-Projekt planen</h3>' +
@@ -1220,6 +1267,8 @@
             detailHtml = this.getKap9Html();
           } else if (ch.detail === 'kap10-multi-agent') {
             detailHtml = this.getKap10Html();
+          } else if (ch.detail === 'kap11-kosten') {
+            detailHtml = this.getKap11Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
