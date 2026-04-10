@@ -1328,56 +1328,7 @@
         </div>
       </div>
 
-      <!-- Kapitel 9: Workspace-Dateien -->
-      <div class="setup-section" data-chapter="9">
-        <div class="setup-section-header" onclick="toggleSection(this)">
-          <div class="setup-section-header-left">
-            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-              <polyline points="13 2 13 9 20 9"></polyline>
-            </svg>
-            <div class="setup-section-title">Kapitel 9: Workspace-Dateien</div>
-            <div class="setup-section-count">2 Befehle</div>
-          </div>
-          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-        <div class="setup-section-content">
-          <p style="margin-top: 1rem;">Die Workspace-Dateien (SOUL.md, AGENTS.md, BOOT.md) generierst du am besten mit dem Workspace Wizard.</p>
-
-          <div class="setup-action-pills">
-            <button class="setup-action-pill" onclick="loadWorkspaceWizard()">Workspace Wizard öffnen →</button>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            1. Workspace synchronisieren (rsync)
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-9-1">rsync -avz ~/mein-buch/.openclaw/workspace/ root@${TAILSCALE_IP}:/docker/${CONTAINER_NAME}/data/.openclaw/workspace/</code>
-          </div>
-
-          <div class="setup-snippet-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-            2. Permissions reparieren
-          </div>
-          <div class="setup-code-block">
-            <button class="setup-code-copy" onclick="copyCode(this)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </button>
-            <code id="code-9-2">ssh root@${TAILSCALE_IP} 'chown -R 1000:1000 /docker/${CONTAINER_NAME}/data/.openclaw/workspace/'</code>
-          </div>
-
-          <div class="setup-checkbox-group" style="margin-top: 2rem;">
-            <input type="checkbox" id="check-kap9-1" class="setup-checkbox" onchange="updateProgress()">
-            <label for="check-kap9-1">Kapitel 9 abgeschlossen</label>
-          </div>
-        </div>
-      </div>
+      <!-- Kapitel 9: Kein Setup-Guide (Konzeptkapitel, wie Kap 8) -->
 
       <!-- Kapitel 13: Komplett-Setup Checklist -->
       <div class="setup-section" data-chapter="13">
