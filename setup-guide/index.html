@@ -1699,8 +1699,7 @@
         if (chapParam) {
           var section = document.querySelector('.setup-section[data-chapter="' + chapParam + '"]');
           if (section) {
-            var content = section.querySelector('.setup-section-content');
-            if (content) content.style.display = 'block';
+            section.classList.add('open');
             setTimeout(function() {
               section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 400);
