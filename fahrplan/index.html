@@ -654,7 +654,7 @@
         { num: '6', title: 'Security Best Practices', desc: 'Sch&uuml;tze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
         { num: '7', title: 'Troubleshooting & FAQ', desc: 'L&ouml;sungen f&uuml;r h&auml;ufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: ['cost-calculator'], detail: 'kap8-vision' },
-        { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
+        { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'], detail: 'kap9-architektur' },
         { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'] },
         { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'] },
@@ -1038,6 +1038,56 @@
         '</div>';
       },
 
+      getKap9Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Agent-Architektur verstehen</h3>' +
+          '<p>Kapitel 9 zeigt, wie aus einem einzelnen Agenten ein orchestriertes System wird. Vier Bausteine, die du f&uuml;r dein eigenes Projekt &uuml;bernehmen kannst.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Zwei Modi, ein Agent</h4>' +
+              '<p>Pers&ouml;nlicher Mitarbeiter im Alltag, Chefredakteur in der Pipeline. Kein separates Programm, nur eine AGENTS.md mit zwei Abschnitten. Der Agent entscheidet selbst, welcher Modus passt.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' +
+              '</svg>' +
+              '<h4>Workspace-Hierarchie</h4>' +
+              '<p>Hauptagent: 7 Dateien (SOUL.md, AGENTS.md, TOOLS.md, IDENTITY.md, USER.md, MEMORY.md, BOOT.md). Sub-Agenten: nur 2 (AGENTS.md + TOOLS.md). Weniger Context = weniger Kosten.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>' +
+              '</svg>' +
+              '<h4>Output-Schemas</h4>' +
+              '<p>Jeder Sub-Agent liefert strukturiertes JSON. Writer: <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">chapter_markdown</code> + <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">word_count</code>. QA: <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">pass</code> oder <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">fail</code>. Keine Interpretation, keine Grauzone.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Context Engineering</h4>' +
+              '<p>5 Optimierungen: System-Prompt von 2.000 auf 800 Tokens. Progressive Disclosure f&uuml;r Wissen. Just-in-Time Skills. Memory Chunking. Lean Init f&uuml;r Sub-Agenten. Ergebnis: von 19$ auf 10$ pro Kapitel.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Nicht jede Aufgabe braucht einen Agenten. Agenten sind f&uuml;r Entscheidungen, Bash-Scripts f&uuml;r Routinearbeit. Lieber vier klare Rollen als sechs verworrene.' +
+          '</div>' +
+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'workspace-wizard\')" style="flex:1;min-width:140px;">Workspace Wizard &rarr;</button>' +
+            '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'config-builder\')" style="flex:1;min-width:140px;background:transparent;border:1px solid rgba(245,158,11,0.4);color:#f59e0b;">Config Builder &rarr;</button>' +
+          '</div>' +
+        '</div>';
+      },
+
       getKap8Html: function() {
         return '<div class="fahrplan-onboarding">' +
           '<h3>Dein Buch-Projekt planen</h3>' +
@@ -1122,6 +1172,8 @@
             detailHtml = this.getKap7Html();
           } else if (ch.detail === 'kap8-vision') {
             detailHtml = this.getKap8Html();
+          } else if (ch.detail === 'kap9-architektur') {
+            detailHtml = this.getKap9Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
