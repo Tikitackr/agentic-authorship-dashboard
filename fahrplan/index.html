@@ -1249,17 +1249,19 @@
 
       handleQuickAccess: function(module, params) {
         if (typeof loadModule === 'function') {
-          if (params) {
-            window.__moduleParams = params;
-          }
           loadModule(module);
-          // URL mit Parametern aktualisieren damit init() sie findet
-          if (params) {
-            var url = '?module=' + module;
-            for (var key in params) {
-              url += '&' + key + '=' + params[key];
-            }
-            history.replaceState({ module: module }, '', url);
+          // Nach Modul-Ladung: Section oeffnen und hinscollen
+          if (params && params.chapter) {
+            var chap = params.chapter;
+            setTimeout(function() {
+              var section = document.querySelector('.setup-section[data-chapter="' + chap + '"]');
+              if (section) {
+                section.classList.add('open');
+                setTimeout(function() {
+                  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+              }
+            }, 600);
           }
         } else {
           var url = '/?module=' + module;
