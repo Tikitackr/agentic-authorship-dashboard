@@ -1031,7 +1031,10 @@
             '<strong>Kernidee:</strong> Der Doctor l&ouml;st ~70% aller Gateway-Probleme automatisch. Starte immer dort, bevor du manuell debuggst. Und: Systematisches Vorgehen schl&auml;gt Bauchgef&uuml;hl.' +
           '</div>' +
 
-          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'cli-referenz\')">CLI-Referenz &ouml;ffnen &rarr;</button>' +
+          '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+            '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\')">Setup-Guide: Troubleshooting &rarr;</button>' +
+            '<button class="fahrplan-next-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);" onclick="fahrplan.handleQuickAccess(\'cli-referenz\')">CLI-Referenz &rarr;</button>' +
+          '</div>' +
         '</div>';
       },
 
