@@ -657,7 +657,7 @@
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'], detail: 'kap9-architektur' },
         { num: '10', title: 'Multi-Agent: Vom Einzelagenten zum Team', desc: 'Vier Agenten, eine Pipeline, klare Rollen', links: ['config-builder', 'workspace-wizard', 'template-packs'], detail: 'kap10-multi-agent' },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'], detail: 'kap11-kosten' },
-        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'] },
+        { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'], detail: 'kap12-workflow' },
         { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Personalisierung und Konfiguration', links: ['meine-daten', 'system-status'] },
         { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: ['publishing'] },
         { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide', links: ['buch-dashboard', 'setup-guide'] },
@@ -1132,6 +1132,53 @@
         '</div>';
       },
 
+      getKap12Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>5 Wochen, 3 Phasen, 1 fertiges Buch</h3>' +
+          '<p>Kapitel 12 ist die komplette R&uuml;ckschau: Vom leeren Dokument zum druckfertigen Manuskript. Mit allen Umwegen und allen Fehlern.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Phase 1: Fundament</h4>' +
+              '<p>SOUL.md in 5 Versionen geschliffen. Wissensbasis strukturiert (9&rarr;36 Dateien). Proof of Concept mit Kapitel 1. Texterin als Qualit&auml;tscheck. Ende Woche 2: Teil A komplett.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' +
+              '</svg>' +
+              '<h4>Phase 2: Pipeline skalieren</h4>' +
+              '<p>Von 1 auf 4 Agenten. Batch-Produktion: 8 Kapitel in 10 Tagen. Im Schnitt 3,2 Durchl&auml;ufe pro Kapitel. 2-stufige QA (Pr&uuml;fer-Agent + Mensch). Ende Woche 4: alle 15 Kapitel.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Phase 3: Fertigstellung</h4>' +
+              '<p>DOCX gescheitert (4 Versuche). HTML&rarr;PDF via WeasyPrint: 766 Zeilen Script, 6&times;9&quot;-Format, Hint-Boxen, QR-Codes. 3-Phasen-Review pro Kapitel. Woche 5: druckfertiges Manuskript.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>' +
+              '</svg>' +
+              '<h4>Was noch kommt</h4>' +
+              '<p>Cover-Design, KDP-Upload mit AI-Disclosure, Marketing &uuml;ber GitHub/Reddit/Discord. Zweite Auflage geplant: mehr Interviews, mehr Fehleranalyse, besseres Onboarding.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> 5 Wochen, 3 Phasen, 1 fertiges Buch. Der Blueprint steht &ndash; jetzt bist du dran.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'13\')">Weiter zu Kapitel 13: Dein Setup &ndash; Step by Step &rarr;</button>' +
+        '</div>';
+      },
+
       getKap11Html: function() {
         return '<div class="fahrplan-onboarding">' +
           '<h3>Was ein KI-Buch wirklich kostet</h3>' +
@@ -1269,6 +1316,8 @@
             detailHtml = this.getKap10Html();
           } else if (ch.detail === 'kap11-kosten') {
             detailHtml = this.getKap11Html();
+          } else if (ch.detail === 'kap12-workflow') {
+            detailHtml = this.getKap12Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
