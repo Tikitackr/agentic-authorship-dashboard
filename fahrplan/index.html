@@ -652,7 +652,7 @@
         { num: '4', title: 'Agent-Konzepte', desc: 'Workspace-Dateien, Automatisierung und Skills', links: ['soul-gallery', 'workspace-wizard'], detail: 'kap4-agenten' },
         { num: '5', title: 'Multi-Channel Setup', desc: 'Telegram, WhatsApp, Discord und mehr per Chat einrichten', links: ['setup-guide'], detail: 'kap5-channels' },
         { num: '6', title: 'Security Best Practices', desc: 'Schuetze dein System richtig', links: ['setup-guide'], detail: 'kap6-security' },
-        { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz'] },
+        { num: '7', title: 'Troubleshooting & FAQ', desc: 'Loesungen fuer haeufige Probleme', links: ['cli-referenz', 'setup-guide'], detail: 'kap7-troubleshooting' },
         { num: '8', title: 'Unser Buch-Projekt: Die Vision', desc: 'Das Konzept hinter unserem Ansatz', links: [] },
         { num: '9', title: 'Agent-Architektur im Detail', desc: 'Deep Dive in die technische Struktur', links: ['workspace-wizard', 'config-builder', 'soul-gallery'] },
         { num: '10', title: 'Multi-Agent: Vom Team zum System', desc: 'Mehrere Agenten koordinieren', links: ['template-packs', 'workspace-wizard', 'config-builder'] },
@@ -984,6 +984,57 @@
         '</div>';
       },
 
+      getKap7Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Dein Erste-Hilfe-Kasten</h3>' +
+          '<p>Kapitel 7 gibt dir alles, was du brauchst, wenn dein Agent streikt. Die Command Ladder f&uuml;hrt dich systematisch von &bdquo;schneller Check&ldquo; bis &bdquo;tiefe Diagnose&ldquo;. Der Doctor l&ouml;st ~70% der Probleme automatisch.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Command Ladder</h4>' +
+              '<p>10 Diagnose-Stufen, von schnell bis tief. <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">openclaw status</code> → <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">doctor --fix</code> → <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">doctor --deep</code>. Jede Stufe liefert mehr, kostet aber auch mehr Zeit.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/>' +
+                '<path d="M12 8v4m0 4h.01"/>' +
+              '</svg>' +
+              '<h4>10 h&auml;ufigste Probleme</h4>' +
+              '<p>Gateway startet nicht, Agent antwortet nicht, Kanal verbindet nicht, Pairing weg nach Restart, Permissions, Timezone. Jedes mit konkreter L&ouml;sung.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' +
+              '</svg>' +
+              '<h4>Debugging-Reihenfolge</h4>' +
+              '<p>Immer in dieser Reihenfolge pr&uuml;fen: Gateway → Agent → Channel → Provider. Systematisch statt raten. Spart Stunden.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>' +
+                '<circle cx="9" cy="7" r="4"/>' +
+                '<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>' +
+                '<path d="M16 3.13a4 4 0 0 1 0 7.75"/>' +
+              '</svg>' +
+              '<h4>Hilfe &amp; Community</h4>' +
+              '<p>docs.openclaw.ai, GitHub Issues, Discord Community, ClawHub Doctor Skills, Kodee (Hostinger KI-Support). Du bist nicht allein.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Der Doctor l&ouml;st ~70% aller Gateway-Probleme automatisch. Starte immer dort, bevor du manuell debuggst. Und: Systematisches Vorgehen schl&auml;gt Bauchgef&uuml;hl.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'cli-referenz\')">CLI-Referenz &ouml;ffnen &rarr;</button>' +
+        '</div>';
+      },
+
       renderChapters: function() {
         var container = document.getElementById('fahrplan-chapters');
         var html = '';
@@ -1017,6 +1068,8 @@
             detailHtml = this.getKap5Html();
           } else if (ch.detail === 'kap6-security') {
             detailHtml = this.getKap6Html();
+          } else if (ch.detail === 'kap7-troubleshooting') {
+            detailHtml = this.getKap7Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
