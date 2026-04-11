@@ -1585,25 +1585,36 @@
             <div style="background: rgba(245,158,11,0.04); border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
               <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
                 <span style="background:#f59e0b; color:#000; font-weight:700; width:1.5rem; height:1.5rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0;">2</span>
-                <strong style="color:#f59e0b; font-size:0.95rem;">Mit dem VPS verbinden</strong>
+                <strong style="color:#f59e0b; font-size:0.95rem;">Server speichern</strong>
               </div>
-              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;"><strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; tippe <em>Remote-SSH: Connect to Host</em> &rarr; <strong style="color:#f59e0b;">Add New SSH Host</strong>. Gib ein:</p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;"><strong style="color:#f59e0b;">Cmd+Shift+P</strong> (Mac) oder <strong style="color:#f59e0b;">Strg+Shift+P</strong> (Windows) &rarr; tippe <em>Remote-SSH: Add New SSH Host</em> &rarr; ausw&auml;hlen. Dann eingeben:</p>
               <div class="setup-code-block">
                 <button class="setup-code-copy" onclick="copyCode(this)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                 </button>
                 <code id="code-13-18b">ssh root@${SERVER_IP}</code>
               </div>
-              <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Config best&auml;tigen &rarr; Enter. Beim n&auml;chsten Mal erscheint dein Server direkt in der Liste.</p>
+              <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">VS Code fragt, wo die Config gespeichert werden soll. Einfach die <strong style="color:#f59e0b;">erste Option</strong> nehmen und Enter dr&uuml;cken. Dein Server ist jetzt gespeichert.</p>
             </div>
 
             <!-- Schritt-Karte 3 -->
             <div style="background: rgba(245,158,11,0.04); border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
               <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
                 <span style="background:#f59e0b; color:#000; font-weight:700; width:1.5rem; height:1.5rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0;">3</span>
+                <strong style="color:#f59e0b; font-size:0.95rem;">Verbinden</strong>
+              </div>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;"><strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; tippe <em>Remote-SSH: Connect to Host</em> &rarr; ausw&auml;hlen. Dein Server erscheint in der Liste &rarr; anklicken.</p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0;">VS Code &ouml;ffnet ein <strong style="color:#f59e0b;">neues Fenster</strong>. Beim ersten Mal wirst du gefragt:</p>
+              <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.35rem 0 0; padding-left: 0.75rem; border-left: 2px solid rgba(245,158,11,0.3);"><strong style="color:#f59e0b;">Platform?</strong> &rarr; <em>Linux</em> w&auml;hlen<br><strong style="color:#f59e0b;">Fingerprint?</strong> &rarr; <em>Continue</em> klicken<br><strong style="color:#f59e0b;">Password?</strong> &rarr; Dein Server-Passwort eingeben (von Hostinger)</p>
+            </div>
+
+            <!-- Schritt-Karte 4 -->
+            <div style="background: rgba(245,158,11,0.04); border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                <span style="background:#f59e0b; color:#000; font-weight:700; width:1.5rem; height:1.5rem; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0;">4</span>
                 <strong style="color:#f59e0b; font-size:0.95rem;">Workspace-Ordner &ouml;ffnen</strong>
               </div>
-              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;"><strong style="color:#f59e0b;">File &rarr; Open Folder</strong> und diesen Pfad eingeben:</p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;">Im <strong style="color:#f59e0b;">neuen Fenster</strong> (unten links steht <em style="color:#f59e0b;">SSH: deine-server-ip</em>): <strong style="color:#f59e0b;">File &rarr; Open Folder</strong> und diesen Pfad eingeben:</p>
               <div class="setup-code-block">
                 <button class="setup-code-copy" onclick="copyCode(this)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
@@ -1613,7 +1624,7 @@
               <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Du siehst jetzt SOUL.md, AGENTS.md, TOOLS.md in der Sidebar. Bearbeiten, speichern &ndash; landet sofort auf dem VPS.</p>
             </div>
 
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.5rem 0 0; padding: 0.6rem 0.75rem; background: rgba(245,158,11,0.04); border-radius: 8px;">&#x1F4A1; <strong style="color:#f59e0b;">Tipp:</strong> Ab jetzt reicht <strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; <em>Connect to Host</em> &rarr; Server ausw&auml;hlen. VS Code merkt sich den Ordner.<br>&#x26A0;&#xFE0F; <strong style="color:#f59e0b;">Nur im workspace-Ordner arbeiten</strong> &ndash; nicht in &uuml;bergeordneten Ordnern, sonst kommt OpenClaw durcheinander.</p>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.5rem 0 0; padding: 0.6rem 0.75rem; background: rgba(245,158,11,0.04); border-radius: 8px;">&#x1F4A1; <strong style="color:#f59e0b;">Ab jetzt:</strong> <strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; <em>Connect to Host</em> &rarr; Server ausw&auml;hlen &rarr; fertig. VS Code merkt sich Ordner und Passwort.<br>&#x26A0;&#xFE0F; <strong style="color:#f59e0b;">Nur im workspace-Ordner arbeiten</strong> &ndash; nicht in &uuml;bergeordneten Ordnern, sonst kommt OpenClaw durcheinander.</p>
           </div>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
