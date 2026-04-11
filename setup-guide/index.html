@@ -1442,81 +1442,76 @@
 
           <!-- Teil 2: Erweitern und Verbinden (13.5-13.9) -->
           <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
-            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.5&ndash;13.6 Skill + Telegram</div>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Ersten Skill installieren und Telegram-Bot verbinden. Beides per Chat.</p>
-
-            <div class="setup-snippet-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              9. Skill installieren (im Gateway-Chat)
-            </div>
-            <div class="setup-code-block">
-              <button class="setup-code-copy" onclick="copyCode(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-              </button>
-              <code id="code-13-9">Installiere den Skill Tikitackr/humanizer-de</code>
-            </div>
-
-            <div class="setup-snippet-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              10. Telegram-Bot erstellen
-            </div>
-            <div class="setup-code-block">
-              <button class="setup-code-copy" onclick="copyCode(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-              </button>
-              <code id="code-13-10">/newbot</code>
-            </div>
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">An <strong style="color:#fff;">@BotFather</strong> in Telegram senden. Token kopieren, im Gateway unter Config &rarr; Channels &rarr; Telegram eintragen. User-ID in <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">allowFrom</code> setzen.</p>
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0;">&#x1F4A1; <strong style="color:var(--text-dim);">Token vergessen?</strong> <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">/mybots</code> an @BotFather. <strong style="color:var(--text-dim);">User-ID vergessen?</strong> <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">@userinfobot</code> anschreiben.</p>
-          </div>
-
-          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
-            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.7 Heartbeat + Cron-Jobs</div>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Agent automatisieren. Heartbeat-Modell und activeHours hast du im Config Builder (Schritt 6) schon gesetzt.</p>
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.5&ndash;13.6 Telegram + erster Skill</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Telegram hast du in Kapitel 5 eingerichtet. Jetzt nutzt du es, um deinen ersten Skill zu installieren.</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              9. Telegram eingerichtet?
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">Dein Telegram-Bot sollte seit Kapitel 5 laufen. Falls nicht:</p>
+            <button class="setup-banner-button" style="margin: 0 0 0.75rem 0;" onclick="loadKap13Module('setup-guide'); setTimeout(function(){ var s = document.querySelector('[data-chapter=&quot;5&quot;]'); if(s){s.classList.add('open'); s.scrollIntoView({behavior:'smooth'});} }, 700);">Telegram-Setup (Kap 5) &ouml;ffnen &rarr;</button>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              10. Skill installieren (per Telegram an deinen Agent)
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-13-10">Installiere den Skill Tikitackr/humanizer-de</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Kopiere den Befehl und schick ihn deinem Agent in Telegram. Er installiert den Humanizer-Skill und best&auml;tigt dir das.</p>
+          </div>
+
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.7 Heartbeat + Cron-Jobs (Telegram-Prompts)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Agent automatisieren. Heartbeat-Modell und activeHours hast du im Config Builder (Schritt 6) schon gesetzt.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               11. Heartbeat testen
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-11">openclaw agents heartbeat --force</code>
+              <code id="code-13-11">Teste den Heartbeat einmal manuell. Zeig mir das Ergebnis.</code>
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">&#x26A0;&#xFE0F; <strong style="color:#f59e0b;">Kostenfalle!</strong> Ohne g&uuml;nstiges Default-Modell + Zeitbegrenzung &uuml;ber 400$/Monat. Pr&uuml;fe dein Spending Limit (Schritt 2)!</p>
 
             <div class="setup-snippet-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              12. T&auml;gliche Zusammenfassung (Cron-Job)
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              12. T&auml;gliche Zusammenfassung einrichten
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-12">openclaw cron add "0 20 * * *" "Fasse zusammen was heute passiert ist."</code>
+              <code id="code-13-12">Richte einen Cron-Job ein: Jeden Abend um 20 Uhr eine Zusammenfassung des Tages.</code>
             </div>
 
             <div class="setup-snippet-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
               13. W&ouml;chentlicher Context-Reset
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-13">openclaw cron add "0 8 * * 1" "/new"</code>
+              <code id="code-13-13">Richte einen w&ouml;chentlichen Context-Reset ein: Jeden Montag um 8 Uhr eine frische Session starten.</code>
             </div>
           </div>
 
           <!-- Teil 3: Stimme und Mobilit&auml;t (13.10-13.14) -->
           <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
-            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.10 Drei Server installieren</div>
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.10 Drei Server installieren (Telegram-Prompt)</div>
             <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Sync, TTS und Realtime. Alle drei per Tailscale Funnel erreichbar.</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              14. Server installieren (im Gateway-Chat oder per Telegram)
+              14. Server installieren (per Telegram)
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
@@ -1535,7 +1530,13 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
               15. Companion &ouml;ffnen (auf dem Handy)
             </div>
-            <button class="setup-banner-button" style="margin: 0.5rem 0;" onclick="loadKap13Module('companion')">Companion &ouml;ffnen &rarr;</button>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">Scanne den QR-Code im Buch oder &ouml;ffne die URL auf deinem Handy:</p>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-13-15">https://openclaw-buch.de/companion/</code>
+            </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Safari &rarr; Teilen &rarr; &bdquo;Zum Home-Bildschirm&ldquo;. Sync-Server-URL eintragen. Dashboard und Handy sind jetzt verbunden.</p>
           </div>
 
