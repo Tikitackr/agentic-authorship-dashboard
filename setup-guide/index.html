@@ -1339,7 +1339,7 @@
               <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="setup-section-title">Kapitel 13: Planen, Konfigurieren &amp; Erweitern</div>
-            <div class="setup-section-count">17 Schritte</div>
+            <div class="setup-section-count">18 Schritte</div>
           </div>
           <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -1504,6 +1504,23 @@
             </div>
           </div>
 
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.8 Erster Hook: Agent Aufgaben beibringen (Telegram-Prompt)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Hooks feuern automatisch wenn etwas passiert (z.B. neue Session). So bringst du deinem Agent eigene Automatisierungen bei.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              14. Welcome-Hook einrichten
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-13-14">Erstell mir einen Welcome-Hook, der mich bei jeder neuen Session begr&uuml;&szlig;t und den aktuellen Status meines Buchprojekts zeigt.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Der Agent erstellt HOOK.md + handler.ts automatisch. So lernst du das Muster: Trigger + Aktion = Automatisierung.</p>
+          </div>
+
           <!-- Teil 3: Stimme und Mobilit&auml;t (13.10-13.14) -->
           <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
             <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.10 Drei Server installieren (Telegram-Prompt)</div>
@@ -1511,13 +1528,13 @@
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-              14. Server installieren (per Telegram)
+              15. Server installieren (per Telegram)
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-14">Installiere den Sync-Server, den TTS-Server und den Realtime-Server. Richte Tailscale Funnel ein.</code>
+              <code id="code-13-15">Installiere den Sync-Server, den TTS-Server und den Realtime-Server. Richte Tailscale Funnel ein.</code>
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Ports: 443 (Sync), 8443 (TTS), 10000 (Realtime). Der Agent richtet alles ein, du best&auml;tigst nur.</p>
           </div>
@@ -1528,7 +1545,7 @@
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              15. Companion &ouml;ffnen
+              16. Companion &ouml;ffnen
             </div>
             <button class="setup-banner-button" style="margin: 0.5rem 0;" onclick="if(window.Cowan){Cowan.open();}else{loadKap13Module('companion');}">Companion &ouml;ffnen &rarr;</button>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">API-Key eingeben, Handy per QR-Code verbinden, Chat nutzen. Alles im Companion-Widget.</p>
@@ -1540,25 +1557,25 @@
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              16. OpenAI Spending Limit setzen
+              17. OpenAI Spending Limit setzen
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-16">https://platform.openai.com/settings/organization/limits</code>
+              <code id="code-13-17">https://platform.openai.com/settings/organization/limits</code>
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">Drei Stufen: Edge TTS (kostenlos, Standard) &rarr; Hybrid (Claude denkt, Stimme spricht) &rarr; Full Realtime (OpenAI). Erst Spending Limit setzen, dann im Companion aktivieren.</p>
 
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              17. Workspace bearbeiten (VS Code Remote-SSH)
+              18. Workspace bearbeiten (VS Code Remote-SSH)
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-17">code --remote ssh-remote+${TAILSCALE_HOSTNAME} /root/.openclaw/workspace</code>
+              <code id="code-13-18">code --remote ssh-remote+${TAILSCALE_HOSTNAME} /root/.openclaw/workspace</code>
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">VS Code mit Remote-SSH-Extension &ouml;ffnet den Workspace direkt auf dem VPS. Dateien bearbeiten, speichern, fertig. Kein rsync n&ouml;tig.</p>
           </div>
