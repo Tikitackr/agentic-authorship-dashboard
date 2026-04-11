@@ -661,7 +661,7 @@
         { num: '13', title: 'Planen und Konfigurieren', desc: 'Kosten, Buchplanung, System-Setup mit dem Dashboard', links: ['cost-calculator', 'buch-dashboard', 'soul-gallery', 'workspace-wizard', 'config-builder'], detail: 'kap13-teil1' },
         { num: '13.2', title: 'Erweitern und Verbinden', desc: 'Skills, Telegram, Heartbeat, Hooks und Dashboard', links: ['setup-guide', 'meine-daten'], detail: 'kap13-teil2' },
         { num: '13.3', title: 'Stimme und Mobilit&auml;t', desc: 'Server, Companion, Voice-Upgrade, Troubleshooting', links: ['companion', 'system-status'], detail: 'kap13-teil3' },
-        { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide', links: ['buch-dashboard', 'setup-guide'] },
+        { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide: Woche f&uuml;r Woche', links: ['buch-dashboard', 'setup-guide'], detail: 'kap14-30tage' },
         { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Ver&ouml;ffentlichung erfolgreich sein', links: ['publishing'] }
       ],
 
@@ -1314,6 +1314,53 @@
         '</div>';
       },
 
+      getKap14Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Dein 30-Tage-Plan: Woche f&uuml;r Woche</h3>' +
+          '<p>Kapitel 14 ist dein Trainingsplan. Vier Wochen, vier Phasen. Am Ende h&auml;ltst du ein fertiges Manuskript in den H&auml;nden.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Woche 1: Outlines (14.1)</h4>' +
+              '<p>F&uuml;r jedes Kapitel ein Outline schreiben. Erfahrungen einarbeiten. Erfahrungs-Abgleich als QA: durchschnittlich 10 fehlende Punkte pro Kapitel gefunden. 5 Minuten Aufwand, 1 Stunde Nacharbeit gespart.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>' +
+              '</svg>' +
+              '<h4>Woche 2: Pipeline (14.2)</h4>' +
+              '<p>AGENTS.md erweitern (Autor, Lektor, Pr&uuml;fer). Templates A/B/C erstellen. Erstes Kapitel komplett durch die Pipeline. VS Code Remote-SSH f&uuml;r Datei-Transfer. MasterPrompt-Tracking gegen Wiederholungen.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Woche 3: Multi-Agent (14.3)</h4>' +
+              '<p>Chefredakteur orchestriert Autor&rarr;Lektor&rarr;Pr&uuml;fer automatisch. <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">sessions_spawn</code> konfigurieren. 3 Kapitel im Batch. ~30% fallen beim ersten Durchlauf durch QA. REVIEW-LEKTIONEN.md als Ged&auml;chtnis.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' +
+              '</svg>' +
+              '<h4>Woche 4: Fertigstellen (14.4)</h4>' +
+              '<p>Alle restlichen Kapitel produzieren (3 bis 4 pro Tag). Review-Runde: erst Texterin, dann eigenes Review mit Checkliste. Vorwort selbst schreiben. QR-Code-Platzhalter. Backup erstellen.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Das Tempo bestimmst du. 30 Tage Baseline, 2 Wochen Sprint oder 12 Wochen am Wochenende. Das System funktioniert bei jedem Tempo. Wichtig ist nur: dranbleiben.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'15\')">Weiter zu Kapitel 15: Marketing &amp; Verkauf &rarr;</button>' +
+        '</div>';
+      },
+
       getKap11Html: function() {
         return '<div class="fahrplan-onboarding">' +
           '<h3>Was ein KI-Buch wirklich kostet</h3>' +
@@ -1459,6 +1506,8 @@
             detailHtml = this.getKap13Teil2Html();
           } else if (ch.detail === 'kap13-teil3') {
             detailHtml = this.getKap13Teil3Html();
+          } else if (ch.detail === 'kap14-30tage') {
+            detailHtml = this.getKap14Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
