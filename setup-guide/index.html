@@ -1423,7 +1423,7 @@
               <button class="setup-code-copy" onclick="copyCode(this)" data-copy-prefix="http://">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-7">${TAILSCALE_HOSTNAME}:18789</code>
+              <code id="code-13-7">${HOSTNAME}:${PORT}</code>
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">SOUL.md, AGENTS.md, openclaw.json und die anderen Dateien aus dem Wizard im Gateway-UI hochladen. Dann <code style="background:var(--bg);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.75rem;">docker compose restart</code></p>
 
@@ -1565,9 +1565,11 @@
               </button>
               <code id="code-13-17">https://platform.openai.com/settings/organization/limits</code>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">Drei Stufen: Edge TTS (kostenlos, Standard) &rarr; Hybrid (Claude denkt, Stimme spricht) &rarr; Full Realtime (OpenAI). Erst Spending Limit setzen, dann im Companion aktivieren.</p>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Drei Stufen: Edge TTS (kostenlos, Standard) &rarr; Hybrid (Claude denkt, Stimme spricht) &rarr; Full Realtime (OpenAI). Erst Spending Limit setzen, dann im Companion aktivieren.</p>
+          </div>
 
-            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">18. Workspace bearbeiten (VS Code Remote-SSH)</div>
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.14 Workspace bearbeiten (VS Code Remote-SSH)</div>
             <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Mit VS Code greifst du direkt auf deinen VPS-Workspace zu. Dateien bearbeiten, speichern, fertig. Das ist der Hauptweg ab Kapitel 14.</p>
 
             <!-- Schritt-Karte 1 -->
