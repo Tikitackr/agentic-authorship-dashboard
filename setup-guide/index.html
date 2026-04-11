@@ -1567,17 +1567,48 @@
             </div>
             <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">Drei Stufen: Edge TTS (kostenlos, Standard) &rarr; Hybrid (Claude denkt, Stimme spricht) &rarr; Full Realtime (OpenAI). Erst Spending Limit setzen, dann im Companion aktivieren.</p>
 
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">13.14 Workspace bearbeiten (VS Code Remote-SSH)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Mit VS Code greifst du direkt auf deinen VPS-Workspace zu &ndash; Dateien bearbeiten, speichern, fertig. Kein rsync, kein Terminal-Kopieren. Das ist der Hauptweg f&uuml;r alles ab Kapitel 14.</p>
+
             <div class="setup-snippet-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
-              18. Workspace bearbeiten (VS Code Remote-SSH)
+              18a. Remote-SSH Extension installieren
             </div>
             <div class="setup-code-block">
               <button class="setup-code-copy" onclick="copyCode(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
               </button>
-              <code id="code-13-18">code --remote ssh-remote+${TAILSCALE_HOSTNAME} /root/.openclaw/workspace</code>
+              <code id="code-13-18a">code --install-extension ms-vscode-remote.remote-ssh</code>
             </div>
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">VS Code mit Remote-SSH-Extension &ouml;ffnet den Workspace direkt auf dem VPS. Dateien bearbeiten, speichern, fertig. Kein rsync n&ouml;tig.</p>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">Oder in VS Code: Extensions-Sidebar (&Ouml;ffnen mit <strong style="color:#f59e0b;">Cmd+Shift+X</strong>) &rarr; &laquo;Remote - SSH&raquo; suchen &rarr; Install.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              18b. SSH-Verbindung zum VPS einrichten
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;">In VS Code: <strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; &laquo;Remote-SSH: Connect to Host&raquo; &rarr; &laquo;Add New SSH Host&raquo;. Dann diesen Befehl eingeben:</p>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-13-18b">ssh root@DEINE-SERVER-IP</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">Ersetze <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">DEINE-SERVER-IP</code> mit der IP aus &laquo;Meine Daten&raquo; im Dashboard. Config-Datei best&auml;tigen &rarr; Enter. Danach &laquo;Connect to Host&raquo; erneut &ouml;ffnen &ndash; dein Server erscheint jetzt in der Liste.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              18c. Workspace-Ordner &ouml;ffnen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.5rem 0;">Nach der Verbindung: <strong style="color:#f59e0b;">File &rarr; Open Folder</strong> und diesen Pfad eingeben:</p>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-13-18c">/root/.openclaw/workspace</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.75rem 0;">Jetzt siehst du SOUL.md, AGENTS.md, TOOLS.md und alle Workspace-Dateien direkt in der Sidebar. Bearbeiten, speichern &ndash; &Auml;nderungen landen sofort auf dem VPS.</p>
+
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.5rem 0 0; padding: 0.75rem; background: rgba(245,158,11,0.04); border-radius: 8px;">&#x1F4A1; <strong style="color:#f59e0b;">Tipp:</strong> N&auml;chstes Mal reicht <strong style="color:#f59e0b;">Cmd+Shift+P</strong> &rarr; &laquo;Remote-SSH: Connect to Host&raquo; &rarr; Server ausw&auml;hlen. VS Code merkt sich den letzten Ordner. &#x26A0;&#xFE0F; <strong style="color:#f59e0b;">Nur im workspace-Ordner arbeiten</strong> &ndash; nicht in &uuml;bergeordneten Ordnern (data, .openclaw), sonst kommt OpenClaw durcheinander.</p>
           </div>
 
           <div class="setup-checkbox-group" style="margin-top: 2rem;">
