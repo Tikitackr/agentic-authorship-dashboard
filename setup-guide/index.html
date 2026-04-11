@@ -1588,6 +1588,160 @@
       </div>
     </div>
 
+      <!-- Kapitel 14: Von Thema zu Buch in 30 Tagen -->
+      <div class="setup-section" data-chapter="14">
+        <div class="setup-section-header" onclick="toggleSection(this)">
+          <div class="setup-section-header-left">
+            <svg class="setup-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <div class="setup-section-title">Kapitel 14: Von Thema zu Buch in 30 Tagen</div>
+            <div class="setup-section-count">9 Schritte</div>
+          </div>
+          <svg class="setup-section-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="setup-section-content">
+
+          <!-- Voraussetzung -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">Voraussetzung: VS Code mit VPS verbunden</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Du brauchst VS Code Remote-SSH, um Outlines, Templates und Agent-Dateien auf den VPS zu bringen. Falls noch nicht eingerichtet:</p>
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 8v4m0 4h.01"></path></svg>
+              1. VS Code Remote-SSH pr&uuml;fen
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Noch nicht eingerichtet? &rarr; <strong style="color: #f59e0b;">Kap 13, Schritt 18</strong>. Workspace-Pfad auf dem VPS: <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">openclaw-k4od &gt; data &gt; .openclaw &gt; workspace</code></p>
+          </div>
+
+          <!-- Woche 1: Outlines (14.1) -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">14.1 Woche 1: Outlines schreiben (Telegram-Prompts)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">F&uuml;r jedes Kapitel ein Outline schreiben. ~1 bis 1,5 Stunden t&auml;glich, 5 bis 7 Tage.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              2. Erstes Outline schreiben
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-2">Lass uns das Outline f&uuml;r Kapitel 4 schreiben. Es geht um Agent-Konzepte. Was muss rein? Speichere das Ergebnis als outlines/kapitel-04-outline.md.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">F&uuml;r jedes Kapitel wiederholen. Erfahrungen aus deinen bisherigen Sessions in die Outlines einarbeiten.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              3. Erfahrungs-Abgleich
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-3">Pr&uuml;fe das Outline f&uuml;r Kapitel 4 gegen meine bisherigen Session-Notizen. Fehlen Punkte, die wir besprochen haben?</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Durchschnittlich 10 fehlende Punkte pro Kapitel. 5 Minuten Aufwand, 1 Stunde Nacharbeit gespart.</p>
+          </div>
+
+          <!-- Woche 2: Pipeline (14.2) -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">14.2 Woche 2: Pipeline aufbauen (Telegram-Prompts)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">AGENTS.md erweitern, Templates erstellen, erstes Kapitel durch die Pipeline. ~2 bis 3 Stunden t&auml;glich.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              4. AGENTS.md erweitern
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-4">Erweitere meine AGENTS.md um konkrete Regeln f&uuml;r Autor, Lektor und Pr&uuml;fer. Autor: Du-Form, aktive Sprache, max 20 W&ouml;rter pro Satz. Lektor: Konsistenz pr&uuml;fen, Wiederholungen streichen. Pr&uuml;fer: Fakten checken, nicht umformulieren.</code>
+            </div>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              5. Templates erstellen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-5">Erstelle drei Template-Dateien: templates/template-A.md (Tutorials, 3.000-4.000 W&ouml;rter), templates/template-B.md (Case Studies, 4.000-5.000 W&ouml;rter), templates/template-C.md (Blueprints mit Checklisten, 4.000-5.500 W&ouml;rter).</code>
+            </div>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              6. Erstes Kapitel durch die Pipeline
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-6">Produziere Kapitel 4 komplett: Autor schreibt nach Outline und Template A, Lektor pr&uuml;ft, Pr&uuml;fer checkt Fakten. Zeig mir das Ergebnis und miss die Zeit.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">&#x1F4A1; Vor jedem Kapitel: frische Session starten (<code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code>). Senkt die Kosten von ~18&euro; auf ~10&euro; pro Kapitel.</p>
+          </div>
+
+          <!-- Woche 3: Multi-Agent (14.3) -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">14.3 Woche 3: Multi-Agent + Batch (Telegram-Prompts)</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Chefredakteur orchestriert die Pipeline automatisch. ~3 bis 4 Stunden t&auml;glich.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              7. Chefredakteur einrichten + Batch testen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-7">Richte eine Chefredakteur-Rolle in meiner AGENTS.md ein. Er soll Autor, Lektor und Pr&uuml;fer als Sub-Agenten koordinieren. Dann produziere Kapitel 5, 6 und 7 nacheinander im Batch.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0.5rem 0;">~30% der Kapitel fallen beim ersten Durchlauf durch die QA. Das ist normal. Zweite Runde mit Lektor-Nachbesserung.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              8. Review-Lektionen anlegen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-8">Erstelle eine REVIEW-LEKTIONEN.md mit allen wiederkehrenden Fehlern aus den bisherigen Kapitel-Reviews. Lies diese Datei automatisch vor jedem neuen Kapitel ein.</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Institutionelles Ged&auml;chtnis: Gleiche Fehler passieren nicht immer wieder.</p>
+          </div>
+
+          <!-- Woche 4: Fertigstellen (14.4) -->
+          <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; position: relative;">
+            <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.05rem;">14.4 Woche 4: Skalieren und Fertigstellen</div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0 0 1rem 0;">Alle restlichen Kapitel, Review-Runde, Finalisierung. Der Endspurt.</p>
+
+            <div class="setup-snippet-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              9. Backup erstellen
+            </div>
+            <div class="setup-code-block">
+              <button class="setup-code-copy" onclick="copyCode(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </button>
+              <code id="code-14-9">Erstelle ein Backup meines kompletten Workspaces: openclaw backup create</code>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.8rem; margin: 0.25rem 0 0;">Sichert alles: Kapitel, Outlines, Sessions, Config. Vor dem finalen Export immer ein Backup machen. &#x26A0;&#xFE0F; <strong style="color:#f59e0b;">In VS Code NUR im workspace-Ordner arbeiten</strong> &ndash; nicht in &uuml;bergeordneten Ordnern (data, .openclaw), sonst kommt OpenClaw durcheinander.</p>
+          </div>
+
+          <div class="setup-checkbox-group" style="margin-top: 2rem;">
+            <input type="checkbox" id="check-kap14-1" class="setup-checkbox" onchange="updateProgress()">
+            <label for="check-kap14-1">Kapitel 14 abgeschlossen</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Progress Bar -->
     <div class="setup-progress">
       <div class="setup-progress-text" id="progressText">0 von 0 Schritte abgeschlossen</div>
