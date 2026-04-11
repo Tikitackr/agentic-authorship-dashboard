@@ -658,8 +658,9 @@
         { num: '10', title: 'Multi-Agent: Vom Einzelagenten zum Team', desc: 'Vier Agenten, eine Pipeline, klare Rollen', links: ['config-builder', 'workspace-wizard', 'template-packs'], detail: 'kap10-multi-agent' },
         { num: '11', title: 'Kosten, Zeit & Learnings', desc: 'Realistische Zahlen und Erfahrungen', links: ['cost-calculator'], detail: 'kap11-kosten' },
         { num: '12', title: 'Von der Idee zum fertigen Buch', desc: 'Der vollst&auml;ndige Workflow', links: ['buch-dashboard'], detail: 'kap12-workflow' },
-        { num: '13', title: 'Dein Setup: Step-by-Step', desc: 'Vom leeren VPS zum laufenden OpenClaw-System', links: ['setup-guide', 'meine-daten'], detail: 'kap13-setup' },
-        { num: '13.2', title: 'Dashboard, Cowan & Voice-Upgrade', desc: 'Erweiterte Features und Add-ons', links: ['publishing'] },
+        { num: '13', title: 'Planen und Konfigurieren', desc: 'Kosten, Buchplanung, System-Setup mit dem Dashboard', links: ['cost-calculator', 'buch-dashboard', 'soul-gallery', 'workspace-wizard', 'config-builder'], detail: 'kap13-teil1' },
+        { num: '13.2', title: 'Erweitern und Verbinden', desc: 'Skills, Telegram, Heartbeat, Hooks und Dashboard', links: ['setup-guide', 'meine-daten'], detail: 'kap13-teil2' },
+        { num: '13.3', title: 'Stimme und Mobilit&auml;t', desc: 'Server, Companion, Voice-Upgrade, Troubleshooting', links: ['companion', 'system-status'], detail: 'kap13-teil3' },
         { num: '14', title: 'Von Thema zu Buch in 30 Tagen', desc: 'Der Schnellstart-Guide', links: ['buch-dashboard', 'setup-guide'] },
         { num: '15', title: 'Marketing & Verkauf optimieren', desc: 'Nach der Ver&ouml;ffentlichung erfolgreich sein', links: ['publishing'] }
       ],
@@ -1175,54 +1176,141 @@
             '<strong>Kernidee:</strong> 5 Wochen, 3 Phasen, 1 fertiges Buch. Der Blueprint steht &ndash; jetzt bist du dran.' +
           '</div>' +
 
-          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'13\')">Weiter zu Kapitel 13: Dein Setup &ndash; Step by Step &rarr;</button>' +
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'13\')">Weiter zu Kapitel 13: Planen und Konfigurieren &rarr;</button>' +
         '</div>';
       },
 
-      getKap13Html: function() {
+      getKap13Teil1Html: function() {
         return '<div class="fahrplan-onboarding">' +
-          '<h3>Vom leeren Server zum laufenden System</h3>' +
-          '<p>Kapitel 13 ist die grosse Bauanleitung: VPS bestellen, OpenClaw installieren, Agent konfigurieren, Telegram verbinden, Heartbeat + Cron-Jobs + Hooks. Alles Step-by-Step.</p>' +
+          '<h3>Planen und Konfigurieren</h3>' +
+          '<p>Teil 1 von Kapitel 13: Zuerst planst du dein Buchprojekt mit dem Dashboard, dann konfigurierst du dein System &ndash; alles visuell, kein manuelles Editieren.</p>' +
 
           '<div class="fahrplan-companions">' +
             '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
               '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
-                '<rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>' +
+                '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' +
               '</svg>' +
-              '<h4 style="color: #f59e0b;">VPS + Docker + Tailscale</h4>' +
-              '<p>Hostinger KVM2 (6&euro;/Monat), Ubuntu LTS, Tailscale f&uuml;r privates Netzwerk. Docker installieren, OpenClaw-Container starten. Gateway-UI auf Port 18789.</p>' +
+              '<h4 style="color: #f59e0b;">Kosten kalkulieren (13.1)</h4>' +
+              '<p>Cost Calculator &ouml;ffnen, Modell w&auml;hlen (Opus/Sonnet/Haiku), Nachrichten pro Tag sch&auml;tzen, Spending Limit setzen. Du gehst mit einem konkreten Monatsbudget aus diesem Abschnitt.</p>' +
             '</div>' +
             '<div class="fahrplan-companion-card">' +
               '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-                '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' +
+                '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' +
               '</svg>' +
-              '<h4>Agent-Pers&ouml;nlichkeit</h4>' +
-              '<p>IDENTITY.md (Visitenkarte), SOUL.md (Herzkammer), AGENTS.md (Arbeitsmodi). Sub-Agenten per <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">allowAgents</code> freischalten. Erster Test-Chat.</p>' +
+              '<h4>Buch planen im Dashboard (13.2)</h4>' +
+              '<p>Buch-Dashboard: Buchidee, Struktur, Features, Agent-Team. 4 Schritte, am Ende steht dein Projektplan. Thema, Zielgruppe und Kapitelstruktur &ndash; alles BEVOR du konfigurierst.</p>' +
             '</div>' +
           '</div>' +
 
           '<div class="fahrplan-companions" style="margin-top: 12px;">' +
             '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
               '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
-                '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' +
+                '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>' +
               '</svg>' +
-              '<h4 style="color: #f59e0b;">Telegram + Humanizer</h4>' +
-              '<p>Bot bei @BotFather erstellen, Token eintragen, User-ID in <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">allowFrom</code>. Humanizer-DE als ersten Skill installieren. Sofort-Test mit Score.</p>' +
+              '<h4 style="color: #f59e0b;">System konfigurieren (13.3)</h4>' +
+              '<p>SOUL Gallery &rarr; Workspace Wizard &rarr; Config Builder. Drei Dashboard-Werkzeuge, drei Schritte: Template w&auml;hlen, 8 Fragen beantworten, openclaw.json zusammenklicken. Dateien auf den VPS bringen.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' +
+              '</svg>' +
+              '<h4>Erster Test (13.4)</h4>' +
+              '<p>Gateway-UI &ouml;ffnen, Test-Nachricht schicken: &bdquo;Hallo! Wer bist du?&ldquo; Agent soll im Tonfall der SOUL.md antworten. Falls generisch &rarr; nachsch&auml;rfen.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Erst planen, dann konfigurieren. Das Dashboard macht die Arbeit &ndash; du triffst die Entscheidungen.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'13.2\')">Weiter zu Teil 2: Erweitern und Verbinden &rarr;</button>' +
+        '</div>';
+      },
+
+      getKap13Teil2Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Erweitern und Verbinden</h3>' +
+          '<p>Teil 2 von Kapitel 13: Dein System l&auml;uft &ndash; jetzt machst du es produktionsbereit. Skills, Kan&auml;le, Automatisierung und die restlichen Dashboard-Module.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Humanizer + Telegram (13.5&ndash;13.6)</h4>' +
+              '<p>Humanizer-DE als ersten Skill installieren und testen. Telegram-Bot bei @BotFather erstellen, Token eintragen, User-ID in <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">allowFrom</code>. Sofort-Test.</p>' +
             '</div>' +
             '<div class="fahrplan-companion-card">' +
               '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
                 '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' +
               '</svg>' +
-              '<h4>Heartbeat, Cron &amp; Hooks</h4>' +
-              '<p>Heartbeat mit g&uuml;nstigem Modell (Haiku) + Zeitbegrenzung. Cron-Jobs f&uuml;r t&auml;gliche Zusammenfassung. <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code> als Kostenhebel. Welcome-Hook als Einstieg in Event-Automatisierung.</p>' +
+              '<h4>Heartbeat + Hooks (13.7&ndash;13.8)</h4>' +
+              '<p>Heartbeat mit Haiku + Zeitbegrenzung. Cron-Jobs f&uuml;r t&auml;gliche Zusammenfassung. <code style="background:rgba(245,158,11,0.1);padding:0.1rem 0.3rem;border-radius:4px;font-size:0.8rem;">/new</code> als Kostenhebel. Welcome-Hook als Einstieg in Event-Automatisierung.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Dashboard kennenlernen (13.9)</h4>' +
+              '<p>Fahrplan, Meine Daten, Setup-Guide, CLI-Referenz, System Status, Skill Explorer, Publishing/KDP. Die Module, die du noch nicht kennst &ndash; kompakt vorgestellt.</p>' +
             '</div>' +
           '</div>' +
 
           '<div class="fahrplan-sync-hint">' +
-            '<strong>Kernidee:</strong> Dieses Kapitel ist die komplette Bauanleitung. Am Ende hast du ein laufendes System mit Agent, Telegram-Bot und Automatisierung.' +
+            '<strong>Kernidee:</strong> Skills, Telegram und Automatisierung machen dein System produktionsbereit. Das Dashboard ist dein Begleiter f&uuml;r alles Weitere.' +
           '</div>' +
 
-          '<button class="fahrplan-next-btn" onclick="fahrplan.handleQuickAccess(\'setup-guide\', {chapter: \'13\'})">Setup-Guide &ouml;ffnen &rarr;</button>' +
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'13.3\')">Weiter zu Teil 3: Stimme und Mobilit&auml;t &rarr;</button>' +
+        '</div>';
+      },
+
+      getKap13Teil3Html: function() {
+        return '<div class="fahrplan-onboarding">' +
+          '<h3>Stimme und Mobilit&auml;t</h3>' +
+          '<p>Teil 3 von Kapitel 13: Das Sprach-&Ouml;kosystem. Drei Server, der Companion aufs Handy, und optional Voice-Upgrade f&uuml;r Echtzeit-Stimme.</p>' +
+
+          '<div class="fahrplan-companions">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Drei Server (13.10)</h4>' +
+              '<p>Sync-Server (Dashboard &harr; Companion), TTS-Server (Edge Neural Voices), Realtime-Server (OpenAI WebRTC). Alle drei per Tailscale Funnel erreichbar. Health-Checks pr&uuml;fen.</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>' +
+              '</svg>' +
+              '<h4>Companion aufs Handy (13.11)</h4>' +
+              '<p>Companion im Browser &ouml;ffnen, &bdquo;Zum Home-Bildschirm&ldquo; &ndash; fertig. Sync-Server verbindet Handy und Dashboard. Lesefortschritt, Chat und Kamera mobil verf&uuml;gbar.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-companions" style="margin-top: 12px;">' +
+            '<div class="fahrplan-companion-card" style="border-color: #f59e0b;">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">' +
+                '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>' +
+              '</svg>' +
+              '<h4 style="color: #f59e0b;">Voice-Upgrade (13.12)</h4>' +
+              '<p>Optional: OpenAI Realtime API f&uuml;r Echtzeit-Stimme. Drei Stufen (Edge TTS &rarr; Hybrid &rarr; Full Realtime). Spending Limit bei OpenAI setzen. Stimme w&auml;hlen (Cedar/Echo/Marin).</p>' +
+            '</div>' +
+            '<div class="fahrplan-companion-card">' +
+              '<svg class="fahrplan-companion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' +
+              '</svg>' +
+              '<h4>Troubleshooting (13.13)</h4>' +
+              '<p>Die h&auml;ufigsten Probleme und L&ouml;sungen: Container startet nicht, Telegram antwortet nicht, Stimme fehlt. Systematisch pr&uuml;fen statt raten.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="fahrplan-sync-hint">' +
+            '<strong>Kernidee:</strong> Drei Server, ein Companion, optional Stimme. Am Ende hast du ein komplett mobiles System &ndash; vom Sofa aus mit deinem Agent reden.' +
+          '</div>' +
+
+          '<button class="fahrplan-next-btn" onclick="fahrplan.toggleExpand(\'14\')">Weiter zu Kapitel 14: Inhalte produzieren &rarr;</button>' +
         '</div>';
       },
 
@@ -1365,8 +1453,12 @@
             detailHtml = this.getKap11Html();
           } else if (ch.detail === 'kap12-workflow') {
             detailHtml = this.getKap12Html();
-          } else if (ch.detail === 'kap13-setup') {
-            detailHtml = this.getKap13Html();
+          } else if (ch.detail === 'kap13-teil1') {
+            detailHtml = this.getKap13Teil1Html();
+          } else if (ch.detail === 'kap13-teil2') {
+            detailHtml = this.getKap13Teil2Html();
+          } else if (ch.detail === 'kap13-teil3') {
+            detailHtml = this.getKap13Teil3Html();
           } else if (ch.links.length > 0) {
             detailHtml = '<div class="fahrplan-detail-generic">' +
               '<p>Dashboard-Werkzeuge fuer dieses Kapitel:</p>' +
